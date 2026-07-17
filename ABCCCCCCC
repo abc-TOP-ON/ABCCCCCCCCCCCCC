@@ -1,4 +1,4 @@
--- ABC HUB v15 - النسخة النهائية مع دمج سكربت الانتقال الفوري
+-- ABC HUB v15 - النسخة النهائية مع واجهة انتقال احترافية
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -198,15 +198,12 @@ local function createSidebarButton(text, posIndex, isActive, pageName)
         end
     end)
     
-    -- وظيفة تبديل الصفحات
     Btn.MouseButton1Click:Connect(function()
-        -- إخفاء كل الصفحات
         HomeContainer.Visible = false
         WelcomeContainer.Visible = false
         TeleportContainer.Visible = false
         SettingsContainer.Visible = false
         
-        -- إظهار الصفحة المطلوبة
         if pageName == "Home" then
             HomeContainer.Visible = true
         elseif pageName == "Welcome" then
@@ -217,7 +214,6 @@ local function createSidebarButton(text, posIndex, isActive, pageName)
             SettingsContainer.Visible = true
         end
         
-        -- تحديث حالة الأزرار
         for _, child in pairs(Sidebar:GetChildren()) do
             if child:IsA("TextButton") and child ~= Btn then
                 child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
@@ -265,7 +261,6 @@ WelcomeContainer.Parent = MainFrame
 WelcomeContainer.ZIndex = 1
 WelcomeContainer.Visible = false
 
--- نص الترحيب
 local WelcomeBigText = Instance.new("TextLabel")
 WelcomeBigText.Size = UDim2.new(1, -40, 0, 60)
 WelcomeBigText.Position = UDim2.new(0, 20, 0.2, 0)
@@ -332,7 +327,7 @@ WelcomeFooter.TextXAlignment = Enum.TextXAlignment.Center
 WelcomeFooter.Parent = WelcomeContainer
 WelcomeFooter.ZIndex = 5
 
--- 12. صفحة الانتقال الفوري
+-- 12. صفحة الانتقال الفوري (واجهة احترافية)
 local TeleportContainer = Instance.new("Frame")
 TeleportContainer.Name = "TeleportContainer"
 TeleportContainer.Size = UDim2.new(1, -150, 1, -20)
@@ -342,27 +337,27 @@ TeleportContainer.Parent = MainFrame
 TeleportContainer.ZIndex = 1
 TeleportContainer.Visible = false
 
--- عنوان صفحة الانتقال
+-- عنوان الصفحة
 local TeleportTitle = Instance.new("TextLabel")
-TeleportTitle.Size = UDim2.new(1, -20, 0, 30)
+TeleportTitle.Size = UDim2.new(1, -20, 0, 35)
 TeleportTitle.Position = UDim2.new(0, 10, 0, 5)
 TeleportTitle.BackgroundTransparency = 1
 TeleportTitle.Text = "📍 قائمة الانتقال الفوري"
 TeleportTitle.TextColor3 = Color3.fromRGB(180, 0, 255)
-TeleportTitle.TextSize = 16
+TeleportTitle.TextSize = 17
 TeleportTitle.Font = Enum.Font.GothamBold
 TeleportTitle.TextXAlignment = Enum.TextXAlignment.Center
 TeleportTitle.Parent = TeleportContainer
 TeleportTitle.ZIndex = 5
 
--- إطار التمرير للأزرار
+-- إطار التمرير
 local ScrollFrame = Instance.new("ScrollingFrame")
-ScrollFrame.Size = UDim2.new(1, -10, 1, -45)
-ScrollFrame.Position = UDim2.new(0, 5, 0, 40)
+ScrollFrame.Size = UDim2.new(1, -10, 1, -50)
+ScrollFrame.Position = UDim2.new(0, 5, 0, 45)
 ScrollFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
-ScrollFrame.BackgroundTransparency = 0.3
+ScrollFrame.BackgroundTransparency = 0.2
 ScrollFrame.BorderSizePixel = 0
-ScrollFrame.CanvasSize = UDim2.new(0, 0, 0, 1100)
+ScrollFrame.CanvasSize = UDim2.new(0, 0, 0, 1150)
 ScrollFrame.ScrollBarThickness = 4
 ScrollFrame.Parent = TeleportContainer
 ScrollFrame.ZIndex = 5
@@ -371,35 +366,45 @@ local ScrollCorner = Instance.new("UICorner")
 ScrollCorner.CornerRadius = UDim.new(0, 8)
 ScrollCorner.Parent = ScrollFrame
 
--- دالة الانتقال
-local function teleportTo(cframe)
+-- دالة الانتقال مع رسالة تأكيد
+local function teleportTo(cframe, placeName)
     local character = LocalPlayer.Character
     if character and character:FindFirstChild("HumanoidRootPart") then
         character.HumanoidRootPart.CFrame = cframe
-        -- رسالة تأكيد
-        local notif = Instance.new("TextLabel")
-        notif.Size = UDim2.new(0, 200, 0, 30)
-        notif.Position = UDim2.new(0.5, -100, 0.5, -15)
-        notif.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
+        
+        -- رسالة تأكيد جميلة
+        local notif = Instance.new("Frame")
+        notif.Size = UDim2.new(0, 280, 0, 45)
+        notif.Position = UDim2.new(0.5, -140, 0.5, -22)
+        notif.BackgroundColor3 = Color3.fromRGB(25, 25, 40)
         notif.BorderSizePixel = 0
-        notif.Text = "✅ تم الانتقال بنجاح!"
-        notif.TextColor3 = Color3.fromRGB(0, 255, 150)
-        notif.TextSize = 14
-        notif.Font = Enum.Font.GothamBold
         notif.Parent = MainFrame
         notif.ZIndex = 50
+        
         local notifCorner = Instance.new("UICorner")
-        notifCorner.CornerRadius = UDim.new(0, 8)
+        notifCorner.CornerRadius = UDim.new(0, 10)
         notifCorner.Parent = notif
-        task.wait(1.5)
+        
+        local notifText = Instance.new("TextLabel")
+        notifText.Size = UDim2.new(1, 0, 1, 0)
+        notifText.BackgroundTransparency = 1
+        notifText.Text = "✅ تم الانتقال إلى " .. placeName .. " بنجاح!"
+        notifText.TextColor3 = Color3.fromRGB(0, 255, 150)
+        notifText.TextSize = 15
+        notifText.Font = Enum.Font.GothamBold
+        notifText.TextXAlignment = Enum.TextXAlignment.Center
+        notifText.Parent = notif
+        
+        task.wait(1.8)
         notif:Destroy()
     end
 end
 
--- دالة إنشاء زر الانتقال
-local function createTeleportButton(text, color, positionY, cframe)
+-- دالة إنشاء زر انتقال مع عرض الإحداثيات
+local function createTeleportButton(text, color, positionY, cframe, placeName)
+    -- الزر الرئيسي
     local Btn = Instance.new("TextButton")
-    Btn.Size = UDim2.new(0.9, 0, 0, 35)
+    Btn.Size = UDim2.new(0.9, 0, 0, 40)
     Btn.Position = UDim2.new(0.05, 0, 0, positionY)
     Btn.BackgroundColor3 = color
     Btn.BorderSizePixel = 0
@@ -414,43 +419,69 @@ local function createTeleportButton(text, color, positionY, cframe)
     BtnCorner.CornerRadius = UDim.new(0, 6)
     BtnCorner.Parent = Btn
     
+    -- عرض الإحداثيات داخل الزر
+    local CoordsText = Instance.new("TextLabel")
+    CoordsText.Size = UDim2.new(0.5, 0, 1, 0)
+    CoordsText.Position = UDim2.new(0.5, 0, 0, 0)
+    CoordsText.BackgroundTransparency = 1
+    local x = math.floor(cframe.X * 10) / 10
+    local y = math.floor(cframe.Y * 10) / 10
+    local z = math.floor(cframe.Z * 10) / 10
+    CoordsText.Text = "(" .. x .. ", " .. y .. ", " .. z .. ")"
+    CoordsText.TextColor3 = Color3.fromRGB(200, 200, 200)
+    CoordsText.TextSize = 10
+    CoordsText.Font = Enum.Font.GothamMedium
+    CoordsText.TextXAlignment = Enum.TextXAlignment.Right
+    CoordsText.TextYAlignment = Enum.TextYAlignment.Center
+    CoordsText.Parent = Btn
+    CoordsText.ZIndex = 7
+    
+    -- تأثير Hover
     Btn.MouseEnter:Connect(function()
-        Btn.BackgroundColor3 = Color3.new(color.R + 0.1, color.G + 0.1, color.B + 0.1)
+        Btn.BackgroundColor3 = Color3.new(color.R + 0.15, color.G + 0.15, color.B + 0.15)
+        Btn.Size = UDim2.new(0.92, 0, 0, 42)
     end)
     Btn.MouseLeave:Connect(function()
         Btn.BackgroundColor3 = color
+        Btn.Size = UDim2.new(0.9, 0, 0, 40)
     end)
     
     Btn.MouseButton1Click:Connect(function()
-        teleportTo(cframe)
+        teleportTo(cframe, placeName)
     end)
 end
 
--- ============================================
--- 13. أزرار الانتقال (22 مكان)
--- ============================================
-createTeleportButton("📍 البداية", Color3.fromRGB(100, 100, 100), 5, CFrame.new(-154.62, 5.17, 4.80))
-createTeleportButton("☕ الكوفي", Color3.fromRGB(0, 180, 100), 45, CFrame.new(46.80, 4.86, -282.78))
-createTeleportButton("🏕️ الخيمة", Color3.fromRGB(212, 143, 56), 85, CFrame.new(-308.12, 4.62, -257.02))
-createTeleportButton("🎭 المسرح", Color3.fromRGB(0, 120, 200), 125, CFrame.new(-307.16, 8.82, -176.99))
-createTeleportButton("🍽️ المطعم", Color3.fromRGB(180, 40, 40), 165, CFrame.new(-153.43, 8.18, 262.25))
-createTeleportButton("🛒 المتجر", Color3.fromRGB(120, 50, 160), 205, CFrame.new(-90.87, 5.55, 282.49))
-createTeleportButton("❄️ جزيرة الثلج", Color3.fromRGB(0, 190, 220), 245, CFrame.new(-35.88, 5.34, 505.95))
-createTeleportButton("🎣 الصيد 1", Color3.fromRGB(139, 94, 60), 285, CFrame.new(-317.16, 15.29, 382.65))
-createTeleportButton("🎣 الصيد 2", Color3.fromRGB(160, 114, 75), 325, CFrame.new(-234.03, 5.07, 535.67))
-createTeleportButton("🎣 الصيد 3", Color3.fromRGB(180, 135, 95), 365, CFrame.new(-268.61, 5.07, 693.13))
-createTeleportButton("🎣 الصيد 4", Color3.fromRGB(200, 150, 110), 405, CFrame.new(197.76, 18.99, 644.84))
-createTeleportButton("🚗 متجر السيارات", Color3.fromRGB(90, 100, 110), 445, CFrame.new(238.83, 5.17, 164.67))
-createTeleportButton("🏦 البنك 1", Color3.fromRGB(15, 110, 70), 485, CFrame.new(265.02, 5.17, 179.93))
-createTeleportButton("🏦 البنك 2", Color3.fromRGB(20, 130, 85), 525, CFrame.new(-128.40, 5.17, 22.61))
-createTeleportButton("🏝️ الجزيرة الخاصة", Color3.fromRGB(140, 90, 210), 565, CFrame.new(644.16, 227.76, -98.30))
-createTeleportButton("🎹 البيانو", Color3.fromRGB(50, 55, 60), 605, CFrame.new(113.23, 7.01, -383.69))
-createTeleportButton("🏟️ الملعب", Color3.fromRGB(34, 139, 34), 645, CFrame.new(142.41, 4.17, 251.22))
-createTeleportButton("🐟 متجر السمك", Color3.fromRGB(0, 75, 140), 685, CFrame.new(-106.07, 5.43, 612.25))
-createTeleportButton("🏕️ المخيم", Color3.fromRGB(120, 80, 50), 725, CFrame.new(-112.13, 5.43, 635.56))
-createTeleportButton("🏠 الكوخ", Color3.fromRGB(160, 120, 90), 765, CFrame.new(106.04, 1.43, 684.97))
-createTeleportButton("🏜️ الصحراء", Color3.fromRGB(210, 180, 80), 805, CFrame.new(-33.01, 5.18, -180.50))
-createTeleportButton("🎣 الصيد 5", Color3.fromRGB(115, 145, 95), 845, CFrame.new(-59.19, 15.25, 454.89))
+-- 13. قائمة الأماكن مع الإحداثيات (22 مكان)
+local teleportPlaces = {
+    {name = "📍 البداية", color = Color3.fromRGB(100, 100, 100), cframe = CFrame.new(-154.62, 5.17, 4.80)},
+    {name = "☕ الكوفي", color = Color3.fromRGB(0, 180, 100), cframe = CFrame.new(46.80, 4.86, -282.78)},
+    {name = "🏕️ الخيمة", color = Color3.fromRGB(212, 143, 56), cframe = CFrame.new(-308.12, 4.62, -257.02)},
+    {name = "🎭 المسرح", color = Color3.fromRGB(0, 120, 200), cframe = CFrame.new(-307.16, 8.82, -176.99)},
+    {name = "🍽️ المطعم", color = Color3.fromRGB(180, 40, 40), cframe = CFrame.new(-153.43, 8.18, 262.25)},
+    {name = "🛒 المتجر", color = Color3.fromRGB(120, 50, 160), cframe = CFrame.new(-90.87, 5.55, 282.49)},
+    {name = "❄️ جزيرة الثلج", color = Color3.fromRGB(0, 190, 220), cframe = CFrame.new(-35.88, 5.34, 505.95)},
+    {name = "🎣 الصيد 1", color = Color3.fromRGB(139, 94, 60), cframe = CFrame.new(-317.16, 15.29, 382.65)},
+    {name = "🎣 الصيد 2", color = Color3.fromRGB(160, 114, 75), cframe = CFrame.new(-234.03, 5.07, 535.67)},
+    {name = "🎣 الصيد 3", color = Color3.fromRGB(180, 135, 95), cframe = CFrame.new(-268.61, 5.07, 693.13)},
+    {name = "🎣 الصيد 4", color = Color3.fromRGB(200, 150, 110), cframe = CFrame.new(197.76, 18.99, 644.84)},
+    {name = "🚗 متجر السيارات", color = Color3.fromRGB(90, 100, 110), cframe = CFrame.new(238.83, 5.17, 164.67)},
+    {name = "🏦 البنك 1", color = Color3.fromRGB(15, 110, 70), cframe = CFrame.new(265.02, 5.17, 179.93)},
+    {name = "🏦 البنك 2", color = Color3.fromRGB(20, 130, 85), cframe = CFrame.new(-128.40, 5.17, 22.61)},
+    {name = "🏝️ الجزيرة الخاصة", color = Color3.fromRGB(140, 90, 210), cframe = CFrame.new(644.16, 227.76, -98.30)},
+    {name = "🎹 البيانو", color = Color3.fromRGB(50, 55, 60), cframe = CFrame.new(113.23, 7.01, -383.69)},
+    {name = "🏟️ الملعب", color = Color3.fromRGB(34, 139, 34), cframe = CFrame.new(142.41, 4.17, 251.22)},
+    {name = "🐟 متجر السمك", color = Color3.fromRGB(0, 75, 140), cframe = CFrame.new(-106.07, 5.43, 612.25)},
+    {name = "🏕️ المخيم", color = Color3.fromRGB(120, 80, 50), cframe = CFrame.new(-112.13, 5.43, 635.56)},
+    {name = "🏠 الكوخ", color = Color3.fromRGB(160, 120, 90), cframe = CFrame.new(106.04, 1.43, 684.97)},
+    {name = "🏜️ الصحراء", color = Color3.fromRGB(210, 180, 80), cframe = CFrame.new(-33.01, 5.18, -180.50)},
+    {name = "🎣 الصيد 5", color = Color3.fromRGB(115, 145, 95), cframe = CFrame.new(-59.19, 15.25, 454.89)}
+}
+
+-- إنشاء الأزرار من القائمة
+for i, place in ipairs(teleportPlaces) do
+    local yPos = 5 + ((i - 1) * 48)
+    createTeleportButton(place.name, place.color, yPos, place.cframe, place.name)
+end
 
 -- 14. صفحة الإعدادات
 local SettingsContainer = Instance.new("Frame")
@@ -475,7 +506,6 @@ SettingsText.Parent = SettingsContainer
 SettingsText.ZIndex = 5
 
 -- 15. صفحة الرئيسية (Home Page)
--- صورة اللاعب
 local avatarFrame = Instance.new("Frame")
 avatarFrame.Size = UDim2.new(0, 80, 0, 80)
 avatarFrame.Position = UDim2.new(0.5, -40, 0, 10)
@@ -524,7 +554,6 @@ task.spawn(function()
     end
 end)
 
--- اسم اللاعب الأول
 local DisplayNameLabel = Instance.new("TextLabel")
 DisplayNameLabel.Size = UDim2.new(1, -20, 0, 25)
 DisplayNameLabel.Position = UDim2.new(0, 10, 0, 98)
@@ -537,7 +566,6 @@ DisplayNameLabel.TextXAlignment = Enum.TextXAlignment.Center
 DisplayNameLabel.Parent = HomeContainer
 DisplayNameLabel.ZIndex = 2
 
--- اسم اللاعب الثاني
 local UsernameLabel = Instance.new("TextLabel")
 UsernameLabel.Size = UDim2.new(1, -20, 0, 16)
 UsernameLabel.Position = UDim2.new(0, 10, 0, 123)
@@ -550,7 +578,6 @@ UsernameLabel.TextXAlignment = Enum.TextXAlignment.Center
 UsernameLabel.Parent = HomeContainer
 UsernameLabel.ZIndex = 2
 
--- خط فاصل
 local Divider = Instance.new("Frame")
 Divider.Size = UDim2.new(0.85, 0, 0, 1)
 Divider.Position = UDim2.new(0.075, 0, 0, 100)
@@ -560,7 +587,6 @@ Divider.BorderSizePixel = 0
 Divider.Parent = HomeContainer
 Divider.ZIndex = 2
 
--- كروت المعلومات
 local function createInfoCard(title, value, icon, row, col)
     local Card = Instance.new("Frame")
     Card.Size = UDim2.new(0.46, -10, 0, 50)
@@ -623,7 +649,6 @@ local function createInfoCard(title, value, icon, row, col)
     ValueLabel.ZIndex = 3
 end
 
--- حساب عمر الحساب
 local totalDays = LocalPlayer.AccountAge
 local parsedYears = math.floor(totalDays / 365)
 local extraDays = totalDays % 365
@@ -631,13 +656,11 @@ local parsedMonths = math.floor(extraDays / 30)
 local finalDays = extraDays % 30
 local ageText = string.format("%d سنة, %d شهر, %d يوم", parsedYears, parsedMonths, finalDays)
 
--- إضافة الكروت
 createInfoCard("اسم العرض", LocalPlayer.DisplayName, "👤", 1, 1)
 createInfoCard("اسم المستخدم", "@" .. LocalPlayer.Name, "🔹", 1, 2)
 createInfoCard("رقم الحساب", tostring(UserId), "🆔", 2, 1)
 createInfoCard("عمر الحساب", ageText, "📅", 2, 2)
 
--- خط فاصل ثاني تحت الكروت
 local Divider2 = Instance.new("Frame")
 Divider2.Size = UDim2.new(0.85, 0, 0, 1)
 Divider2.Position = UDim2.new(0.075, 0, 0, 272)
@@ -647,7 +670,6 @@ Divider2.BorderSizePixel = 0
 Divider2.Parent = HomeContainer
 Divider2.ZIndex = 2
 
--- رسالة "معلومات المطور"
 local DevTitle = Instance.new("TextLabel")
 DevTitle.Size = UDim2.new(0.9, 0, 0, 18)
 DevTitle.Position = UDim2.new(0.05, 0, 0, 282)
@@ -660,7 +682,6 @@ DevTitle.TextXAlignment = Enum.TextXAlignment.Center
 DevTitle.Parent = HomeContainer
 DevTitle.ZIndex = 5
 
--- حاوية المطور
 local DevContainer = Instance.new("Frame")
 DevContainer.Name = "DevContainer"
 DevContainer.Size = UDim2.new(0.9, 0, 0, 40)
@@ -674,7 +695,6 @@ local DevCorner = Instance.new("UICorner")
 DevCorner.CornerRadius = UDim.new(0, 8)
 DevCorner.Parent = DevContainer
 
--- اسم المطور
 local DevName = Instance.new("TextButton")
 DevName.Size = UDim2.new(0.48, -5, 1, -6)
 DevName.Position = UDim2.new(0.01, 0, 0, 3)
@@ -721,7 +741,6 @@ DevName.MouseButton1Click:Connect(function()
     Notification:Destroy()
 end)
 
--- ديسكورد المطور
 local DevDiscord = Instance.new("TextButton")
 DevDiscord.Size = UDim2.new(0.48, -5, 1, -6)
 DevDiscord.Position = UDim2.new(0.51, 0, 0, 3)
@@ -768,7 +787,6 @@ DevDiscord.MouseButton1Click:Connect(function()
     Notification:Destroy()
 end)
 
--- شعار صغير تحت المطور
 local FooterText = Instance.new("TextLabel")
 FooterText.Size = UDim2.new(1, -20, 0, 16)
 FooterText.Position = UDim2.new(0, 10, 1, -18)
