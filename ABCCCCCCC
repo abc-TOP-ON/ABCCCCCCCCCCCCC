@@ -1,4 +1,4 @@
--- ABC HUB v15 - النسخة العربية الكاملة مع صفحة ترحيب
+-- ABC HUB v15 - النسخة النهائية مع دمج سكربت الانتقال الفوري
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -163,7 +163,7 @@ task.spawn(function()
 end)
 
 -- 9. أزرار القائمة الجانبية
-local function createSidebarButton(text, posIndex, isActive)
+local function createSidebarButton(text, posIndex, isActive, pageName)
     local Btn = Instance.new("TextButton")
     Btn.Size = UDim2.new(1, -20, 0, 40)
     Btn.Position = UDim2.new(0, 10, 0, 60 + ((posIndex - 1) * 48))
@@ -198,6 +198,36 @@ local function createSidebarButton(text, posIndex, isActive)
         end
     end)
     
+    -- وظيفة تبديل الصفحات
+    Btn.MouseButton1Click:Connect(function()
+        -- إخفاء كل الصفحات
+        HomeContainer.Visible = false
+        WelcomeContainer.Visible = false
+        TeleportContainer.Visible = false
+        SettingsContainer.Visible = false
+        
+        -- إظهار الصفحة المطلوبة
+        if pageName == "Home" then
+            HomeContainer.Visible = true
+        elseif pageName == "Welcome" then
+            WelcomeContainer.Visible = true
+        elseif pageName == "Teleport" then
+            TeleportContainer.Visible = true
+        elseif pageName == "Settings" then
+            SettingsContainer.Visible = true
+        end
+        
+        -- تحديث حالة الأزرار
+        for _, child in pairs(Sidebar:GetChildren()) do
+            if child:IsA("TextButton") and child ~= Btn then
+                child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
+                child.TextColor3 = Color3.fromRGB(255, 255, 255)
+            end
+        end
+        Btn.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
+        Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    end)
+    
     if isActive then
         local Indicator = Instance.new("Frame")
         Indicator.Size = UDim2.new(0, 4, 1, -12)
@@ -207,13 +237,16 @@ local function createSidebarButton(text, posIndex, isActive)
         Indicator.Parent = Btn
         Indicator.ZIndex = 18
     end
+    
+    return Btn
 end
 
-createSidebarButton("🏠 الرئيسية", 1, true)
-createSidebarButton("🎉 ترحيب", 2, false)
-createSidebarButton("⚙️ الإعدادات", 3, false)
+createSidebarButton("🏠 الرئيسية", 1, true, "Home")
+createSidebarButton("🎉 ترحيب", 2, false, "Welcome")
+createSidebarButton("📍 الانتقال", 3, false, "Teleport")
+createSidebarButton("⚙️ الإعدادات", 4, false, "Settings")
 
--- 10. حاوية المحتوى (الصفحة الرئيسية)
+-- 10. حاوية المحتوى الرئيسي
 local HomeContainer = Instance.new("Frame")
 HomeContainer.Name = "HomeContainer"
 HomeContainer.Size = UDim2.new(1, -150, 1, -20)
@@ -221,9 +254,8 @@ HomeContainer.Position = UDim2.new(0, 150, 0, 10)
 HomeContainer.BackgroundTransparency = 1
 HomeContainer.Parent = MainFrame
 HomeContainer.ZIndex = 1
-HomeContainer.Visible = true
 
--- 11. حاوية الترحيب (مخفية في البداية)
+-- 11. صفحة الترحيب
 local WelcomeContainer = Instance.new("Frame")
 WelcomeContainer.Name = "WelcomeContainer"
 WelcomeContainer.Size = UDim2.new(1, -150, 1, -20)
@@ -233,11 +265,217 @@ WelcomeContainer.Parent = MainFrame
 WelcomeContainer.ZIndex = 1
 WelcomeContainer.Visible = false
 
--- ============================================
--- المحتوى حق الصفحة الرئيسية (Home)
--- ============================================
+-- نص الترحيب
+local WelcomeBigText = Instance.new("TextLabel")
+WelcomeBigText.Size = UDim2.new(1, -40, 0, 60)
+WelcomeBigText.Position = UDim2.new(0, 20, 0.2, 0)
+WelcomeBigText.BackgroundTransparency = 1
+WelcomeBigText.Text = "🌟 نورت السكربت 🌟"
+WelcomeBigText.TextColor3 = Color3.fromRGB(180, 0, 255)
+WelcomeBigText.TextSize = 28
+WelcomeBigText.Font = Enum.Font.GothamBold
+WelcomeBigText.TextXAlignment = Enum.TextXAlignment.Center
+WelcomeBigText.Parent = WelcomeContainer
+WelcomeBigText.ZIndex = 5
 
--- 12. صورة اللاعب
+local WelcomeSubText = Instance.new("TextLabel")
+WelcomeSubText.Size = UDim2.new(1, -40, 0, 40)
+WelcomeSubText.Position = UDim2.new(0, 20, 0.4, 0)
+WelcomeSubText.BackgroundTransparency = 1
+WelcomeSubText.Text = "ABC HUB v15"
+WelcomeSubText.TextColor3 = Color3.fromRGB(255, 255, 255)
+WelcomeSubText.TextSize = 24
+WelcomeSubText.Font = Enum.Font.GothamBold
+WelcomeSubText.TextXAlignment = Enum.TextXAlignment.Center
+WelcomeSubText.Parent = WelcomeContainer
+WelcomeSubText.ZIndex = 5
+
+local WelcomeMsg = Instance.new("TextLabel")
+WelcomeMsg.Size = UDim2.new(1, -40, 0, 30)
+WelcomeMsg.Position = UDim2.new(0, 20, 0.55, 0)
+WelcomeMsg.BackgroundTransparency = 1
+WelcomeMsg.Text = "✨ أهلاً بك في أقوى سكربت على روبلوكس ✨"
+WelcomeMsg.TextColor3 = Color3.fromRGB(200, 200, 200)
+WelcomeMsg.TextSize = 16
+WelcomeMsg.Font = Enum.Font.GothamMedium
+WelcomeMsg.TextXAlignment = Enum.TextXAlignment.Center
+WelcomeMsg.Parent = WelcomeContainer
+WelcomeMsg.ZIndex = 5
+
+local WelcomeDivider1 = Instance.new("Frame")
+WelcomeDivider1.Size = UDim2.new(0.6, 0, 0, 1)
+WelcomeDivider1.Position = UDim2.new(0.2, 0, 0.5, 0)
+WelcomeDivider1.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
+WelcomeDivider1.BackgroundTransparency = 0.3
+WelcomeDivider1.BorderSizePixel = 0
+WelcomeDivider1.Parent = WelcomeContainer
+WelcomeDivider1.ZIndex = 5
+
+local WelcomeDivider2 = Instance.new("Frame")
+WelcomeDivider2.Size = UDim2.new(0.6, 0, 0, 1)
+WelcomeDivider2.Position = UDim2.new(0.2, 0, 0.65, 0)
+WelcomeDivider2.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
+WelcomeDivider2.BackgroundTransparency = 0.3
+WelcomeDivider2.BorderSizePixel = 0
+WelcomeDivider2.Parent = WelcomeContainer
+WelcomeDivider2.ZIndex = 5
+
+local WelcomeFooter = Instance.new("TextLabel")
+WelcomeFooter.Size = UDim2.new(1, -40, 0, 25)
+WelcomeFooter.Position = UDim2.new(0, 20, 0.75, 0)
+WelcomeFooter.BackgroundTransparency = 1
+WelcomeFooter.Text = "💜 استمتع بالتجربة 💜"
+WelcomeFooter.TextColor3 = Color3.fromRGB(180, 0, 255)
+WelcomeFooter.TextSize = 14
+WelcomeFooter.Font = Enum.Font.GothamMedium
+WelcomeFooter.TextXAlignment = Enum.TextXAlignment.Center
+WelcomeFooter.Parent = WelcomeContainer
+WelcomeFooter.ZIndex = 5
+
+-- 12. صفحة الانتقال الفوري
+local TeleportContainer = Instance.new("Frame")
+TeleportContainer.Name = "TeleportContainer"
+TeleportContainer.Size = UDim2.new(1, -150, 1, -20)
+TeleportContainer.Position = UDim2.new(0, 150, 0, 10)
+TeleportContainer.BackgroundTransparency = 1
+TeleportContainer.Parent = MainFrame
+TeleportContainer.ZIndex = 1
+TeleportContainer.Visible = false
+
+-- عنوان صفحة الانتقال
+local TeleportTitle = Instance.new("TextLabel")
+TeleportTitle.Size = UDim2.new(1, -20, 0, 30)
+TeleportTitle.Position = UDim2.new(0, 10, 0, 5)
+TeleportTitle.BackgroundTransparency = 1
+TeleportTitle.Text = "📍 قائمة الانتقال الفوري"
+TeleportTitle.TextColor3 = Color3.fromRGB(180, 0, 255)
+TeleportTitle.TextSize = 16
+TeleportTitle.Font = Enum.Font.GothamBold
+TeleportTitle.TextXAlignment = Enum.TextXAlignment.Center
+TeleportTitle.Parent = TeleportContainer
+TeleportTitle.ZIndex = 5
+
+-- إطار التمرير للأزرار
+local ScrollFrame = Instance.new("ScrollingFrame")
+ScrollFrame.Size = UDim2.new(1, -10, 1, -45)
+ScrollFrame.Position = UDim2.new(0, 5, 0, 40)
+ScrollFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+ScrollFrame.BackgroundTransparency = 0.3
+ScrollFrame.BorderSizePixel = 0
+ScrollFrame.CanvasSize = UDim2.new(0, 0, 0, 1100)
+ScrollFrame.ScrollBarThickness = 4
+ScrollFrame.Parent = TeleportContainer
+ScrollFrame.ZIndex = 5
+
+local ScrollCorner = Instance.new("UICorner")
+ScrollCorner.CornerRadius = UDim.new(0, 8)
+ScrollCorner.Parent = ScrollFrame
+
+-- دالة الانتقال
+local function teleportTo(cframe)
+    local character = LocalPlayer.Character
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        character.HumanoidRootPart.CFrame = cframe
+        -- رسالة تأكيد
+        local notif = Instance.new("TextLabel")
+        notif.Size = UDim2.new(0, 200, 0, 30)
+        notif.Position = UDim2.new(0.5, -100, 0.5, -15)
+        notif.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
+        notif.BorderSizePixel = 0
+        notif.Text = "✅ تم الانتقال بنجاح!"
+        notif.TextColor3 = Color3.fromRGB(0, 255, 150)
+        notif.TextSize = 14
+        notif.Font = Enum.Font.GothamBold
+        notif.Parent = MainFrame
+        notif.ZIndex = 50
+        local notifCorner = Instance.new("UICorner")
+        notifCorner.CornerRadius = UDim.new(0, 8)
+        notifCorner.Parent = notif
+        task.wait(1.5)
+        notif:Destroy()
+    end
+end
+
+-- دالة إنشاء زر الانتقال
+local function createTeleportButton(text, color, positionY, cframe)
+    local Btn = Instance.new("TextButton")
+    Btn.Size = UDim2.new(0.9, 0, 0, 35)
+    Btn.Position = UDim2.new(0.05, 0, 0, positionY)
+    Btn.BackgroundColor3 = color
+    Btn.BorderSizePixel = 0
+    Btn.Text = text
+    Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Btn.TextSize = 13
+    Btn.Font = Enum.Font.GothamBold
+    Btn.Parent = ScrollFrame
+    Btn.ZIndex = 6
+
+    local BtnCorner = Instance.new("UICorner")
+    BtnCorner.CornerRadius = UDim.new(0, 6)
+    BtnCorner.Parent = Btn
+    
+    Btn.MouseEnter:Connect(function()
+        Btn.BackgroundColor3 = Color3.new(color.R + 0.1, color.G + 0.1, color.B + 0.1)
+    end)
+    Btn.MouseLeave:Connect(function()
+        Btn.BackgroundColor3 = color
+    end)
+    
+    Btn.MouseButton1Click:Connect(function()
+        teleportTo(cframe)
+    end)
+end
+
+-- ============================================
+-- 13. أزرار الانتقال (22 مكان)
+-- ============================================
+createTeleportButton("📍 البداية", Color3.fromRGB(100, 100, 100), 5, CFrame.new(-154.62, 5.17, 4.80))
+createTeleportButton("☕ الكوفي", Color3.fromRGB(0, 180, 100), 45, CFrame.new(46.80, 4.86, -282.78))
+createTeleportButton("🏕️ الخيمة", Color3.fromRGB(212, 143, 56), 85, CFrame.new(-308.12, 4.62, -257.02))
+createTeleportButton("🎭 المسرح", Color3.fromRGB(0, 120, 200), 125, CFrame.new(-307.16, 8.82, -176.99))
+createTeleportButton("🍽️ المطعم", Color3.fromRGB(180, 40, 40), 165, CFrame.new(-153.43, 8.18, 262.25))
+createTeleportButton("🛒 المتجر", Color3.fromRGB(120, 50, 160), 205, CFrame.new(-90.87, 5.55, 282.49))
+createTeleportButton("❄️ جزيرة الثلج", Color3.fromRGB(0, 190, 220), 245, CFrame.new(-35.88, 5.34, 505.95))
+createTeleportButton("🎣 الصيد 1", Color3.fromRGB(139, 94, 60), 285, CFrame.new(-317.16, 15.29, 382.65))
+createTeleportButton("🎣 الصيد 2", Color3.fromRGB(160, 114, 75), 325, CFrame.new(-234.03, 5.07, 535.67))
+createTeleportButton("🎣 الصيد 3", Color3.fromRGB(180, 135, 95), 365, CFrame.new(-268.61, 5.07, 693.13))
+createTeleportButton("🎣 الصيد 4", Color3.fromRGB(200, 150, 110), 405, CFrame.new(197.76, 18.99, 644.84))
+createTeleportButton("🚗 متجر السيارات", Color3.fromRGB(90, 100, 110), 445, CFrame.new(238.83, 5.17, 164.67))
+createTeleportButton("🏦 البنك 1", Color3.fromRGB(15, 110, 70), 485, CFrame.new(265.02, 5.17, 179.93))
+createTeleportButton("🏦 البنك 2", Color3.fromRGB(20, 130, 85), 525, CFrame.new(-128.40, 5.17, 22.61))
+createTeleportButton("🏝️ الجزيرة الخاصة", Color3.fromRGB(140, 90, 210), 565, CFrame.new(644.16, 227.76, -98.30))
+createTeleportButton("🎹 البيانو", Color3.fromRGB(50, 55, 60), 605, CFrame.new(113.23, 7.01, -383.69))
+createTeleportButton("🏟️ الملعب", Color3.fromRGB(34, 139, 34), 645, CFrame.new(142.41, 4.17, 251.22))
+createTeleportButton("🐟 متجر السمك", Color3.fromRGB(0, 75, 140), 685, CFrame.new(-106.07, 5.43, 612.25))
+createTeleportButton("🏕️ المخيم", Color3.fromRGB(120, 80, 50), 725, CFrame.new(-112.13, 5.43, 635.56))
+createTeleportButton("🏠 الكوخ", Color3.fromRGB(160, 120, 90), 765, CFrame.new(106.04, 1.43, 684.97))
+createTeleportButton("🏜️ الصحراء", Color3.fromRGB(210, 180, 80), 805, CFrame.new(-33.01, 5.18, -180.50))
+createTeleportButton("🎣 الصيد 5", Color3.fromRGB(115, 145, 95), 845, CFrame.new(-59.19, 15.25, 454.89))
+
+-- 14. صفحة الإعدادات
+local SettingsContainer = Instance.new("Frame")
+SettingsContainer.Name = "SettingsContainer"
+SettingsContainer.Size = UDim2.new(1, -150, 1, -20)
+SettingsContainer.Position = UDim2.new(0, 150, 0, 10)
+SettingsContainer.BackgroundTransparency = 1
+SettingsContainer.Parent = MainFrame
+SettingsContainer.ZIndex = 1
+SettingsContainer.Visible = false
+
+local SettingsText = Instance.new("TextLabel")
+SettingsText.Size = UDim2.new(1, -20, 0, 30)
+SettingsText.Position = UDim2.new(0, 10, 0.4, 0)
+SettingsText.BackgroundTransparency = 1
+SettingsText.Text = "⚙️ قريباً..."
+SettingsText.TextColor3 = Color3.fromRGB(180, 0, 255)
+SettingsText.TextSize = 20
+SettingsText.Font = Enum.Font.GothamBold
+SettingsText.TextXAlignment = Enum.TextXAlignment.Center
+SettingsText.Parent = SettingsContainer
+SettingsText.ZIndex = 5
+
+-- 15. صفحة الرئيسية (Home Page)
+-- صورة اللاعب
 local avatarFrame = Instance.new("Frame")
 avatarFrame.Size = UDim2.new(0, 80, 0, 80)
 avatarFrame.Position = UDim2.new(0.5, -40, 0, 10)
@@ -286,7 +524,7 @@ task.spawn(function()
     end
 end)
 
--- 13. اسم اللاعب الأول
+-- اسم اللاعب الأول
 local DisplayNameLabel = Instance.new("TextLabel")
 DisplayNameLabel.Size = UDim2.new(1, -20, 0, 25)
 DisplayNameLabel.Position = UDim2.new(0, 10, 0, 98)
@@ -299,7 +537,7 @@ DisplayNameLabel.TextXAlignment = Enum.TextXAlignment.Center
 DisplayNameLabel.Parent = HomeContainer
 DisplayNameLabel.ZIndex = 2
 
--- 14. اسم اللاعب الثاني
+-- اسم اللاعب الثاني
 local UsernameLabel = Instance.new("TextLabel")
 UsernameLabel.Size = UDim2.new(1, -20, 0, 16)
 UsernameLabel.Position = UDim2.new(0, 10, 0, 123)
@@ -312,7 +550,7 @@ UsernameLabel.TextXAlignment = Enum.TextXAlignment.Center
 UsernameLabel.Parent = HomeContainer
 UsernameLabel.ZIndex = 2
 
--- 15. خط فاصل
+-- خط فاصل
 local Divider = Instance.new("Frame")
 Divider.Size = UDim2.new(0.85, 0, 0, 1)
 Divider.Position = UDim2.new(0.075, 0, 0, 100)
@@ -322,7 +560,7 @@ Divider.BorderSizePixel = 0
 Divider.Parent = HomeContainer
 Divider.ZIndex = 2
 
--- 16. كروت المعلومات
+-- كروت المعلومات
 local function createInfoCard(title, value, icon, row, col)
     local Card = Instance.new("Frame")
     Card.Size = UDim2.new(0.46, -10, 0, 50)
@@ -399,7 +637,7 @@ createInfoCard("اسم المستخدم", "@" .. LocalPlayer.Name, "🔹", 1, 2)
 createInfoCard("رقم الحساب", tostring(UserId), "🆔", 2, 1)
 createInfoCard("عمر الحساب", ageText, "📅", 2, 2)
 
--- 17. خط فاصل ثاني تحت الكروت
+-- خط فاصل ثاني تحت الكروت
 local Divider2 = Instance.new("Frame")
 Divider2.Size = UDim2.new(0.85, 0, 0, 1)
 Divider2.Position = UDim2.new(0.075, 0, 0, 272)
@@ -409,7 +647,7 @@ Divider2.BorderSizePixel = 0
 Divider2.Parent = HomeContainer
 Divider2.ZIndex = 2
 
--- 18. رسالة "معلومات المطور"
+-- رسالة "معلومات المطور"
 local DevTitle = Instance.new("TextLabel")
 DevTitle.Size = UDim2.new(0.9, 0, 0, 18)
 DevTitle.Position = UDim2.new(0.05, 0, 0, 282)
@@ -422,8 +660,9 @@ DevTitle.TextXAlignment = Enum.TextXAlignment.Center
 DevTitle.Parent = HomeContainer
 DevTitle.ZIndex = 5
 
--- 19. حاوية المطور
+-- حاوية المطور
 local DevContainer = Instance.new("Frame")
+DevContainer.Name = "DevContainer"
 DevContainer.Size = UDim2.new(0.9, 0, 0, 40)
 DevContainer.Position = UDim2.new(0.05, 0, 0, 302)
 DevContainer.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
@@ -529,7 +768,7 @@ DevDiscord.MouseButton1Click:Connect(function()
     Notification:Destroy()
 end)
 
--- 20. شعار صغير تحت المطور
+-- شعار صغير تحت المطور
 local FooterText = Instance.new("TextLabel")
 FooterText.Size = UDim2.new(1, -20, 0, 16)
 FooterText.Position = UDim2.new(0, 10, 1, -18)
@@ -542,199 +781,5 @@ FooterText.TextXAlignment = Enum.TextXAlignment.Center
 FooterText.TextTransparency = 0.4
 FooterText.Parent = HomeContainer
 FooterText.ZIndex = 2
-
--- ============================================
--- محتوى صفحة الترحيب (Welcome)
--- ============================================
-
--- 21. إطار الترحيب
-local WelcomeFrame = Instance.new("Frame")
-WelcomeFrame.Size = UDim2.new(0.9, 0, 0.85, 0)
-WelcomeFrame.Position = UDim2.new(0.05, 0, 0.05, 0)
-WelcomeFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 35)
-WelcomeFrame.BorderSizePixel = 0
-WelcomeFrame.Parent = WelcomeContainer
-WelcomeFrame.ZIndex = 5
-
-local WelcomeFrameCorner = Instance.new("UICorner")
-WelcomeFrameCorner.CornerRadius = UDim.new(0, 12)
-WelcomeFrameCorner.Parent = WelcomeFrame
-
--- إطار بنفسجي للترحيب
-local WelcomeGlow = Instance.new("Frame")
-WelcomeGlow.Size = UDim2.new(1, 6, 1, 6)
-WelcomeGlow.Position = UDim2.new(0, -3, 0, -3)
-WelcomeGlow.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
-WelcomeGlow.BackgroundTransparency = 0.3
-WelcomeGlow.BorderSizePixel = 0
-WelcomeGlow.Parent = WelcomeFrame
-WelcomeGlow.ZIndex = -1
-
-local WelcomeGlowCorner = Instance.new("UICorner")
-WelcomeGlowCorner.CornerRadius = UDim.new(0, 15)
-WelcomeGlowCorner.Parent = WelcomeGlow
-
--- 22. أيقونة كبيرة
-local WelcomeIcon = Instance.new("TextLabel")
-WelcomeIcon.Size = UDim2.new(0, 80, 0, 80)
-WelcomeIcon.Position = UDim2.new(0.5, -40, 0, 30)
-WelcomeIcon.BackgroundTransparency = 1
-WelcomeIcon.Text = "🎉"
-WelcomeIcon.TextColor3 = Color3.fromRGB(255, 255, 255)
-WelcomeIcon.TextSize = 70
-WelcomeIcon.Font = Enum.Font.GothamBold
-WelcomeIcon.TextXAlignment = Enum.TextXAlignment.Center
-WelcomeIcon.Parent = WelcomeFrame
-WelcomeIcon.ZIndex = 6
-
--- 23. عنوان الترحيب
-local WelcomeTitle = Instance.new("TextLabel")
-WelcomeTitle.Size = UDim2.new(1, -40, 0, 40)
-WelcomeTitle.Position = UDim2.new(0, 20, 0, 130)
-WelcomeTitle.BackgroundTransparency = 1
-WelcomeTitle.Text = "🌟 نورت سكربت ABC HUB v15 🌟"
-WelcomeTitle.TextColor3 = Color3.fromRGB(180, 0, 255)
-WelcomeTitle.TextSize = 22
-WelcomeTitle.Font = Enum.Font.GothamBold
-WelcomeTitle.TextXAlignment = Enum.TextXAlignment.Center
-WelcomeTitle.Parent = WelcomeFrame
-WelcomeTitle.ZIndex = 6
-
--- 24. رسالة ترحيب
-local WelcomeMessage = Instance.new("TextLabel")
-WelcomeMessage.Size = UDim2.new(1, -40, 0, 30)
-WelcomeMessage.Position = UDim2.new(0, 20, 0, 180)
-WelcomeMessage.BackgroundTransparency = 1
-WelcomeMessage.Text = "✨ مرحباً بك في أقوى سكربت على الإطلاق ✨"
-WelcomeMessage.TextColor3 = Color3.fromRGB(200, 200, 200)
-WelcomeMessage.TextSize = 16
-WelcomeMessage.Font = Enum.Font.GothamMedium
-WelcomeMessage.TextXAlignment = Enum.TextXAlignment.Center
-WelcomeMessage.Parent = WelcomeFrame
-WelcomeMessage.ZIndex = 6
-
--- 25. رسالة ثانية
-local WelcomeMessage2 = Instance.new("TextLabel")
-WelcomeMessage2.Size = UDim2.new(1, -40, 0, 25)
-WelcomeMessage2.Position = UDim2.new(0, 20, 0, 215)
-WelcomeMessage2.BackgroundTransparency = 1
-WelcomeMessage2.Text = "💜 استمتع بتجربة فريدة مع أفضل الميزات 💜"
-WelcomeMessage2.TextColor3 = Color3.fromRGB(180, 180, 200)
-WelcomeMessage2.TextSize = 14
-WelcomeMessage2.Font = Enum.Font.GothamMedium
-WelcomeMessage2.TextXAlignment = Enum.TextXAlignment.Center
-WelcomeMessage2.Parent = WelcomeFrame
-WelcomeMessage2.ZIndex = 6
-
--- 26. خطوط زخرفية
-local DecorLine1 = Instance.new("Frame")
-DecorLine1.Size = UDim2.new(0.3, 0, 0, 2)
-DecorLine1.Position = UDim2.new(0.35, 0, 0, 255)
-DecorLine1.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
-DecorLine1.BackgroundTransparency = 0.5
-DecorLine1.BorderSizePixel = 0
-DecorLine1.Parent = WelcomeFrame
-DecorLine1.ZIndex = 6
-
-local DecorLine2 = Instance.new("Frame")
-DecorLine2.Size = UDim2.new(0.3, 0, 0, 2)
-DecorLine2.Position = UDim2.new(0.35, 0, 0, 265)
-DecorLine2.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
-DecorLine2.BackgroundTransparency = 0.5
-DecorLine2.BorderSizePixel = 0
-DecorLine2.Parent = WelcomeFrame
-DecorLine2.ZIndex = 6
-
--- 27. اسم اللاعب في الترحيب
-local WelcomePlayer = Instance.new("TextLabel")
-WelcomePlayer.Size = UDim2.new(1, -40, 0, 30)
-WelcomePlayer.Position = UDim2.new(0, 20, 0, 280)
-WelcomePlayer.BackgroundTransparency = 1
-WelcomePlayer.Text = "👤 " .. LocalPlayer.DisplayName
-WelcomePlayer.TextColor3 = Color3.fromRGB(255, 255, 255)
-WelcomePlayer.TextSize = 18
-WelcomePlayer.Font = Enum.Font.GothamBold
-WelcomePlayer.TextXAlignment = Enum.TextXAlignment.Center
-WelcomePlayer.Parent = WelcomeFrame
-WelcomePlayer.ZIndex = 6
-
--- 28. زر العودة للرئيسية
-local BackButton = Instance.new("TextButton")
-BackButton.Size = UDim2.new(0.4, 0, 0, 40)
-BackButton.Position = UDim2.new(0.3, 0, 0, 330)
-BackButton.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
-BackButton.BorderSizePixel = 0
-BackButton.Text = "🏠 العودة للرئيسية"
-BackButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-BackButton.TextSize = 14
-BackButton.Font = Enum.Font.GothamBold
-BackButton.Parent = WelcomeFrame
-BackButton.ZIndex = 7
-
-local BackCorner = Instance.new("UICorner")
-BackCorner.CornerRadius = UDim.new(0, 8)
-BackCorner.Parent = BackButton
-
-BackButton.MouseEnter:Connect(function()
-    BackButton.BackgroundColor3 = Color3.fromRGB(220, 0, 255)
-end)
-
-BackButton.MouseLeave:Connect(function()
-    BackButton.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
-end)
-
--- ============================================
--- 29. وظائف الأزرار (تبديل الصفحات)
--- ============================================
-
--- وظيفة إظهار الصفحة الرئيسية
-local function ShowHome()
-    HomeContainer.Visible = true
-    WelcomeContainer.Visible = false
-    -- تحديث حالة الأزرار
-    for _, child in pairs(Sidebar:GetChildren()) do
-        if child:IsA("TextButton") then
-            if child.Text == "🏠 الرئيسية" then
-                child.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
-                child.TextColor3 = Color3.fromRGB(255, 255, 255)
-            elseif child.Text == "🎉 ترحيب" then
-                child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
-                child.TextColor3 = Color3.fromRGB(255, 255, 255)
-            end
-        end
-    end
-end
-
--- وظيفة إظهار صفحة الترحيب
-local function ShowWelcome()
-    HomeContainer.Visible = false
-    WelcomeContainer.Visible = true
-    -- تحديث حالة الأزرار
-    for _, child in pairs(Sidebar:GetChildren()) do
-        if child:IsA("TextButton") then
-            if child.Text == "🎉 ترحيب" then
-                child.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
-                child.TextColor3 = Color3.fromRGB(255, 255, 255)
-            elseif child.Text == "🏠 الرئيسية" then
-                child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
-                child.TextColor3 = Color3.fromRGB(255, 255, 255)
-            end
-        end
-    end
-end
-
--- ربط أزرار القائمة الجانبية
-for _, child in pairs(Sidebar:GetChildren()) do
-    if child:IsA("TextButton") then
-        if child.Text == "🏠 الرئيسية" then
-            child.MouseButton1Click:Connect(ShowHome)
-        elseif child.Text == "🎉 ترحيب" then
-            child.MouseButton1Click:Connect(ShowWelcome)
-        end
-    end
-end
-
--- ربط زر العودة في صفحة الترحيب
-BackButton.MouseButton1Click:Connect(ShowHome)
 
 print("✅ ABC HUB v15 تم تحميله بنجاح!")
