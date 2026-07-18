@@ -1,4 +1,4 @@
--- ABC HUB v15 - النسخة النهائية مع واجهة انتقال احترافية
+-- ABC HUB v15 - النسخة النهائية مع دعم التلفون
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -118,7 +118,7 @@ CloseX.MouseLeave:Connect(function()
     CloseX.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
 end)
 
-CloseX.MouseButton1Click:Connect(function()
+CloseX.Activated:Connect(function()
     ScreenGui:Destroy()
 end)
 
@@ -162,7 +162,7 @@ task.spawn(function()
     end
 end)
 
--- 9. أزرار القائمة الجانبية
+-- 9. أزرار القائمة الجانبية (مع دعم التلفون)
 local function createSidebarButton(text, posIndex, isActive, pageName)
     local Btn = Instance.new("TextButton")
     Btn.Size = UDim2.new(1, -20, 0, 40)
@@ -198,7 +198,8 @@ local function createSidebarButton(text, posIndex, isActive, pageName)
         end
     end)
     
-    Btn.MouseButton1Click:Connect(function()
+    -- استخدام Activated بدل MouseButton1Click لدعم التلفون
+    Btn.Activated:Connect(function()
         HomeContainer.Visible = false
         WelcomeContainer.Visible = false
         TeleportContainer.Visible = false
@@ -327,7 +328,7 @@ WelcomeFooter.TextXAlignment = Enum.TextXAlignment.Center
 WelcomeFooter.Parent = WelcomeContainer
 WelcomeFooter.ZIndex = 5
 
--- 12. صفحة الانتقال الفوري (واجهة احترافية مثل الرئيسية)
+-- 12. صفحة الانتقال الفوري
 local TeleportContainer = Instance.new("Frame")
 TeleportContainer.Name = "TeleportContainer"
 TeleportContainer.Size = UDim2.new(1, -150, 1, -20)
@@ -337,7 +338,6 @@ TeleportContainer.Parent = MainFrame
 TeleportContainer.ZIndex = 1
 TeleportContainer.Visible = false
 
--- عنوان الصفحة
 local TeleportTitle = Instance.new("TextLabel")
 TeleportTitle.Size = UDim2.new(1, -20, 0, 35)
 TeleportTitle.Position = UDim2.new(0, 10, 0, 5)
@@ -350,7 +350,6 @@ TeleportTitle.TextXAlignment = Enum.TextXAlignment.Center
 TeleportTitle.Parent = TeleportContainer
 TeleportTitle.ZIndex = 5
 
--- خط فاصل تحت العنوان
 local TeleportDivider = Instance.new("Frame")
 TeleportDivider.Size = UDim2.new(0.85, 0, 0, 1)
 TeleportDivider.Position = UDim2.new(0.075, 0, 0, 42)
@@ -360,7 +359,6 @@ TeleportDivider.BorderSizePixel = 0
 TeleportDivider.Parent = TeleportContainer
 TeleportDivider.ZIndex = 5
 
--- إطار التمرير
 local ScrollFrame = Instance.new("ScrollingFrame")
 ScrollFrame.Size = UDim2.new(1, -10, 1, -55)
 ScrollFrame.Position = UDim2.new(0, 5, 0, 48)
@@ -382,7 +380,6 @@ local function teleportTo(cframe, placeName)
     if character and character:FindFirstChild("HumanoidRootPart") then
         character.HumanoidRootPart.CFrame = cframe
         
-        -- رسالة تأكيد جميلة
         local notif = Instance.new("Frame")
         notif.Size = UDim2.new(0, 300, 0, 45)
         notif.Position = UDim2.new(0.5, -150, 0.5, -22)
@@ -410,26 +407,24 @@ local function teleportTo(cframe, placeName)
     end
 end
 
--- دالة إنشاء زر انتقال مع عرض الإحداثيات
+-- دالة إنشاء زر انتقال (مع دعم التلفون)
 local function createTeleportButton(text, color, positionY, cframe, placeName)
-    -- الزر الرئيسي
     local Btn = Instance.new("TextButton")
-    Btn.Size = UDim2.new(0.9, 0, 0, 40)
+    Btn.Size = UDim2.new(0.9, 0, 0, 45)
     Btn.Position = UDim2.new(0.05, 0, 0, positionY)
     Btn.BackgroundColor3 = color
     Btn.BorderSizePixel = 0
     Btn.Text = text
     Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Btn.TextSize = 13
+    Btn.TextSize = 14
     Btn.Font = Enum.Font.GothamBold
     Btn.Parent = ScrollFrame
     Btn.ZIndex = 6
 
     local BtnCorner = Instance.new("UICorner")
-    BtnCorner.CornerRadius = UDim.new(0, 6)
+    BtnCorner.CornerRadius = UDim.new(0, 8)
     BtnCorner.Parent = Btn
     
-    -- عرض الإحداثيات داخل الزر
     local CoordsText = Instance.new("TextLabel")
     CoordsText.Size = UDim2.new(0.5, 0, 1, 0)
     CoordsText.Position = UDim2.new(0.5, 0, 0, 0)
@@ -439,29 +434,29 @@ local function createTeleportButton(text, color, positionY, cframe, placeName)
     local z = math.floor(cframe.Z * 10) / 10
     CoordsText.Text = "(" .. x .. ", " .. y .. ", " .. z .. ")"
     CoordsText.TextColor3 = Color3.fromRGB(200, 200, 200)
-    CoordsText.TextSize = 10
+    CoordsText.TextSize = 11
     CoordsText.Font = Enum.Font.GothamMedium
     CoordsText.TextXAlignment = Enum.TextXAlignment.Right
     CoordsText.TextYAlignment = Enum.TextYAlignment.Center
     CoordsText.Parent = Btn
     CoordsText.ZIndex = 7
     
-    -- تأثير Hover
     Btn.MouseEnter:Connect(function()
         Btn.BackgroundColor3 = Color3.new(color.R + 0.15, color.G + 0.15, color.B + 0.15)
-        Btn.Size = UDim2.new(0.92, 0, 0, 42)
+        Btn.Size = UDim2.new(0.92, 0, 0, 47)
     end)
     Btn.MouseLeave:Connect(function()
         Btn.BackgroundColor3 = color
-        Btn.Size = UDim2.new(0.9, 0, 0, 40)
+        Btn.Size = UDim2.new(0.9, 0, 0, 45)
     end)
     
-    Btn.MouseButton1Click:Connect(function()
+    -- استخدام Activated بدل MouseButton1Click لدعم التلفون
+    Btn.Activated:Connect(function()
         teleportTo(cframe, placeName)
     end)
 end
 
--- 13. قائمة الأماكن مع الإحداثيات (22 مكان)
+-- 13. قائمة الأماكن
 local teleportPlaces = {
     {name = "📍 البداية", color = Color3.fromRGB(100, 100, 100), cframe = CFrame.new(-154.62, 5.17, 4.80)},
     {name = "☕ الكوفي", color = Color3.fromRGB(0, 180, 100), cframe = CFrame.new(46.80, 4.86, -282.78)},
@@ -489,7 +484,7 @@ local teleportPlaces = {
 
 -- إنشاء الأزرار من القائمة
 for i, place in ipairs(teleportPlaces) do
-    local yPos = 5 + ((i - 1) * 48)
+    local yPos = 5 + ((i - 1) * 52)
     createTeleportButton(place.name, place.color, yPos, place.cframe, place.name)
 end
 
@@ -731,7 +726,7 @@ DevName.MouseLeave:Connect(function()
     DevName.TextColor3 = Color3.fromRGB(180, 0, 255)
 end)
 
-DevName.MouseButton1Click:Connect(function()
+DevName.Activated:Connect(function()
     setclipboard("hamza000599")
     local Notification = Instance.new("TextLabel")
     Notification.Size = UDim2.new(0, 200, 0, 30)
@@ -777,7 +772,7 @@ DevDiscord.MouseLeave:Connect(function()
     DevDiscord.TextColor3 = Color3.fromRGB(180, 0, 255)
 end)
 
-DevDiscord.MouseButton1Click:Connect(function()
+DevDiscord.Activated:Connect(function()
     setclipboard("hamza.abc0")
     local Notification = Instance.new("TextLabel")
     Notification.Size = UDim2.new(0, 220, 0, 30)
