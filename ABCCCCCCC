@@ -327,7 +327,7 @@ WelcomeFooter.TextXAlignment = Enum.TextXAlignment.Center
 WelcomeFooter.Parent = WelcomeContainer
 WelcomeFooter.ZIndex = 5
 
--- 12. صفحة الانتقال الفوري (واجهة احترافية)
+-- 12. صفحة الانتقال الفوري (واجهة احترافية مثل الرئيسية)
 local TeleportContainer = Instance.new("Frame")
 TeleportContainer.Name = "TeleportContainer"
 TeleportContainer.Size = UDim2.new(1, -150, 1, -20)
@@ -350,10 +350,20 @@ TeleportTitle.TextXAlignment = Enum.TextXAlignment.Center
 TeleportTitle.Parent = TeleportContainer
 TeleportTitle.ZIndex = 5
 
+-- خط فاصل تحت العنوان
+local TeleportDivider = Instance.new("Frame")
+TeleportDivider.Size = UDim2.new(0.85, 0, 0, 1)
+TeleportDivider.Position = UDim2.new(0.075, 0, 0, 42)
+TeleportDivider.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
+TeleportDivider.BackgroundTransparency = 0.4
+TeleportDivider.BorderSizePixel = 0
+TeleportDivider.Parent = TeleportContainer
+TeleportDivider.ZIndex = 5
+
 -- إطار التمرير
 local ScrollFrame = Instance.new("ScrollingFrame")
-ScrollFrame.Size = UDim2.new(1, -10, 1, -50)
-ScrollFrame.Position = UDim2.new(0, 5, 0, 45)
+ScrollFrame.Size = UDim2.new(1, -10, 1, -55)
+ScrollFrame.Position = UDim2.new(0, 5, 0, 48)
 ScrollFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
 ScrollFrame.BackgroundTransparency = 0.2
 ScrollFrame.BorderSizePixel = 0
@@ -374,8 +384,8 @@ local function teleportTo(cframe, placeName)
         
         -- رسالة تأكيد جميلة
         local notif = Instance.new("Frame")
-        notif.Size = UDim2.new(0, 280, 0, 45)
-        notif.Position = UDim2.new(0.5, -140, 0.5, -22)
+        notif.Size = UDim2.new(0, 300, 0, 45)
+        notif.Position = UDim2.new(0.5, -150, 0.5, -22)
         notif.BackgroundColor3 = Color3.fromRGB(25, 25, 40)
         notif.BorderSizePixel = 0
         notif.Parent = MainFrame
