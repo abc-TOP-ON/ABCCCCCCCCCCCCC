@@ -1,4 +1,4 @@
--- ABC HUB v15 - النسخة النهائية مع دعم التلفون الكامل
+-- ABC HUB v15 - النسخة النهائية مع أزرار انتقال وترحيب شغالة على التلفون
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -162,7 +162,7 @@ task.spawn(function()
     end
 end)
 
--- 9. أزرار القائمة الجانبية
+-- 9. أزرار القائمة الجانبية (مع دعم التلفون)
 local function createSidebarButton(text, posIndex, isActive, pageName)
     local Btn = Instance.new("TextButton")
     Btn.Size = UDim2.new(1, -20, 0, 40)
@@ -192,12 +192,15 @@ local function createSidebarButton(text, posIndex, isActive, pageName)
         end
     end)
     
+    -- استخدام Activated مع دالة منفصلة
     Btn.Activated:Connect(function()
+        -- إخفاء كل الصفحات
         HomeContainer.Visible = false
         WelcomeContainer.Visible = false
         TeleportContainer.Visible = false
         SettingsContainer.Visible = false
         
+        -- إظهار الصفحة المطلوبة
         if pageName == "Home" then
             HomeContainer.Visible = true
         elseif pageName == "Welcome" then
@@ -208,6 +211,7 @@ local function createSidebarButton(text, posIndex, isActive, pageName)
             SettingsContainer.Visible = true
         end
         
+        -- تحديث حالة الأزرار
         for _, child in pairs(Sidebar:GetChildren()) do
             if child:IsA("TextButton") and child ~= Btn then
                 child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
@@ -229,10 +233,11 @@ local function createSidebarButton(text, posIndex, isActive, pageName)
     return Btn
 end
 
-createSidebarButton("🏠 الرئيسية", 1, true, "Home")
-createSidebarButton("🎉 ترحيب", 2, false, "Welcome")
-createSidebarButton("📍 الانتقال", 3, false, "Teleport")
-createSidebarButton("⚙️ الإعدادات", 4, false, "Settings")
+-- إنشاء الأزرار مع أسماء الصفحات
+local homeBtn = createSidebarButton("🏠 الرئيسية", 1, true, "Home")
+local welcomeBtn = createSidebarButton("🎉 ترحيب", 2, false, "Welcome")
+local teleportBtn = createSidebarButton("📍 الانتقال", 3, false, "Teleport")
+local settingsBtn = createSidebarButton("⚙️ الإعدادات", 4, false, "Settings")
 
 -- 10. حاوية المحتوى الرئيسي
 local HomeContainer = Instance.new("Frame")
@@ -350,7 +355,6 @@ TeleportDivider.BorderSizePixel = 0
 TeleportDivider.Parent = TeleportContainer
 TeleportDivider.ZIndex = 5
 
--- إطار التمرير (مع إعدادات خاصة للتلفون)
 local ScrollFrame = Instance.new("ScrollingFrame")
 ScrollFrame.Size = UDim2.new(1, -10, 1, -55)
 ScrollFrame.Position = UDim2.new(0, 5, 0, 48)
@@ -419,7 +423,6 @@ local function createTeleportButton(text, color, positionY, cframe, placeName)
     BtnCorner.CornerRadius = UDim.new(0, 8)
     BtnCorner.Parent = Btn
     
-    -- الإحداثيات
     local CoordsText = Instance.new("TextLabel")
     CoordsText.Size = UDim2.new(0.5, 0, 1, 0)
     CoordsText.Position = UDim2.new(0.5, 0, 0, 0)
@@ -703,6 +706,7 @@ DevName.TextSize = 12
 DevName.Font = Enum.Font.GothamBold
 DevName.Parent = DevContainer
 DevName.ZIndex = 10
+DevName.AutoButtonColor = true
 
 local DevNameCorner = Instance.new("UICorner")
 DevNameCorner.CornerRadius = UDim.new(0, 6)
@@ -747,6 +751,7 @@ DevDiscord.TextSize = 12
 DevDiscord.Font = Enum.Font.GothamBold
 DevDiscord.Parent = DevContainer
 DevDiscord.ZIndex = 10
+DevDiscord.AutoButtonColor = true
 
 local DevDiscordCorner = Instance.new("UICorner")
 DevDiscordCorner.CornerRadius = UDim.new(0, 6)
