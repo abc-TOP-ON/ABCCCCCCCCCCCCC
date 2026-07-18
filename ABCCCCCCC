@@ -1,4 +1,4 @@
--- 7MO HUB v15 - نسخة الهاتف (مع سكربت تجميع الفلوس الفوري + الصيد التلقائي + الاخبار)
+-- 7MO HUB v15 - نسخة الهاتف (مع سكربت تجميع الفلوس الفوري + الصيد التلقائي)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -142,6 +142,7 @@ local colorIndex = 1
 -- حلقة التحديث المستمر للنيون
 task.spawn(function()
     while ScreenGui and ToggleButton.Parent do
+        -- تحديث ألوان الحلقات
         colorIndex = colorIndex + 0.02
         local index = math.floor(colorIndex) % #ringColors + 1
         local nextIndex = index % #ringColors + 1
@@ -156,13 +157,16 @@ task.spawn(function()
         
         local finalColor = Color3.new(r, g, b)
         
+        -- تحديث لون النيون
         NeonRing.BackgroundColor3 = finalColor
         NeonRing.BorderColor3 = finalColor
         
+        -- نبض الشفافية
         local breathe = 0.2 + math.sin(tick() * 2.5) * 0.2
         NeonRing.BackgroundTransparency = breathe
         PulseRing.BackgroundTransparency = breathe + 0.2
         
+        -- تغيير حجم الحلقة النابضة
         local pulseSize = 1.5 + math.sin(tick() * 2) * 0.1
         PulseRing.Size = UDim2.new(pulseSize, 0, pulseSize, 0)
         PulseRing.Position = UDim2.new(-(pulseSize-1)/2, 0, -(pulseSize-1)/2, 0)
@@ -291,14 +295,17 @@ function toggleUI()
     MainFrame.Visible = isOpen
     
     if isOpen then
+        -- تغيير لون الزر إلى بنفسجي
         ToggleButton.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
         ButtonText.TextColor3 = Color3.fromRGB(255, 255, 255)
+        -- تغيير الحجم قليلاً
         local tween = TweenService:Create(ToggleButton, TweenInfo.new(0.2), {Size = UDim2.new(0, buttonSize * 1.1, 0, buttonSize * 1.1)})
         tween:Play()
         task.wait(0.2)
         local tween2 = TweenService:Create(ToggleButton, TweenInfo.new(0.1), {Size = UDim2.new(0, buttonSize, 0, buttonSize)})
         tween2:Play()
     else
+        -- إعادة اللون إلى الأسود
         ToggleButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
         ButtonText.TextColor3 = Color3.fromRGB(255, 255, 255)
         local tween = TweenService:Create(ToggleButton, TweenInfo.new(0.2), {Size = UDim2.new(0, buttonSize * 0.9, 0, buttonSize * 0.9)})
@@ -309,6 +316,7 @@ function toggleUI()
     end
 end
 
+-- ربط زر الدخول/الخروج
 ToggleButton.MouseButton1Click:Connect(function()
     if not dragging then
         toggleUI()
@@ -410,9 +418,8 @@ createSidebarButton("🎉 ترحيب", 2, false)
 createSidebarButton("⚡ انتقال الفوري", 3, false)
 createSidebarButton("💰 فلوس", 4, false)
 createSidebarButton("🎣 الصيد", 5, false)
-createSidebarButton("📰 الاخبار", 6, false)
-createSidebarButton("👥 لاعبين", 7, false)
-createSidebarButton("⚙️ لاعب", 8, false)
+createSidebarButton("👥 لاعبين", 6, false)
+createSidebarButton("⚙️ لاعب", 7, false)
 
 -- حاويات المحتوى
 local HomeContainer = Instance.new("Frame")
@@ -459,15 +466,6 @@ FishingContainer.BackgroundTransparency = 1
 FishingContainer.Parent = MainFrame
 FishingContainer.ZIndex = 1
 FishingContainer.Visible = false
-
-local NewsContainer = Instance.new("Frame")
-NewsContainer.Name = "NewsContainer"
-NewsContainer.Size = UDim2.new(1, -150, 1, -20)
-NewsContainer.Position = UDim2.new(0, 150, 0, 10)
-NewsContainer.BackgroundTransparency = 1
-NewsContainer.Parent = MainFrame
-NewsContainer.ZIndex = 1
-NewsContainer.Visible = false
 
 local PlayerContainer = Instance.new("Frame")
 PlayerContainer.Name = "PlayerContainer"
@@ -995,6 +993,10 @@ MoneyTitle.Font = Enum.Font.GothamBold
 MoneyTitle.Parent = MoneyFrame
 MoneyTitle.ZIndex = 6
 
+-- ============================================
+-- واجهة سكربت تجميع الفلوس الفوري V7
+-- ============================================
+
 -- زر التشغيل/الإيقاف
 local ToggleButtonMoney = Instance.new("TextButton")
 ToggleButtonMoney.Size = UDim2.new(0.8, 0, 0, 50)
@@ -1055,13 +1057,15 @@ _G.CashStealer = false
 local eventConnection = nil
 local collectedCount = 0
 
--- دالة التحقق السريع والالتقاط الخاطف
+-- دالة التحقق السريع والالتقاط الخاطف مع فلترة الموانع والطاولات
 local function processItem(item)
     if not _G.CashStealer then return end
     
+    -- رصد مجسم الفلوس الحقيقي
     if item.Name == "CashDrop" and (item:IsA("Part") or item:IsA("MeshPart")) then
         local fullName = item:GetFullName():lower()
         
+        -- الفلاتر الصارمة لمنع الانتقال العشوائي للطاولات والمقاعد والحواجز
         if not fullName:find("table") and 
            not fullName:find("board") and 
            not fullName:find("game") and 
@@ -1074,18 +1078,23 @@ local function processItem(item)
            not fullName:find("lockedframe") and  
            not fullName:find("barrier") then
             
-            task.wait(0.02)
+            -- فحص للتأكد من وجود اللوحة الرقمية للفلوس ($)
+            task.wait(0.02) -- وقت انتظار ضئيل جداً لضمان تحميل الخصائص بدون لاق
             if item:FindFirstChildOfClass("BillboardGui") then
                 local player = game.Players.LocalPlayer
                 local character = player.Character or player.CharacterAdded:Wait()
                 local rootPart = character:FindFirstChild("HumanoidRootPart")
                 
                 if rootPart then
+                    -- 1. حفظ موقعك الأصلي بدقة
                     local originalPosition = rootPart.CFrame
+                    
+                    -- 2. الانتقال الفوري الخاطف فوق الفلوس
                     rootPart.CFrame = item.CFrame
                     
                     local remote = game:GetService("ReplicatedStorage"):FindFirstChild("CashDrop", true)
                     
+                    -- 3. حلقة الضغط السريع حتى تختفي الرزمة تماماً وتُسجل في رصيدك
                     while item and item.Parent and _G.CashStealer do
                         if remote and remote:IsA("RemoteEvent") then
                             remote:FireServer(item)
@@ -1097,14 +1106,16 @@ local function processItem(item)
                         local clicker = item:FindFirstChildOfClass("ClickDetector")
                         if clicker then fireclickdetector(clicker) end
                         
-                        task.wait(0.01)
+                        task.wait(0.01) -- سرعة تفعيل قصوى
                     end
                     
+                    -- زيادة العداد عند النجاح
                     if _G.CashStealer then
                         collectedCount = collectedCount + 1
                         CountLabel.Text = "📦 " .. collectedCount
                     end
                     
+                    -- 4. العودة التلقائية الفورية لمكانك الأصلي الآمن
                     if _G.CashStealer then
                         rootPart.CFrame = originalPosition
                     end
@@ -1114,20 +1125,25 @@ local function processItem(item)
     end
 end
 
+-- تشغيل نظام الرصد العميق والخفيف جداً على المعالج
 local function startStealing()
+    -- تجميع الفلوس المتواجدة بالفعل على الأرض لحظة التشغيل
     for _, item in pairs(workspace:GetDescendants()) do
         if item.Name == "CashDrop" then
             spawn(function() pcall(processItem, item) end)
         end
     end
     
+    -- مراقبة شجرة الملفات العميقة (DescendantAdded): أي رزمة تنزل في أي مجلد يتم صيدها فوراً وبدون أي لاق
     eventConnection = workspace.DescendantAdded:Connect(function(item)
+        -- ميزة تصفية الأداء: السكربت يتجاهل أي ملف ليس له علاقة بالفلوس فوراً لتوفير المعالج %100
         if item.Name == "CashDrop" then
             pcall(processItem, item)
         end
     end)
 end
 
+-- زر التشغيل/الإيقاف
 ToggleButtonMoney.MouseButton1Click:Connect(function()
     _G.CashStealer = not _G.CashStealer
     if _G.CashStealer then
@@ -1152,6 +1168,7 @@ ToggleButtonMoney.MouseButton1Click:Connect(function()
     end
 end)
 
+-- زر إعادة تعيين الإحصائيات
 local ResetBtn = Instance.new("TextButton")
 ResetBtn.Size = UDim2.new(0.3, 0, 0, 30)
 ResetBtn.Position = UDim2.new(0.35, 0, 0.72, 0)
@@ -1173,6 +1190,27 @@ ResetBtn.MouseButton1Click:Connect(function()
     showNotification("🔄 تم إعادة تعيين العداد", MoneyFrame)
 end)
 
+-- دالة الإشعارات
+function showNotification(text, parent)
+    local notif = Instance.new("TextLabel")
+    notif.Size = UDim2.new(0, 220, 0, 30)
+    notif.Position = UDim2.new(0.5, -110, 0.85, 0)
+    notif.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
+    notif.BackgroundTransparency = 0.1
+    notif.TextColor3 = Color3.fromRGB(0, 255, 150)
+    notif.TextSize = 13
+    notif.Font = Enum.Font.GothamBold
+    notif.Text = text
+    notif.Parent = parent
+    
+    local notifCorner = Instance.new("UICorner")
+    notifCorner.CornerRadius = UDim.new(0, 8)
+    notifCorner.Parent = notif
+    
+    task.wait(1.5)
+    notif:Destroy()
+end
+
 -- ============================================
 -- محتوى صفحة الصيد (Fishing)
 -- ============================================
@@ -1189,6 +1227,7 @@ local FishingFrameCorner = Instance.new("UICorner")
 FishingFrameCorner.CornerRadius = UDim.new(0, 12)
 FishingFrameCorner.Parent = FishingFrame
 
+-- إطار متوهج للصيد
 local FishingGlow = Instance.new("Frame")
 FishingGlow.Size = UDim2.new(1, 6, 1, 6)
 FishingGlow.Position = UDim2.new(0, -3, 0, -3)
@@ -1202,6 +1241,7 @@ local FishingGlowCorner = Instance.new("UICorner")
 FishingGlowCorner.CornerRadius = UDim.new(0, 15)
 FishingGlowCorner.Parent = FishingGlow
 
+-- عنوان الصفحة
 local FishingTitle = Instance.new("TextLabel")
 FishingTitle.Size = UDim2.new(1, 0, 0, 40)
 FishingTitle.Position = UDim2.new(0, 0, 0, 5)
@@ -1213,6 +1253,7 @@ FishingTitle.Font = Enum.Font.GothamBold
 FishingTitle.Parent = FishingFrame
 FishingTitle.ZIndex = 6
 
+-- زر تشغيل الصيد
 local FishingToggleButton = Instance.new("TextButton")
 FishingToggleButton.Size = UDim2.new(0.7, 0, 0, 55)
 FishingToggleButton.Position = UDim2.new(0.15, 0, 0.2, 0)
@@ -1228,6 +1269,7 @@ local FishingToggleCorner = Instance.new("UICorner")
 FishingToggleCorner.CornerRadius = UDim.new(0, 10)
 FishingToggleCorner.Parent = FishingToggleButton
 
+-- حالة الصيد
 local FishingStatus = Instance.new("TextLabel")
 FishingStatus.Size = UDim2.new(1, -20, 0, 30)
 FishingStatus.Position = UDim2.new(0, 10, 0.45, 0)
@@ -1240,6 +1282,7 @@ FishingStatus.TextXAlignment = Enum.TextXAlignment.Center
 FishingStatus.Parent = FishingFrame
 FishingStatus.ZIndex = 7
 
+-- مربع معلومات
 local InfoBox = Instance.new("Frame")
 InfoBox.Size = UDim2.new(0.85, 0, 0, 80)
 InfoBox.Position = UDim2.new(0.075, 0, 0.55, 0)
@@ -1265,9 +1308,11 @@ InfoText.TextYAlignment = Enum.TextYAlignment.Center
 InfoText.Parent = InfoBox
 InfoText.ZIndex = 8
 
+-- متغيرات الصيد
 local fishingActive = false
 local fishingConnection = nil
 
+-- دالة تشغيل الصيد
 local function startFishing()
     if fishingActive then
         fishingActive = false
@@ -1307,231 +1352,6 @@ local function startFishing()
 end
 
 FishingToggleButton.MouseButton1Click:Connect(startFishing)
-
--- ============================================
--- محتوى صفحة الاخبار (News)
--- ============================================
-
-local NewsFrame = Instance.new("Frame")
-NewsFrame.Size = UDim2.new(0.9, 0, 0.85, 0)
-NewsFrame.Position = UDim2.new(0.05, 0, 0.05, 0)
-NewsFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 35)
-NewsFrame.BorderSizePixel = 0
-NewsFrame.Parent = NewsContainer
-NewsFrame.ZIndex = 5
-
-local NewsFrameCorner = Instance.new("UICorner")
-NewsFrameCorner.CornerRadius = UDim.new(0, 12)
-NewsFrameCorner.Parent = NewsFrame
-
--- إطار متوهج للأخبار
-local NewsGlow = Instance.new("Frame")
-NewsGlow.Size = UDim2.new(1, 6, 1, 6)
-NewsGlow.Position = UDim2.new(0, -3, 0, -3)
-NewsGlow.BackgroundColor3 = Color3.fromRGB(255, 200, 0)
-NewsGlow.BackgroundTransparency = 0.3
-NewsGlow.BorderSizePixel = 0
-NewsGlow.Parent = NewsFrame
-NewsGlow.ZIndex = -1
-
-local NewsGlowCorner = Instance.new("UICorner")
-NewsGlowCorner.CornerRadius = UDim.new(0, 15)
-NewsGlowCorner.Parent = NewsGlow
-
--- عنوان الصفحة
-local NewsTitle = Instance.new("TextLabel")
-NewsTitle.Size = UDim2.new(1, 0, 0, 40)
-NewsTitle.Position = UDim2.new(0, 0, 0, 5)
-NewsTitle.BackgroundColor3 = Color3.fromRGB(40, 30, 0)
-NewsTitle.Text = "📰 آخر الأخبار 📰"
-NewsTitle.TextColor3 = Color3.fromRGB(255, 200, 0)
-NewsTitle.TextSize = 20
-NewsTitle.Font = Enum.Font.GothamBold
-NewsTitle.Parent = NewsFrame
-NewsTitle.ZIndex = 6
-
--- سكرول للأخبار
-local NewsScroll = Instance.new("ScrollingFrame")
-NewsScroll.Size = UDim2.new(0.95, 0, 0.75, 0)
-NewsScroll.Position = UDim2.new(0.025, 0, 0.1, 0)
-NewsScroll.BackgroundTransparency = 1
-NewsScroll.BorderSizePixel = 0
-NewsScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
-NewsScroll.ScrollBarThickness = 4
-NewsScroll.Parent = NewsFrame
-NewsScroll.ZIndex = 6
-
--- ============================================
--- محتوى الأخبار
--- ============================================
-
-local newsYOffset = 5
-
--- الخبر الأول: ميزة الصيد التلقائي
-local NewsItem1 = Instance.new("Frame")
-NewsItem1.Size = UDim2.new(0.95, 0, 0, 70)
-NewsItem1.Position = UDim2.new(0.025, 0, 0, newsYOffset)
-NewsItem1.BackgroundColor3 = Color3.fromRGB(0, 40, 60)
-NewsItem1.BorderSizePixel = 0
-NewsItem1.Parent = NewsScroll
-NewsItem1.ZIndex = 7
-
-local NewsItem1Corner = Instance.new("UICorner")
-NewsItem1Corner.CornerRadius = UDim.new(0, 8)
-NewsItem1Corner.Parent = NewsItem1
-
-local NewsIcon1 = Instance.new("TextLabel")
-NewsIcon1.Size = UDim2.new(0, 40, 1, 0)
-NewsIcon1.Position = UDim2.new(0, 5, 0, 0)
-NewsIcon1.BackgroundTransparency = 1
-NewsIcon1.Text = "🎣"
-NewsIcon1.TextColor3 = Color3.fromRGB(0, 200, 255)
-NewsIcon1.TextSize = 30
-NewsIcon1.Font = Enum.Font.GothamBold
-NewsIcon1.TextXAlignment = Enum.TextXAlignment.Center
-NewsIcon1.Parent = NewsItem1
-NewsIcon1.ZIndex = 8
-
-local NewsText1 = Instance.new("TextLabel")
-NewsText1.Size = UDim2.new(1, -55, 1, -10)
-NewsText1.Position = UDim2.new(0, 50, 0, 5)
-NewsText1.BackgroundTransparency = 1
-NewsText1.Text = "✅ تم إضافة ميزة الصيد التلقائي!\n🎣 الآن يمكنك الصيد بشكل تلقائي بضغطة زر"
-NewsText1.TextColor3 = Color3.fromRGB(200, 230, 255)
-NewsText1.TextSize = 13
-NewsText1.Font = Enum.Font.GothamMedium
-NewsText1.TextXAlignment = Enum.TextXAlignment.Left
-NewsText1.TextYAlignment = Enum.TextYAlignment.Center
-NewsText1.Parent = NewsItem1
-NewsText1.ZIndex = 8
-
-newsYOffset = newsYOffset + 78
-
--- الخبر الثاني: ميزة سرقة الفلوس
-local NewsItem2 = Instance.new("Frame")
-NewsItem2.Size = UDim2.new(0.95, 0, 0, 70)
-NewsItem2.Position = UDim2.new(0.025, 0, 0, newsYOffset)
-NewsItem2.BackgroundColor3 = Color3.fromRGB(40, 20, 0)
-NewsItem2.BorderSizePixel = 0
-NewsItem2.Parent = NewsScroll
-NewsItem2.ZIndex = 7
-
-local NewsItem2Corner = Instance.new("UICorner")
-NewsItem2Corner.CornerRadius = UDim.new(0, 8)
-NewsItem2Corner.Parent = NewsItem2
-
-local NewsIcon2 = Instance.new("TextLabel")
-NewsIcon2.Size = UDim2.new(0, 40, 1, 0)
-NewsIcon2.Position = UDim2.new(0, 5, 0, 0)
-NewsIcon2.BackgroundTransparency = 1
-NewsIcon2.Text = "💰"
-NewsIcon2.TextColor3 = Color3.fromRGB(255, 215, 0)
-NewsIcon2.TextSize = 30
-NewsIcon2.Font = Enum.Font.GothamBold
-NewsIcon2.TextXAlignment = Enum.TextXAlignment.Center
-NewsIcon2.Parent = NewsItem2
-NewsIcon2.ZIndex = 8
-
-local NewsText2 = Instance.new("TextLabel")
-NewsText2.Size = UDim2.new(1, -55, 1, -10)
-NewsText2.Position = UDim2.new(0, 50, 0, 5)
-NewsText2.BackgroundTransparency = 1
-NewsText2.Text = "💰 تم إضافة ميزة سرقة الفلوس الفورية!\n⚡ سرعة فائقة بدون أي تقطيع أو لاق"
-NewsText2.TextColor3 = Color3.fromRGB(255, 230, 200)
-NewsText2.TextSize = 13
-NewsText2.Font = Enum.Font.GothamMedium
-NewsText2.TextXAlignment = Enum.TextXAlignment.Left
-NewsText2.TextYAlignment = Enum.TextYAlignment.Center
-NewsText2.Parent = NewsItem2
-NewsText2.ZIndex = 8
-
-newsYOffset = newsYOffset + 78
-
--- الخبر الثالث: رابط الديسكورد
-local NewsItem3 = Instance.new("Frame")
-NewsItem3.Size = UDim2.new(0.95, 0, 0, 90)
-NewsItem3.Position = UDim2.new(0.025, 0, 0, newsYOffset)
-NewsItem3.BackgroundColor3 = Color3.fromRGB(30, 20, 50)
-NewsItem3.BorderSizePixel = 0
-NewsItem3.Parent = NewsScroll
-NewsItem3.ZIndex = 7
-
-local NewsItem3Corner = Instance.new("UICorner")
-NewsItem3Corner.CornerRadius = UDim.new(0, 8)
-NewsItem3Corner.Parent = NewsItem3
-
-local NewsIcon3 = Instance.new("TextLabel")
-NewsIcon3.Size = UDim2.new(0, 40, 1, 0)
-NewsIcon3.Position = UDim2.new(0, 5, 0, 0)
-NewsIcon3.BackgroundTransparency = 1
-NewsIcon3.Text = "💬"
-NewsIcon3.TextColor3 = Color3.fromRGB(100, 150, 255)
-NewsIcon3.TextSize = 30
-NewsIcon3.Font = Enum.Font.GothamBold
-NewsIcon3.TextXAlignment = Enum.TextXAlignment.Center
-NewsIcon3.Parent = NewsItem3
-NewsIcon3.ZIndex = 8
-
-local NewsText3 = Instance.new("TextLabel")
-NewsText3.Size = UDim2.new(1, -55, 0, 40)
-NewsText3.Position = UDim2.new(0, 50, 0, 5)
-NewsText3.BackgroundTransparency = 1
-NewsText3.Text = "💬 تواصل معنا على ديسكورد\nللاستفسارات والمشاكل"
-NewsText3.TextColor3 = Color3.fromRGB(200, 200, 255)
-NewsText3.TextSize = 13
-NewsText3.Font = Enum.Font.GothamMedium
-NewsText3.TextXAlignment = Enum.TextXAlignment.Left
-NewsText3.Parent = NewsItem3
-NewsText3.ZIndex = 8
-
--- زر نسخ رابط الديسكورد
-local DiscordCopyBtn = Instance.new("TextButton")
-DiscordCopyBtn.Size = UDim2.new(0.7, 0, 0, 30)
-DiscordCopyBtn.Position = UDim2.new(0.15, 0, 0.6, 0)
-DiscordCopyBtn.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
-DiscordCopyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-DiscordCopyBtn.TextSize = 14
-DiscordCopyBtn.Font = Enum.Font.GothamBold
-DiscordCopyBtn.Text = "📋 انسخ رابط الديسكورد"
-DiscordCopyBtn.Parent = NewsItem3
-DiscordCopyBtn.ZIndex = 9
-
-local DiscordCopyCorner = Instance.new("UICorner")
-DiscordCopyCorner.CornerRadius = UDim.new(0, 8)
-DiscordCopyCorner.Parent = DiscordCopyBtn
-
-DiscordCopyBtn.MouseEnter:Connect(function()
-    DiscordCopyBtn.BackgroundColor3 = Color3.fromRGB(110, 130, 255)
-end)
-
-DiscordCopyBtn.MouseLeave:Connect(function()
-    DiscordCopyBtn.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
-end)
-
-DiscordCopyBtn.MouseButton1Click:Connect(function()
-    setclipboard("https://discord.gg/w9FDeSx9f")
-    local Notification = Instance.new("TextLabel")
-    Notification.Size = UDim2.new(0, 280, 0, 30)
-    Notification.Position = UDim2.new(0.5, -140, 0.5, -15)
-    Notification.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
-    Notification.BorderSizePixel = 0
-    Notification.Text = "✅ تم نسخ رابط الديسكورد!"
-    Notification.TextColor3 = Color3.fromRGB(0, 255, 150)
-    Notification.TextSize = 14
-    Notification.Font = Enum.Font.GothamBold
-    Notification.Parent = MainFrame
-    Notification.ZIndex = 50
-    local NotifCorner = Instance.new("UICorner")
-    NotifCorner.CornerRadius = UDim.new(0, 8)
-    NotifCorner.Parent = Notification
-    task.wait(2)
-    Notification:Destroy()
-end)
-
-newsYOffset = newsYOffset + 98
-
--- تحديث حجم السكرول
-NewsScroll.CanvasSize = UDim2.new(0, 0, 0, newsYOffset + 10)
 
 -- ============================================
 -- محتوى صفحة اللاعبين (Player List)
@@ -1771,6 +1591,7 @@ local originalFOV = Camera.FieldOfView
 -- دوال الميزات
 -- ============================================
 
+-- تطبيق الإعدادات الأساسية
 function ApplySettings()
     local character = LocalPlayer.Character
     if character then
@@ -1789,6 +1610,7 @@ function ApplySettings()
     end
 end
 
+-- دالة الاختفاء (Invisible)
 local function toggleInvisible()
     features.invisible = not features.invisible
     local character = LocalPlayer.Character
@@ -1816,6 +1638,7 @@ local function toggleInvisible()
     return features.invisible
 end
 
+-- دالة اختراق الجدران
 local function toggleNoclip()
     features.noclip = not features.noclip
     local character = LocalPlayer.Character
@@ -1829,6 +1652,7 @@ local function toggleNoclip()
     return features.noclip
 end
 
+-- دالة الطيران
 local function toggleFly()
     local character = LocalPlayer.Character
     if not character then return end
@@ -1912,6 +1736,7 @@ local function toggleFly()
     return features.fly
 end
 
+-- دالة الدوران التلقائي
 local function toggleAutoRotate()
     features.autoRotate = not features.autoRotate
     
@@ -1941,6 +1766,7 @@ local function toggleAutoRotate()
     return features.autoRotate
 end
 
+-- دالة FOV 120
 local function toggleFOV120()
     features.fov120 = not features.fov120
     
@@ -1958,6 +1784,7 @@ end
 -- دوال إنشاء الأزرار
 -- ============================================
 
+-- دالة إنشاء زر مع شريط تمرير
 local function createSettingSlider(yOffset, labelText, minVal, maxVal, defaultValue, settingName)
     local container = Instance.new("Frame")
     container.Size = UDim2.new(0.92, 0, 0, 65)
@@ -2066,6 +1893,7 @@ local function createSettingSlider(yOffset, labelText, minVal, maxVal, defaultVa
     return container
 end
 
+-- دالة إنشاء زر تبديل (Toggle)
 local function createToggleButton(yOffset, labelText, icon, settingName, color)
     local container = Instance.new("Frame")
     container.Size = UDim2.new(0.92, 0, 0, 45)
@@ -2137,26 +1965,6 @@ local function createToggleButton(yOffset, labelText, icon, settingName, color)
     return container
 end
 
-function showNotification(text, parent)
-    local notif = Instance.new("TextLabel")
-    notif.Size = UDim2.new(0, 220, 0, 30)
-    notif.Position = UDim2.new(0.5, -110, 0.85, 0)
-    notif.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
-    notif.BackgroundTransparency = 0.1
-    notif.TextColor3 = Color3.fromRGB(0, 255, 150)
-    notif.TextSize = 13
-    notif.Font = Enum.Font.GothamBold
-    notif.Text = text
-    notif.Parent = parent
-    
-    local notifCorner = Instance.new("UICorner")
-    notifCorner.CornerRadius = UDim.new(0, 8)
-    notifCorner.Parent = notif
-    
-    task.wait(1.5)
-    notif:Destroy()
-end
-
 -- ============================================
 -- إنشاء الأزرار في صفحة الإعدادات
 -- ============================================
@@ -2215,7 +2023,8 @@ RunService.Heartbeat:Connect(function()
                 part.Handle.Transparency = 1
             end
         end
-    endend)
+    end
+end)
 
 LocalPlayer.CharacterAdded:Connect(function()
     task.wait(0.5)
@@ -2274,7 +2083,6 @@ local function ShowHome()
     TeleportContainer.Visible = false
     MoneyContainer.Visible = false
     FishingContainer.Visible = false
-    NewsContainer.Visible = false
     PlayerContainer.Visible = false
     SettingsContainer.Visible = false
     for _, child in pairs(Sidebar:GetChildren()) do
@@ -2296,7 +2104,6 @@ local function ShowWelcome()
     TeleportContainer.Visible = false
     MoneyContainer.Visible = false
     FishingContainer.Visible = false
-    NewsContainer.Visible = false
     PlayerContainer.Visible = false
     SettingsContainer.Visible = false
     for _, child in pairs(Sidebar:GetChildren()) do
@@ -2318,7 +2125,6 @@ local function ShowTeleport()
     TeleportContainer.Visible = true
     MoneyContainer.Visible = false
     FishingContainer.Visible = false
-    NewsContainer.Visible = false
     PlayerContainer.Visible = false
     SettingsContainer.Visible = false
     for _, child in pairs(Sidebar:GetChildren()) do
@@ -2340,7 +2146,6 @@ local function ShowMoney()
     TeleportContainer.Visible = false
     MoneyContainer.Visible = true
     FishingContainer.Visible = false
-    NewsContainer.Visible = false
     PlayerContainer.Visible = false
     SettingsContainer.Visible = false
     for _, child in pairs(Sidebar:GetChildren()) do
@@ -2362,7 +2167,6 @@ local function ShowFishing()
     TeleportContainer.Visible = false
     MoneyContainer.Visible = false
     FishingContainer.Visible = true
-    NewsContainer.Visible = false
     PlayerContainer.Visible = false
     SettingsContainer.Visible = false
     for _, child in pairs(Sidebar:GetChildren()) do
@@ -2378,35 +2182,12 @@ local function ShowFishing()
     end
 end
 
-local function ShowNews()
-    HomeContainer.Visible = false
-    WelcomeContainer.Visible = false
-    TeleportContainer.Visible = false
-    MoneyContainer.Visible = false
-    FishingContainer.Visible = false
-    NewsContainer.Visible = true
-    PlayerContainer.Visible = false
-    SettingsContainer.Visible = false
-    for _, child in pairs(Sidebar:GetChildren()) do
-        if child:IsA("TextButton") then
-            if child.Text == "📰 الاخبار" then
-                child.BackgroundColor3 = Color3.fromRGB(255, 200, 0)
-                child.TextColor3 = Color3.fromRGB(0, 0, 0)
-            else
-                child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
-                child.TextColor3 = Color3.fromRGB(255, 255, 255)
-            end
-        end
-    end
-end
-
 local function ShowPlayers()
     HomeContainer.Visible = false
     WelcomeContainer.Visible = false
     TeleportContainer.Visible = false
     MoneyContainer.Visible = false
     FishingContainer.Visible = false
-    NewsContainer.Visible = false
     PlayerContainer.Visible = true
     SettingsContainer.Visible = false
     UpdatePlayerList()
@@ -2429,7 +2210,6 @@ local function ShowSettings()
     TeleportContainer.Visible = false
     MoneyContainer.Visible = false
     FishingContainer.Visible = false
-    NewsContainer.Visible = false
     PlayerContainer.Visible = false
     SettingsContainer.Visible = true
     ApplySettings()
@@ -2459,8 +2239,6 @@ for _, child in pairs(Sidebar:GetChildren()) do
             child.MouseButton1Click:Connect(ShowMoney)
         elseif child.Text == "🎣 الصيد" then
             child.MouseButton1Click:Connect(ShowFishing)
-        elseif child.Text == "📰 الاخبار" then
-            child.MouseButton1Click:Connect(ShowNews)
         elseif child.Text == "👥 لاعبين" then
             child.MouseButton1Click:Connect(ShowPlayers)
         elseif child.Text == "⚙️ لاعب" then
@@ -2474,6 +2252,5 @@ print("📱 تم دعم الهاتف والكمبيوتر معاً!")
 print("🟣 زر دائري متحرك بأطراف بنفسجية!")
 print("💰 تم دمج سكربت تجميع الفلوس الفوري V7!")
 print("🎣 تم إضافة صفحة الصيد التلقائي!")
-print("📰 تم إضافة صفحة الأخبار!")
 print("🔧 الميزات: سرعة، قفز، جاذبية، اختفاء، اختراق جدران، طيران، دوران، FOV 120")
 print("📍 " .. #places .. " مكاناً للانتقال الفوري!")
