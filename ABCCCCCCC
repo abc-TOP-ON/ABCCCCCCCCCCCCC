@@ -142,7 +142,6 @@ local colorIndex = 1
 -- حلقة التحديث المستمر للنيون
 task.spawn(function()
     while ScreenGui and ToggleButton.Parent do
-        -- تحديث ألوان الحلقات
         colorIndex = colorIndex + 0.02
         local index = math.floor(colorIndex) % #ringColors + 1
         local nextIndex = index % #ringColors + 1
@@ -157,16 +156,13 @@ task.spawn(function()
         
         local finalColor = Color3.new(r, g, b)
         
-        -- تحديث لون النيون
         NeonRing.BackgroundColor3 = finalColor
         NeonRing.BorderColor3 = finalColor
         
-        -- نبض الشفافية
         local breathe = 0.2 + math.sin(tick() * 2.5) * 0.2
         NeonRing.BackgroundTransparency = breathe
         PulseRing.BackgroundTransparency = breathe + 0.2
         
-        -- تغيير حجم الحلقة النابضة
         local pulseSize = 1.5 + math.sin(tick() * 2) * 0.1
         PulseRing.Size = UDim2.new(pulseSize, 0, pulseSize, 0)
         PulseRing.Position = UDim2.new(-(pulseSize-1)/2, 0, -(pulseSize-1)/2, 0)
@@ -295,17 +291,14 @@ function toggleUI()
     MainFrame.Visible = isOpen
     
     if isOpen then
-        -- تغيير لون الزر إلى بنفسجي
         ToggleButton.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
         ButtonText.TextColor3 = Color3.fromRGB(255, 255, 255)
-        -- تغيير الحجم قليلاً
         local tween = TweenService:Create(ToggleButton, TweenInfo.new(0.2), {Size = UDim2.new(0, buttonSize * 1.1, 0, buttonSize * 1.1)})
         tween:Play()
         task.wait(0.2)
         local tween2 = TweenService:Create(ToggleButton, TweenInfo.new(0.1), {Size = UDim2.new(0, buttonSize, 0, buttonSize)})
         tween2:Play()
     else
-        -- إعادة اللون إلى الأسود
         ToggleButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
         ButtonText.TextColor3 = Color3.fromRGB(255, 255, 255)
         local tween = TweenService:Create(ToggleButton, TweenInfo.new(0.2), {Size = UDim2.new(0, buttonSize * 0.9, 0, buttonSize * 0.9)})
@@ -1064,11 +1057,9 @@ local collectedCount = 0
 local function processItem(item)
     if not _G.CashStealer then return end
     
-    -- رصد مجسم الفلوس الحقيقي
     if item.Name == "CashDrop" and (item:IsA("Part") or item:IsA("MeshPart")) then
         local fullName = item:GetFullName():lower()
         
-        -- الفلاتر الصارمة لمنع الانتقال العشوائي للطاولات والمقاعد والحواجز
         if not fullName:find("table") and 
            not fullName:find("board") and 
            not fullName:find("game") and 
@@ -1081,23 +1072,18 @@ local function processItem(item)
            not fullName:find("lockedframe") and  
            not fullName:find("barrier") then
             
-            -- فحص للتأكد من وجود اللوحة الرقمية للفلوس ($)
-            task.wait(0.02) -- وقت انتظار ضئيل جداً لضمان تحميل الخصائص بدون لاق
+            task.wait(0.02)
             if item:FindFirstChildOfClass("BillboardGui") then
                 local player = game.Players.LocalPlayer
                 local character = player.Character or player.CharacterAdded:Wait()
                 local rootPart = character:FindFirstChild("HumanoidRootPart")
                 
                 if rootPart then
-                    -- 1. حفظ موقعك الأصلي بدقة
                     local originalPosition = rootPart.CFrame
-                    
-                    -- 2. الانتقال الفوري الخاطف فوق الفلوس
                     rootPart.CFrame = item.CFrame
                     
                     local remote = game:GetService("ReplicatedStorage"):FindFirstChild("CashDrop", true)
                     
-                    -- 3. حلقة الضغط السريع حتى تختفي الرزمة تماماً وتُسجل في رصيدك
                     while item and item.Parent and _G.CashStealer do
                         if remote and remote:IsA("RemoteEvent") then
                             remote:FireServer(item)
@@ -1109,16 +1095,14 @@ local function processItem(item)
                         local clicker = item:FindFirstChildOfClass("ClickDetector")
                         if clicker then fireclickdetector(clicker) end
                         
-                        task.wait(0.01) -- سرعة تفعيل قصوى
+                        task.wait(0.01)
                     end
                     
-                    -- زيادة العداد عند النجاح
                     if _G.CashStealer then
                         collectedCount = collectedCount + 1
                         CountLabel.Text = "📦 " .. collectedCount
                     end
                     
-                    -- 4. العودة التلقائية الفورية لمكانك الأصلي الآمن
                     if _G.CashStealer then
                         rootPart.CFrame = originalPosition
                     end
@@ -1130,16 +1114,13 @@ end
 
 -- تشغيل نظام الرصد العميق والخفيف جداً على المعالج
 local function startStealing()
-    -- تجميع الفلوس المتواجدة بالفعل على الأرض لحظة التشغيل
     for _, item in pairs(workspace:GetDescendants()) do
         if item.Name == "CashDrop" then
             spawn(function() pcall(processItem, item) end)
         end
     end
     
-    -- مراقبة شجرة الملفات العميقة (DescendantAdded): أي رزمة تنزل في أي مجلد يتم صيدها فوراً وبدون أي لاق
     eventConnection = workspace.DescendantAdded:Connect(function(item)
-        -- ميزة تصفية الأداء: السكربت يتجاهل أي ملف ليس له علاقة بالفلوس فوراً لتوفير المعالج %100
         if item.Name == "CashDrop" then
             pcall(processItem, item)
         end
@@ -1230,7 +1211,6 @@ local FishingFrameCorner = Instance.new("UICorner")
 FishingFrameCorner.CornerRadius = UDim.new(0, 12)
 FishingFrameCorner.Parent = FishingFrame
 
--- إطار متوهج للصيد
 local FishingGlow = Instance.new("Frame")
 FishingGlow.Size = UDim2.new(1, 6, 1, 6)
 FishingGlow.Position = UDim2.new(0, -3, 0, -3)
@@ -1244,7 +1224,6 @@ local FishingGlowCorner = Instance.new("UICorner")
 FishingGlowCorner.CornerRadius = UDim.new(0, 15)
 FishingGlowCorner.Parent = FishingGlow
 
--- عنوان الصفحة
 local FishingTitle = Instance.new("TextLabel")
 FishingTitle.Size = UDim2.new(1, 0, 0, 40)
 FishingTitle.Position = UDim2.new(0, 0, 0, 5)
@@ -1256,7 +1235,6 @@ FishingTitle.Font = Enum.Font.GothamBold
 FishingTitle.Parent = FishingFrame
 FishingTitle.ZIndex = 6
 
--- زر تشغيل الصيد
 local FishingToggleButton = Instance.new("TextButton")
 FishingToggleButton.Size = UDim2.new(0.7, 0, 0, 55)
 FishingToggleButton.Position = UDim2.new(0.15, 0, 0.2, 0)
@@ -1272,7 +1250,6 @@ local FishingToggleCorner = Instance.new("UICorner")
 FishingToggleCorner.CornerRadius = UDim.new(0, 10)
 FishingToggleCorner.Parent = FishingToggleButton
 
--- حالة الصيد
 local FishingStatus = Instance.new("TextLabel")
 FishingStatus.Size = UDim2.new(1, -20, 0, 30)
 FishingStatus.Position = UDim2.new(0, 10, 0.45, 0)
@@ -1285,7 +1262,6 @@ FishingStatus.TextXAlignment = Enum.TextXAlignment.Center
 FishingStatus.Parent = FishingFrame
 FishingStatus.ZIndex = 7
 
--- مربع معلومات
 local InfoBox = Instance.new("Frame")
 InfoBox.Size = UDim2.new(0.85, 0, 0, 80)
 InfoBox.Position = UDim2.new(0.075, 0, 0.55, 0)
@@ -1315,7 +1291,6 @@ InfoText.ZIndex = 8
 local fishingActive = false
 local fishingConnection = nil
 
--- دالة تشغيل الصيد
 local function startFishing()
     if fishingActive then
         fishingActive = false
@@ -1422,8 +1397,7 @@ PlayerCountLabel.Position = UDim2.new(0, 20, 1, -22)
 PlayerCountLabel.BackgroundTransparency = 1
 PlayerCountLabel.TextColor3 = Color3.fromRGB(150, 150, 180)
 PlayerCountLabel.TextSize = 11
-PlayerCountLabel.Font = Enum.Font.GothamMedium
-PlayerCountLabel.TextXAlignment = Enum.TextXAlignment.Center
+PlayerCountLabel.Font = Enum.Font.GothamMediumPlayerCountLabel.TextXAlignment = Enum.TextXAlignment.Center
 PlayerCountLabel.Parent = PlayerFrame
 PlayerCountLabel.ZIndex = 6
 
@@ -1787,7 +1761,6 @@ end
 -- دوال إنشاء الأزرار
 -- ============================================
 
--- دالة إنشاء زر مع شريط تمرير
 local function createSettingSlider(yOffset, labelText, minVal, maxVal, defaultValue, settingName)
     local container = Instance.new("Frame")
     container.Size = UDim2.new(0.92, 0, 0, 65)
@@ -1896,7 +1869,6 @@ local function createSettingSlider(yOffset, labelText, minVal, maxVal, defaultVa
     return container
 end
 
--- دالة إنشاء زر تبديل (Toggle)
 local function createToggleButton(yOffset, labelText, icon, settingName, color)
     local container = Instance.new("Frame")
     container.Size = UDim2.new(0.92, 0, 0, 45)
@@ -1936,8 +1908,6 @@ local function createToggleButton(yOffset, labelText, icon, settingName, color)
     local toggleCorner = Instance.new("UICorner")
     toggleCorner.CornerRadius = UDim.new(0, 4)
     toggleCorner.Parent = toggleBtn
-    
-    local isActive = false
     
     toggleBtn.MouseButton1Click:Connect(function()
         local newState = false
@@ -2077,7 +2047,7 @@ task.spawn(function()
 end)
 
 -- ============================================
--- وظائف الأزرار (تبديل الصفحات)
+-- وظائف الأزرار (تبديل الصفحات) - الإصدار القديم
 -- ============================================
 
 local function ShowHome()
@@ -2229,7 +2199,7 @@ local function ShowSettings()
     end
 end
 
--- ربط أزرار القائمة الجانبية
+-- ربط أزرار القائمة الجانبية (الأساسية)
 for _, child in pairs(Sidebar:GetChildren()) do
     if child:IsA("TextButton") then
         if child.Text == "🏠 الرئيسية" then
@@ -2259,46 +2229,10 @@ print("🔧 الميزات: سرعة، قفز، جاذبية، اختفاء، ا
 print("📍 " .. #places .. " مكاناً للانتقال الفوري!")
 
 -- ============================================
--- إضافة صفحة الأخبار (مع إصلاح مشكلة التبديل)
+-- إضافة صفحة الأخبار (مع إصلاح زر الأخبار)
 -- ============================================
 
--- إضافة زر الأخبار في القائمة الجانبية
-local function addNewsButton()
-    for _, child in pairs(Sidebar:GetChildren()) do
-        if child:IsA("TextButton") and child.Text == "📰 الأخبار" then
-            child:Destroy()
-        end
-    end
-    
-    local NewsBtn = Instance.new("TextButton")
-    NewsBtn.Size = UDim2.new(1, -20, 0, 40)
-    NewsBtn.Position = UDim2.new(0, 10, 0, 60 + (7 * 48))
-    NewsBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
-    NewsBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    NewsBtn.BorderSizePixel = 0
-    NewsBtn.Text = "📰 الأخبار"
-    NewsBtn.TextSize = 14
-    NewsBtn.Font = Enum.Font.GothamBold
-    NewsBtn.Parent = Sidebar
-    NewsBtn.ZIndex = 17
-
-    local NewsBtnCorner = Instance.new("UICorner")
-    NewsBtnCorner.CornerRadius = UDim.new(0, 8)
-    NewsBtnCorner.Parent = NewsBtn
-    
-    NewsBtn.MouseEnter:Connect(function()
-        NewsBtn.BackgroundColor3 = Color3.fromRGB(70, 70, 95)
-    end)
-    NewsBtn.MouseLeave:Connect(function()
-        NewsBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
-    end)
-    
-    return NewsBtn
-end
-
-local newsButton = addNewsButton()
-
--- حاوية صفحة الأخبار
+-- إنشاء حاوية الأخبار
 local NewsContainer = Instance.new("Frame")
 NewsContainer.Name = "NewsContainer"
 NewsContainer.Size = UDim2.new(1, -150, 1, -20)
@@ -2661,11 +2595,46 @@ newsY = newsY + 75
 NewsScroll.CanvasSize = UDim2.new(0, 0, 0, newsY + 30)
 
 -- ============================================
--- إصلاح مشكلة تبديل الصفحات
+-- إضافة زر الأخبار وربطه
 -- ============================================
 
--- دالة لإخفاء جميع الحاويات
-local function HideAllContainers()
+-- البحث عن زر الأخبار
+local newsButton = nil
+for _, child in pairs(Sidebar:GetChildren()) do
+    if child:IsA("TextButton") and child.Text == "📰 الأخبار" then
+        newsButton = child
+        break
+    end
+end
+
+-- إذا ما لقى الزر، نضيفه
+if not newsButton then
+    newsButton = Instance.new("TextButton")
+    newsButton.Size = UDim2.new(1, -20, 0, 40)
+    newsButton.Position = UDim2.new(0, 10, 0, 60 + (7 * 48))
+    newsButton.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
+    newsButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    newsButton.BorderSizePixel = 0
+    newsButton.Text = "📰 الأخبار"
+    newsButton.TextSize = 14
+    newsButton.Font = Enum.Font.GothamBold
+    newsButton.Parent = Sidebar
+    newsButton.ZIndex = 17
+
+    local NewsBtnCorner = Instance.new("UICorner")
+    NewsBtnCorner.CornerRadius = UDim.new(0, 8)
+    NewsBtnCorner.Parent = newsButton
+    
+    newsButton.MouseEnter:Connect(function()
+        newsButton.BackgroundColor3 = Color3.fromRGB(70, 70, 95)
+    end)
+    newsButton.MouseLeave:Connect(function()
+        newsButton.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
+    end)
+end
+
+-- دالة عرض الأخبار
+local function ShowNewsNow()
     HomeContainer.Visible = false
     WelcomeContainer.Visible = false
     TeleportContainer.Visible = false
@@ -2673,133 +2642,6 @@ local function HideAllContainers()
     FishingContainer.Visible = false
     PlayerContainer.Visible = false
     SettingsContainer.Visible = false
-    NewsContainer.Visible = false
-end
-
--- إعادة تعريف دوال عرض الصفحات مع إخفاء الكل أولاً
-local function ShowHomeFixed()
-    HideAllContainers()
-    HomeContainer.Visible = true
-    
-    for _, child in pairs(Sidebar:GetChildren()) do
-        if child:IsA("TextButton") then
-            if child.Text == "🏠 الرئيسية" then
-                child.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
-                child.TextColor3 = Color3.fromRGB(255, 255, 255)
-            else
-                child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
-                child.TextColor3 = Color3.fromRGB(255, 255, 255)
-            end
-        end
-    end
-end
-
-local function ShowWelcomeFixed()
-    HideAllContainers()
-    WelcomeContainer.Visible = true
-    
-    for _, child in pairs(Sidebar:GetChildren()) do
-        if child:IsA("TextButton") then
-            if child.Text == "🎉 ترحيب" then
-                child.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
-                child.TextColor3 = Color3.fromRGB(255, 255, 255)
-            else
-                child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
-                child.TextColor3 = Color3.fromRGB(255, 255, 255)
-            end
-        end
-    end
-end
-
-local function ShowTeleportFixed()
-    HideAllContainers()
-    TeleportContainer.Visible = true
-    
-    for _, child in pairs(Sidebar:GetChildren()) do
-        if child:IsA("TextButton") then
-            if child.Text == "⚡ انتقال الفوري" then
-                child.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
-                child.TextColor3 = Color3.fromRGB(255, 255, 255)
-            else
-                child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
-                child.TextColor3 = Color3.fromRGB(255, 255, 255)
-            end
-        end
-    end
-end
-
-local function ShowMoneyFixed()
-    HideAllContainers()
-    MoneyContainer.Visible = true
-    
-    for _, child in pairs(Sidebar:GetChildren()) do
-        if child:IsA("TextButton") then
-            if child.Text == "💰 فلوس" then
-                child.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
-                child.TextColor3 = Color3.fromRGB(255, 255, 255)
-            else
-                child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
-                child.TextColor3 = Color3.fromRGB(255, 255, 255)
-            end
-        end
-    end
-end
-
-local function ShowFishingFixed()
-    HideAllContainers()
-    FishingContainer.Visible = true
-    
-    for _, child in pairs(Sidebar:GetChildren()) do
-        if child:IsA("TextButton") then
-            if child.Text == "🎣 الصيد" then
-                child.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
-                child.TextColor3 = Color3.fromRGB(0, 0, 0)
-            else
-                child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
-                child.TextColor3 = Color3.fromRGB(255, 255, 255)
-            end
-        end
-    end
-end
-
-local function ShowPlayersFixed()
-    HideAllContainers()
-    PlayerContainer.Visible = true
-    UpdatePlayerList()
-    
-    for _, child in pairs(Sidebar:GetChildren()) do
-        if child:IsA("TextButton") then
-            if child.Text == "👥 لاعبين" then
-                child.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
-                child.TextColor3 = Color3.fromRGB(255, 255, 255)
-            else
-                child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
-                child.TextColor3 = Color3.fromRGB(255, 255, 255)
-            end
-        end
-    end
-end
-
-local function ShowSettingsFixed()
-    HideAllContainers()
-    SettingsContainer.Visible = true
-    ApplySettings()
-    
-    for _, child in pairs(Sidebar:GetChildren()) do
-        if child:IsA("TextButton") then
-            if child.Text == "⚙️ لاعب" then
-                child.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
-                child.TextColor3 = Color3.fromRGB(255, 255, 255)
-            else
-                child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
-                child.TextColor3 = Color3.fromRGB(255, 255, 255)
-            end
-        end
-    end
-end
-
-local function ShowNewsFixed()
-    HideAllContainers()
     NewsContainer.Visible = true
     
     for _, child in pairs(Sidebar:GetChildren()) do
@@ -2815,34 +2657,8 @@ local function ShowNewsFixed()
     end
 end
 
--- إزالة الروابط القديمة
-for _, child in pairs(Sidebar:GetChildren()) do
-    if child:IsA("TextButton") then
-        child.MouseButton1Click:Disconnect()
-    end
-end
+-- ربط زر الأخبار
+newsButton.MouseButton1Click:Connect(ShowNewsNow)
 
--- ربط الأزرار بالدوال الجديدة
-for _, child in pairs(Sidebar:GetChildren()) do
-    if child:IsA("TextButton") then
-        if child.Text == "🏠 الرئيسية" then
-            child.MouseButton1Click:Connect(ShowHomeFixed)
-        elseif child.Text == "🎉 ترحيب" then
-            child.MouseButton1Click:Connect(ShowWelcomeFixed)
-        elseif child.Text == "⚡ انتقال الفوري" then
-            child.MouseButton1Click:Connect(ShowTeleportFixed)
-        elseif child.Text == "💰 فلوس" then
-            child.MouseButton1Click:Connect(ShowMoneyFixed)
-        elseif child.Text == "🎣 الصيد" then
-            child.MouseButton1Click:Connect(ShowFishingFixed)
-        elseif child.Text == "👥 لاعبين" then
-            child.MouseButton1Click:Connect(ShowPlayersFixed)
-        elseif child.Text == "⚙️ لاعب" then
-            child.MouseButton1Click:Connect(ShowSettingsFixed)
-        elseif child.Text == "📰 الأخبار" then
-            child.MouseButton1Click:Connect(ShowNewsFixed)
-        end
-    end
-end
-
-print("📰 تم إضافة صفحة الأخبار وإصلاح مشكلة تبديل الصفحات!")
+print("📰 تم إضافة صفحة الأخبار بنجاح!")
+print("✅ زر الأخبار يعمل بشكل صحيح!")
