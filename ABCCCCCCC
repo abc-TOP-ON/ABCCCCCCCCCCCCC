@@ -1,4 +1,4 @@
--- ABC HUB v15 - نسخة الهاتف (مع سكربت تجميع الفلوس الفوري)
+-- ABC HUB v15 - نسخة الهاتف (مع سكربت تجميع الفلوس الفوري + الصيد التلقائي)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -215,8 +215,9 @@ createSidebarButton("🏠 الرئيسية", 1, true)
 createSidebarButton("🎉 ترحيب", 2, false)
 createSidebarButton("⚡ انتقال الفوري", 3, false)
 createSidebarButton("💰 فلوس", 4, false)
-createSidebarButton("👥 لاعبين", 5, false)
-createSidebarButton("⚙️ لاعب", 6, false)
+createSidebarButton("🎣 الصيد", 5, false)
+createSidebarButton("👥 لاعبين", 6, false)
+createSidebarButton("⚙️ لاعب", 7, false)
 
 -- حاويات المحتوى
 local HomeContainer = Instance.new("Frame")
@@ -254,6 +255,15 @@ MoneyContainer.BackgroundTransparency = 1
 MoneyContainer.Parent = MainFrame
 MoneyContainer.ZIndex = 1
 MoneyContainer.Visible = false
+
+local FishingContainer = Instance.new("Frame")
+FishingContainer.Name = "FishingContainer"
+FishingContainer.Size = UDim2.new(1, -150, 1, -20)
+FishingContainer.Position = UDim2.new(0, 150, 0, 10)
+FishingContainer.BackgroundTransparency = 1
+FishingContainer.Parent = MainFrame
+FishingContainer.ZIndex = 1
+FishingContainer.Visible = false
 
 local PlayerContainer = Instance.new("Frame")
 PlayerContainer.Name = "PlayerContainer"
@@ -1000,6 +1010,152 @@ function showNotification(text, parent)
 end
 
 -- ============================================
+-- محتوى صفحة الصيد (Fishing)
+-- ============================================
+
+local FishingFrame = Instance.new("Frame")
+FishingFrame.Size = UDim2.new(0.9, 0, 0.85, 0)
+FishingFrame.Position = UDim2.new(0.05, 0, 0.05, 0)
+FishingFrame.BackgroundColor3 = Color3.fromRGB(15, 25, 35)
+FishingFrame.BorderSizePixel = 0
+FishingFrame.Parent = FishingContainer
+FishingFrame.ZIndex = 5
+
+local FishingFrameCorner = Instance.new("UICorner")
+FishingFrameCorner.CornerRadius = UDim.new(0, 12)
+FishingFrameCorner.Parent = FishingFrame
+
+-- إطار متوهج للصيد
+local FishingGlow = Instance.new("Frame")
+FishingGlow.Size = UDim2.new(1, 6, 1, 6)
+FishingGlow.Position = UDim2.new(0, -3, 0, -3)
+FishingGlow.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
+FishingGlow.BackgroundTransparency = 0.3
+FishingGlow.BorderSizePixel = 0
+FishingGlow.Parent = FishingFrame
+FishingGlow.ZIndex = -1
+
+local FishingGlowCorner = Instance.new("UICorner")
+FishingGlowCorner.CornerRadius = UDim.new(0, 15)
+FishingGlowCorner.Parent = FishingGlow
+
+-- عنوان الصفحة
+local FishingTitle = Instance.new("TextLabel")
+FishingTitle.Size = UDim2.new(1, 0, 0, 40)
+FishingTitle.Position = UDim2.new(0, 0, 0, 5)
+FishingTitle.BackgroundColor3 = Color3.fromRGB(0, 40, 60)
+FishingTitle.Text = "🎣 الصيد التلقائي 🎣"
+FishingTitle.TextColor3 = Color3.fromRGB(0, 200, 255)
+FishingTitle.TextSize = 20
+FishingTitle.Font = Enum.Font.GothamBold
+FishingTitle.Parent = FishingFrame
+FishingTitle.ZIndex = 6
+
+-- زر تشغيل الصيد
+local FishingToggleButton = Instance.new("TextButton")
+FishingToggleButton.Size = UDim2.new(0.7, 0, 0, 55)
+FishingToggleButton.Position = UDim2.new(0.15, 0, 0.2, 0)
+FishingToggleButton.BackgroundColor3 = Color3.fromRGB(0, 150, 200)
+FishingToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+FishingToggleButton.TextSize = 22
+FishingToggleButton.Font = Enum.Font.SourceSansBold
+FishingToggleButton.Text = "🎣 تشغيل الصيد"
+FishingToggleButton.Parent = FishingFrame
+FishingToggleButton.ZIndex = 7
+
+local FishingToggleCorner = Instance.new("UICorner")
+FishingToggleCorner.CornerRadius = UDim.new(0, 10)
+FishingToggleCorner.Parent = FishingToggleButton
+
+-- حالة الصيد
+local FishingStatus = Instance.new("TextLabel")
+FishingStatus.Size = UDim2.new(1, -20, 0, 30)
+FishingStatus.Position = UDim2.new(0, 10, 0.45, 0)
+FishingStatus.BackgroundTransparency = 1
+FishingStatus.Text = "⏸️ الصيد متوقف"
+FishingStatus.TextColor3 = Color3.fromRGB(255, 100, 100)
+FishingStatus.TextSize = 16
+FishingStatus.Font = Enum.Font.GothamBold
+FishingStatus.TextXAlignment = Enum.TextXAlignment.Center
+FishingStatus.Parent = FishingFrame
+FishingStatus.ZIndex = 7
+
+-- مربع معلومات
+local InfoBox = Instance.new("Frame")
+InfoBox.Size = UDim2.new(0.85, 0, 0, 80)
+InfoBox.Position = UDim2.new(0.075, 0, 0.55, 0)
+InfoBox.BackgroundColor3 = Color3.fromRGB(0, 30, 50)
+InfoBox.BorderSizePixel = 0
+InfoBox.Parent = FishingFrame
+InfoBox.ZIndex = 7
+
+local InfoBoxCorner = Instance.new("UICorner")
+InfoBoxCorner.CornerRadius = UDim.new(0, 8)
+InfoBoxCorner.Parent = InfoBox
+
+local InfoText = Instance.new("TextLabel")
+InfoText.Size = UDim2.new(1, -10, 1, -10)
+InfoText.Position = UDim2.new(0, 5, 0, 5)
+InfoText.BackgroundTransparency = 1
+InfoText.Text = "🐟 سكربت الصيد التلقائي\n📌 اضغط على الزر لتفعيل الصيد التلقائي"
+InfoText.TextColor3 = Color3.fromRGB(150, 200, 255)
+InfoText.TextSize = 14
+InfoText.Font = Enum.Font.GothamMedium
+InfoText.TextXAlignment = Enum.TextXAlignment.Center
+InfoText.TextYAlignment = Enum.TextYAlignment.Center
+InfoText.Parent = InfoBox
+InfoText.ZIndex = 8
+
+-- متغيرات الصيد
+local fishingActive = false
+local fishingConnection = nil
+
+-- دالة تشغيل الصيد
+local function startFishing()
+    if fishingActive then
+        -- إيقاف الصيد
+        fishingActive = false
+        FishingToggleButton.Text = "🎣 تشغيل الصيد"
+        FishingToggleButton.BackgroundColor3 = Color3.fromRGB(0, 150, 200)
+        FishingStatus.Text = "⏸️ الصيد متوقف"
+        FishingStatus.TextColor3 = Color3.fromRGB(255, 100, 100)
+        InfoText.Text = "🐟 تم إيقاف الصيد التلقائي"
+        if fishingConnection then
+            fishingConnection:Disconnect()
+            fishingConnection = nil
+        end
+        showNotification("⛔ تم إيقاف الصيد التلقائي", FishingFrame)
+    else
+        -- تشغيل الصيد
+        fishingActive = true
+        FishingToggleButton.Text = "⏹️ إيقاف الصيد"
+        FishingToggleButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+        FishingStatus.Text = "🟢 جاري الصيد..."
+        FishingStatus.TextColor3 = Color3.fromRGB(0, 255, 100)
+        InfoText.Text = "🐟 جاري الصيد التلقائي... انتظر النتائج 🎣"
+        
+        -- تحميل سكربت الصيد من الرابط
+        local success, result = pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/salihmahdu12-ui/SA-ALONE-THE-REAL/refs/heads/main/.ALARAB"))()
+        end)
+        
+        if success then
+            showNotification("✅ تم تشغيل الصيد التلقائي!", FishingFrame)
+        else
+            showNotification("❌ فشل تحميل سكربت الصيد!", FishingFrame)
+            fishingActive = false
+            FishingToggleButton.Text = "🎣 تشغيل الصيد"
+            FishingToggleButton.BackgroundColor3 = Color3.fromRGB(0, 150, 200)
+            FishingStatus.Text = "❌ فشل التشغيل"
+            FishingStatus.TextColor3 = Color3.fromRGB(255, 50, 50)
+        end
+    end
+end
+
+-- ربط زر الصيد
+FishingToggleButton.MouseButton1Click:Connect(startFishing)
+
+-- ============================================
 -- محتوى صفحة اللاعبين (Player List)
 -- ============================================
 
@@ -1733,6 +1889,7 @@ local function ShowHome()
     WelcomeContainer.Visible = false
     TeleportContainer.Visible = false
     MoneyContainer.Visible = false
+    FishingContainer.Visible = false
     PlayerContainer.Visible = false
     SettingsContainer.Visible = false
     for _, child in pairs(Sidebar:GetChildren()) do
@@ -1753,6 +1910,7 @@ local function ShowWelcome()
     WelcomeContainer.Visible = true
     TeleportContainer.Visible = false
     MoneyContainer.Visible = false
+    FishingContainer.Visible = false
     PlayerContainer.Visible = false
     SettingsContainer.Visible = false
     for _, child in pairs(Sidebar:GetChildren()) do
@@ -1773,6 +1931,7 @@ local function ShowTeleport()
     WelcomeContainer.Visible = false
     TeleportContainer.Visible = true
     MoneyContainer.Visible = false
+    FishingContainer.Visible = false
     PlayerContainer.Visible = false
     SettingsContainer.Visible = false
     for _, child in pairs(Sidebar:GetChildren()) do
@@ -1793,6 +1952,7 @@ local function ShowMoney()
     WelcomeContainer.Visible = false
     TeleportContainer.Visible = false
     MoneyContainer.Visible = true
+    FishingContainer.Visible = false
     PlayerContainer.Visible = false
     SettingsContainer.Visible = false
     for _, child in pairs(Sidebar:GetChildren()) do
@@ -1808,11 +1968,33 @@ local function ShowMoney()
     end
 end
 
+local function ShowFishing()
+    HomeContainer.Visible = false
+    WelcomeContainer.Visible = false
+    TeleportContainer.Visible = false
+    MoneyContainer.Visible = false
+    FishingContainer.Visible = true
+    PlayerContainer.Visible = false
+    SettingsContainer.Visible = false
+    for _, child in pairs(Sidebar:GetChildren()) do
+        if child:IsA("TextButton") then
+            if child.Text == "🎣 الصيد" then
+                child.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
+                child.TextColor3 = Color3.fromRGB(0, 0, 0)
+            else
+                child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
+                child.TextColor3 = Color3.fromRGB(255, 255, 255)
+            end
+        end
+    end
+end
+
 local function ShowPlayers()
     HomeContainer.Visible = false
     WelcomeContainer.Visible = false
     TeleportContainer.Visible = false
     MoneyContainer.Visible = false
+    FishingContainer.Visible = false
     PlayerContainer.Visible = true
     SettingsContainer.Visible = false
     UpdatePlayerList()
@@ -1834,6 +2016,7 @@ local function ShowSettings()
     WelcomeContainer.Visible = false
     TeleportContainer.Visible = false
     MoneyContainer.Visible = false
+    FishingContainer.Visible = false
     PlayerContainer.Visible = false
     SettingsContainer.Visible = true
     ApplySettings()
@@ -1861,6 +2044,8 @@ for _, child in pairs(Sidebar:GetChildren()) do
             child.MouseButton1Click:Connect(ShowTeleport)
         elseif child.Text == "💰 فلوس" then
             child.MouseButton1Click:Connect(ShowMoney)
+        elseif child.Text == "🎣 الصيد" then
+            child.MouseButton1Click:Connect(ShowFishing)
         elseif child.Text == "👥 لاعبين" then
             child.MouseButton1Click:Connect(ShowPlayers)
         elseif child.Text == "⚙️ لاعب" then
@@ -1872,5 +2057,6 @@ end
 print("✅ ABC HUB v15 تم تحميله بنجاح!")
 print("📱 تم دعم الهاتف والكمبيوتر معاً!")
 print("💰 تم دمج سكربت تجميع الفلوس الفوري V7!")
+print("🎣 تم إضافة صفحة الصيد التلقائي!")
 print("🔧 الميزات: سرعة، قفز، جاذبية، اختفاء، اختراق جدران، طيران، دوران، FOV 120")
 print("📍 " .. #places .. " مكاناً للانتقال الفوري!")
