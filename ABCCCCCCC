@@ -1,4 +1,4 @@
--- ABC HUB v15 - نسخة الهاتف (مع إصلاح القفز اللانهائي للهاتف والكمبيوتر)
+-- ABC HUB v15 - نسخة الهاتف (مع ميزات جديدة)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -965,15 +965,17 @@ local playerSettings = {
 }
 
 local features = {
-    infiniteJump = false,
+    invisible = false,
     noclip = false,
     fly = false,
-    autoRotate = false
+    autoRotate = false,
+    fov120 = false
 }
 
 local flyConnection = nil
 local rotateConnection = nil
 local currentRotation = 0
+local originalFOV = Camera.FieldOfView
 
 -- ============================================
 -- دوال الميزات
@@ -998,10 +1000,32 @@ function ApplySettings()
     end
 end
 
--- دالة القفز اللانهائي (تم الإصلاح للهاتف والكمبيوتر)
-local function toggleInfiniteJump()
-    features.infiniteJump = not features.infiniteJump
-    return features.infiniteJump
+-- دالة الاختفاء (Invisible)
+local function toggleInvisible()
+    features.invisible = not features.invisible
+    local character = LocalPlayer.Character
+    if character then
+        for _, part in pairs(character:GetDescendants()) do
+            if part:IsA("BasePart") then
+                if features.invisible then
+                    part.Transparency = 1
+                    part.CanCollide = false
+                else
+                    part.Transparency = 0
+                    part.CanCollide = true
+                end
+            end
+            if part:IsA("Accessory") then
+                if features.invisible then
+                    part:SetAttribute("SavedTransparency", part.Handle.Transparency)
+                    part.Handle.Transparency = 1
+                else
+                    part.Handle.Transparency = part:GetAttribute("SavedTransparency") or 0
+                end
+            end
+        end
+    end
+    return features.invisible
 end
 
 -- دالة اختراق الجدران
@@ -1130,6 +1154,20 @@ local function toggleAutoRotate()
         end
     end
     return features.autoRotate
+end
+
+-- دالة FOV 120
+local function toggleFOV120()
+    features.fov120 = not features.fov120
+    
+    if features.fov120 then
+        Camera.FieldOfView = 120
+        showNotification("👁️ تم تفعيل FOV 120", SettingsFrame)
+    else
+        Camera.FieldOfView = originalFOV
+        showNotification("👁️ تم إلغاء FOV 120", SettingsFrame)
+    end
+    return features.fov120
 end
 
 -- ============================================
@@ -1291,26 +1329,26 @@ local function createToggleButton(yOffset, labelText, icon, settingName, color)
     toggleBtn.MouseButton1Click:Connect(function()
         local newState = false
         
-        if settingName == "infiniteJump" then
-            newState = toggleInfiniteJump()
+        if settingName == "invisible" then
+            newState = toggleInvisible()
         elseif settingName == "noclip" then
             newState = toggleNoclip()
         elseif settingName == "fly" then
             newState = toggleFly()
         elseif settingName == "autoRotate" then
             newState = toggleAutoRotate()
+        elseif settingName == "fov120" then
+            newState = toggleFOV120()
         end
         
         if newState then
             toggleBtn.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
             toggleBtn.Text = "تفعيل"
             label.TextColor3 = Color3.fromRGB(0, 255, 150)
-            showNotification("✅ تم تشغيل " .. labelText, SettingsFrame)
         else
             toggleBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
             toggleBtn.Text = "إيقاف"
             label.TextColor3 = Color3.fromRGB(255, 255, 255)
-            showNotification("⛔ تم إيقاف " .. labelText, SettingsFrame)
         end
     end)
     
@@ -1355,7 +1393,7 @@ createSettingSlider(yOffset, "🌍 الجاذبية", 0, 500, 196.2, "gravity")
 yOffset = yOffset + 70
 
 -- الميزات الإضافية
-createToggleButton(yOffset, "قفز لا نهائي (هاتف فقط)", "📱", "infiniteJump")
+createToggleButton(yOffset, "اختفاء", "👻", "invisible")
 yOffset = yOffset + 50
 
 createToggleButton(yOffset, "اختراق الجدران", "🧱", "noclip")
@@ -1367,67 +1405,36 @@ yOffset = yOffset + 50
 createToggleButton(yOffset, "دوران تلقائي", "🔄", "autoRotate")
 yOffset = yOffset + 50
 
+createToggleButton(yOffset, "FOV 120", "👁️", "fov120")
+yOffset = yOffset + 50
+
 SettingsScroll.CanvasSize = UDim2.new(0, 0, 0, yOffset + 20)
-
--- ============================================
--- 🔥 القفز اللانهائي (فقط عند الضغط - مو تلقائي)
--- ============================================
-
--- إلغاء أي ربط سابق
-ContextActionService:UnbindAction("JumpAction")
-
--- دالة القفز - فقط عند الضغط (مو تلقائي)
-local function handleJump(input, gameProcessed)
-    if gameProcessed then return end  -- منع التداخل
-    if not features.infiniteJump then return end  -- إذا الميزة مفعلة
-    
-    local character = LocalPlayer.Character
-    if not character then return end
-    
-    local humanoid = character:FindFirstChild("Humanoid")
-    if not humanoid or humanoid.Health <= 0 then return end
-    
-    -- ✅ فقط عند الضغط على زر القفز (مو تلقائي)
-    if input.KeyCode == Enum.KeyCode.Space or 
-       input.UserInputType == Enum.UserInputType.Touch or
-       input.KeyCode == Enum.KeyCode.ButtonR1 or
-       input.KeyCode == Enum.KeyCode.ButtonA then
-        
-        -- ✅ يقفز في الهواء (فوق بعض) - فقط لما اضغط
-        humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-    end
-end
-
--- ربط الضغط (مرة واحدة لكل ضغطة)
-UserInputService.InputBegan:Connect(handleJump)
-
--- دعم إضافي للهاتف
-ContextActionService:BindAction("JumpAction", function(actionName, inputState, inputObject)
-    if inputState == Enum.UserInputState.Begin and features.infiniteJump then
-        local character = LocalPlayer.Character
-        if character then
-            local humanoid = character:FindFirstChild("Humanoid")
-            if humanoid and humanoid.Health > 0 then
-                -- ✅ يقفز مرة واحدة لكل ضغطة
-                humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-            end
-        end
-    end
-end, false, Enum.KeyCode.Space, Enum.KeyCode.ButtonR1, Enum.KeyCode.ButtonA)
-
-print("✅ القفز اللانهائي يعمل فقط عند الضغط (مو تلقائي)!")
 
 -- ============================================
 -- مراقبة دائمة للميزات
 -- ============================================
 
--- مراقبة اختراق الجدران
+-- مراقبة اختراق الجدران والاختفاء
 RunService.Heartbeat:Connect(function()
-    if features.noclip and LocalPlayer.Character then
-        local character = LocalPlayer.Character
+    local character = LocalPlayer.Character
+    if not character then return end
+    
+    if features.noclip then
         for _, part in pairs(character:GetDescendants()) do
             if part:IsA("BasePart") then
                 part.CanCollide = false
+            end
+        end
+    end
+    
+    if features.invisible then
+        for _, part in pairs(character:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.Transparency = 1
+                part.CanCollide = false
+            end
+            if part:IsA("Accessory") and part.Handle then
+                part.Handle.Transparency = 1
             end
         end
     end
@@ -1442,6 +1449,17 @@ LocalPlayer.CharacterAdded:Connect(function()
             for _, part in pairs(character:GetDescendants()) do
                 if part:IsA("BasePart") then
                     part.CanCollide = false
+                end
+            end
+        end
+        if features.invisible then
+            for _, part in pairs(character:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.Transparency = 1
+                    part.CanCollide = false
+                end
+                if part:IsA("Accessory") and part.Handle then
+                    part.Handle.Transparency = 1
                 end
             end
         end
@@ -1591,5 +1609,5 @@ end
 
 print("✅ ABC HUB v15 تم تحميله بنجاح!")
 print("📱 تم دعم الهاتف والكمبيوتر معاً!")
-print("🔧 جميع الميزات: سرعة، قفز، جاذبية، قفز لا نهائي (هاتف فقط)، اختراق جدران، طيران، دوران")
+print("🔧 الميزات: سرعة، قفز، جاذبية، اختفاء، اختراق جدران، طيران، دوران، FOV 120")
 print("📍 " .. #places .. " مكاناً للانتقال الفوري!")
