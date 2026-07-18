@@ -142,7 +142,6 @@ local colorIndex = 1
 -- حلقة التحديث المستمر للنيون
 task.spawn(function()
     while ScreenGui and ToggleButton.Parent do
-        -- تحديث ألوان الحلقات
         colorIndex = colorIndex + 0.02
         local index = math.floor(colorIndex) % #ringColors + 1
         local nextIndex = index % #ringColors + 1
@@ -157,16 +156,13 @@ task.spawn(function()
         
         local finalColor = Color3.new(r, g, b)
         
-        -- تحديث لون النيون
         NeonRing.BackgroundColor3 = finalColor
         NeonRing.BorderColor3 = finalColor
         
-        -- نبض الشفافية
         local breathe = 0.2 + math.sin(tick() * 2.5) * 0.2
         NeonRing.BackgroundTransparency = breathe
         PulseRing.BackgroundTransparency = breathe + 0.2
         
-        -- تغيير حجم الحلقة النابضة
         local pulseSize = 1.5 + math.sin(tick() * 2) * 0.1
         PulseRing.Size = UDim2.new(pulseSize, 0, pulseSize, 0)
         PulseRing.Position = UDim2.new(-(pulseSize-1)/2, 0, -(pulseSize-1)/2, 0)
@@ -176,7 +172,7 @@ task.spawn(function()
 end)
 
 -- ============================================
--- النافذة الرئيسية (تظهر عند الضغط على الزر)
+-- النافذة الرئيسية
 -- ============================================
 
 local MainFrame = Instance.new("Frame")
@@ -195,7 +191,6 @@ local MainCorner = Instance.new("UICorner")
 MainCorner.CornerRadius = UDim.new(0, 12)
 MainCorner.Parent = MainFrame
 
--- الإطار البنفسجي
 local GlowFrame = Instance.new("Frame")
 GlowFrame.Name = "GlowFrame"
 GlowFrame.Size = UDim2.new(1, 8, 1, 8)
@@ -224,7 +219,6 @@ local GlowCorner2 = Instance.new("UICorner")
 GlowCorner2.CornerRadius = UDim.new(0, 20)
 GlowCorner2.Parent = GlowFrame2
 
--- تحريك الإطار البنفسجي
 local glowColors2 = {
     Color3.fromRGB(120, 0, 255),
     Color3.fromRGB(180, 0, 255),
@@ -256,7 +250,7 @@ RunService.Heartbeat:Connect(function()
     GlowFrame2.BackgroundTransparency = breathe - 0.1
 end)
 
--- زر الإغلاق X (داخل النافذة)
+-- زر الإغلاق X
 local CloseX = Instance.new("TextButton")
 CloseX.Name = "CloseX"
 CloseX.Size = UDim2.new(0, 35, 0, 35)
@@ -286,26 +280,19 @@ CloseX.MouseButton1Click:Connect(function()
     toggleUI()
 end)
 
--- ============================================
--- وظيفة إظهار/إخفاء الواجهة
--- ============================================
-
 function toggleUI()
     isOpen = not isOpen
     MainFrame.Visible = isOpen
     
     if isOpen then
-        -- تغيير لون الزر إلى بنفسجي
         ToggleButton.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
         ButtonText.TextColor3 = Color3.fromRGB(255, 255, 255)
-        -- تغيير الحجم قليلاً
         local tween = TweenService:Create(ToggleButton, TweenInfo.new(0.2), {Size = UDim2.new(0, buttonSize * 1.1, 0, buttonSize * 1.1)})
         tween:Play()
         task.wait(0.2)
         local tween2 = TweenService:Create(ToggleButton, TweenInfo.new(0.1), {Size = UDim2.new(0, buttonSize, 0, buttonSize)})
         tween2:Play()
     else
-        -- إعادة اللون إلى الأسود
         ToggleButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
         ButtonText.TextColor3 = Color3.fromRGB(255, 255, 255)
         local tween = TweenService:Create(ToggleButton, TweenInfo.new(0.2), {Size = UDim2.new(0, buttonSize * 0.9, 0, buttonSize * 0.9)})
@@ -316,7 +303,6 @@ function toggleUI()
     end
 end
 
--- ربط زر الدخول/الخروج
 ToggleButton.MouseButton1Click:Connect(function()
     if not dragging then
         toggleUI()
@@ -347,7 +333,6 @@ SidebarFix.BorderSizePixel = 0
 SidebarFix.Parent = Sidebar
 SidebarFix.ZIndex = 15
 
--- شعار 7MO HUB v15
 local LogoText = Instance.new("TextLabel")
 LogoText.Size = UDim2.new(1, 0, 0, 50)
 LogoText.BackgroundTransparency = 1
@@ -366,7 +351,6 @@ task.spawn(function()
     end
 end)
 
--- أزرار القائمة الجانبية
 local function createSidebarButton(text, posIndex, isActive)
     local Btn = Instance.new("TextButton")
     Btn.Size = UDim2.new(1, -20, 0, 40)
@@ -488,7 +472,7 @@ SettingsContainer.ZIndex = 1
 SettingsContainer.Visible = false
 
 -- ============================================
--- حاوية المعلومات
+-- حاوية المعلومات (جديدة)
 -- ============================================
 
 local InfoContainer = Instance.new("Frame")
@@ -643,7 +627,6 @@ local function createNewsCard(icon, title, desc, color, isImportant)
     return card
 end
 
--- إضافة الأخبار
 createNewsCard("✅", "تم إضافة نظام سرقة الفلوس التلقائي V7!",
     "الآن يمكنك تجميع الفلوس من الأرض تلقائياً وبسرعة فائقة! يدعم جميع أنواع الفلوس ويتجاهل الطاولات والمقاعد.",
     Color3.fromRGB(0, 255, 100), true)
@@ -801,7 +784,6 @@ DiscordLink.MouseButton1Click:Connect(function()
     if setclipboard then
         setclipboard("https://discord.gg/w9FDeSx9f")
     end
-    showNotification("✅ تم نسخ رابط الديسكورد!", NewsFrame)
 end)
 
 DiscordLink.MouseEnter:Connect(function()
@@ -813,7 +795,6 @@ end)
 
 newsY = newsY + 85
 
--- قسم الأخطاء الشائعة
 local ErrorSection = Instance.new("Frame")
 ErrorSection.Size = UDim2.new(0.94, 0, 0, 65)
 ErrorSection.Position = UDim2.new(0.03, 0, 0, newsY + 5)
@@ -907,7 +888,6 @@ local InfoFrameCorner = Instance.new("UICorner")
 InfoFrameCorner.CornerRadius = UDim.new(0, 12)
 InfoFrameCorner.Parent = InfoFrame
 
--- إطار متوهج
 local InfoGlow = Instance.new("Frame")
 InfoGlow.Size = UDim2.new(1, 6, 1, 6)
 InfoGlow.Position = UDim2.new(0, -3, 0, -3)
@@ -921,7 +901,6 @@ local InfoGlowCorner = Instance.new("UICorner")
 InfoGlowCorner.CornerRadius = UDim.new(0, 15)
 InfoGlowCorner.Parent = InfoGlow
 
--- عنوان الصفحة
 local InfoTitle = Instance.new("TextLabel")
 InfoTitle.Size = UDim2.new(1, -40, 0, 40)
 InfoTitle.Position = UDim2.new(0, 20, 0, 8)
@@ -934,7 +913,6 @@ InfoTitle.TextXAlignment = Enum.TextXAlignment.Center
 InfoTitle.Parent = InfoFrame
 InfoTitle.ZIndex = 6
 
--- خط فاصل
 local InfoDivider = Instance.new("Frame")
 InfoDivider.Size = UDim2.new(0.6, 0, 0, 2)
 InfoDivider.Position = UDim2.new(0.2, 0, 0, 52)
@@ -944,7 +922,6 @@ InfoDivider.BorderSizePixel = 0
 InfoDivider.Parent = InfoFrame
 InfoDivider.ZIndex = 6
 
--- حاوية البطاقات
 local InfoScroll = Instance.new("ScrollingFrame")
 InfoScroll.Size = UDim2.new(1, -10, 1, -75)
 InfoScroll.Position = UDim2.new(0, 5, 0, 58)
@@ -955,7 +932,6 @@ InfoScroll.ScrollBarThickness = 4
 InfoScroll.Parent = InfoFrame
 InfoScroll.ZIndex = 6
 
--- دالة إنشاء بطاقة معلومات
 local function createInfoCard2(icon, title, value, color)
     local card = Instance.new("Frame")
     card.Size = UDim2.new(0.92, 0, 0, 55)
@@ -969,7 +945,6 @@ local function createInfoCard2(icon, title, value, color)
     cardCorner.CornerRadius = UDim.new(0, 8)
     cardCorner.Parent = card
     
-    -- أيقونة
     local iconLabel = Instance.new("TextLabel")
     iconLabel.Size = UDim2.new(0, 45, 1, 0)
     iconLabel.Position = UDim2.new(0, 8, 0, 0)
@@ -982,7 +957,6 @@ local function createInfoCard2(icon, title, value, color)
     iconLabel.Parent = card
     iconLabel.ZIndex = 8
     
-    -- العنوان
     local titleLabel = Instance.new("TextLabel")
     titleLabel.Size = UDim2.new(1, -60, 0, 20)
     titleLabel.Position = UDim2.new(0, 55, 0, 4)
@@ -995,7 +969,6 @@ local function createInfoCard2(icon, title, value, color)
     titleLabel.Parent = card
     titleLabel.ZIndex = 8
     
-    -- القيمة
     local valueLabel = Instance.new("TextLabel")
     valueLabel.Size = UDim2.new(1, -60, 0, 24)
     valueLabel.Position = UDim2.new(0, 55, 0, 24)
@@ -1012,7 +985,6 @@ local function createInfoCard2(icon, title, value, color)
     return card
 end
 
--- دالة إنشاء بطاقة مطور
 local function createDeveloperCard(icon, title, discordName, role, color, isOwner)
     local card = Instance.new("Frame")
     card.Size = UDim2.new(0.92, 0, 0, 70)
@@ -1022,7 +994,6 @@ local function createDeveloperCard(icon, title, discordName, role, color, isOwne
     card.Parent = InfoScroll
     card.ZIndex = 7
     
-    -- حدود ذهبية للأونر
     if isOwner then
         local border = Instance.new("Frame")
         border.Size = UDim2.new(1, 0, 1, 0)
@@ -1042,7 +1013,6 @@ local function createDeveloperCard(icon, title, discordName, role, color, isOwne
     cardCorner.CornerRadius = UDim.new(0, 8)
     cardCorner.Parent = card
     
-    -- أيقونة
     local iconLabel = Instance.new("TextLabel")
     iconLabel.Size = UDim2.new(0, 45, 1, 0)
     iconLabel.Position = UDim2.new(0, 8, 0, 0)
@@ -1055,7 +1025,6 @@ local function createDeveloperCard(icon, title, discordName, role, color, isOwne
     iconLabel.Parent = card
     iconLabel.ZIndex = 8
     
-    -- دور المطور
     local roleLabel = Instance.new("TextLabel")
     roleLabel.Size = UDim2.new(1, -60, 0, 18)
     roleLabel.Position = UDim2.new(0, 55, 0, 4)
@@ -1068,7 +1037,6 @@ local function createDeveloperCard(icon, title, discordName, role, color, isOwne
     roleLabel.Parent = card
     roleLabel.ZIndex = 8
     
-    -- اسم الديسكورد
     local nameLabel = Instance.new("TextLabel")
     nameLabel.Size = UDim2.new(1, -60, 0, 24)
     nameLabel.Position = UDim2.new(0, 55, 0, 24)
@@ -1081,7 +1049,6 @@ local function createDeveloperCard(icon, title, discordName, role, color, isOwne
     nameLabel.Parent = card
     nameLabel.ZIndex = 8
     
-    -- زر نسخ الديسكورد
     local copyBtn = Instance.new("TextButton")
     copyBtn.Size = UDim2.new(0, 30, 0, 30)
     copyBtn.Position = UDim2.new(1, -38, 0.5, -15)
@@ -1114,15 +1081,12 @@ local function createDeveloperCard(icon, title, discordName, role, color, isOwne
     return card
 end
 
--- إضافة البطاقات
 local infoY = 5
 
--- السكربت
 local card1 = createInfoCard2("📦", "إصدار السكربت", "7MO HUB v15 - النسخة النهائية", Color3.fromRGB(180, 0, 255))
 card1.Position = UDim2.new(0.04, 0, 0, infoY)
 infoY = infoY + 62
 
--- مطور السكربت (hamza.abc0)
 local cardDev = createDeveloperCard(
     "👨‍💻", 
     "مطور السكربت", 
@@ -1134,7 +1098,6 @@ local cardDev = createDeveloperCard(
 cardDev.Position = UDim2.new(0.04, 0, 0, infoY)
 infoY = infoY + 77
 
--- أونر الديسكورد (qóyt.)
 local cardOwner = createDeveloperCard(
     "👑", 
     "أونر الديسكورد", 
@@ -1146,7 +1109,6 @@ local cardOwner = createDeveloperCard(
 cardOwner.Position = UDim2.new(0.04, 0, 0, infoY)
 infoY = infoY + 77
 
--- صورة الديسكورد (لوجو السيرفر)
 local DiscordLogoFrame = Instance.new("Frame")
 DiscordLogoFrame.Size = UDim2.new(0.92, 0, 0, 80)
 DiscordLogoFrame.Position = UDim2.new(0.04, 0, 0, infoY)
@@ -1159,7 +1121,6 @@ local DiscordLogoCorner = Instance.new("UICorner")
 DiscordLogoCorner.CornerRadius = UDim.new(0, 8)
 DiscordLogoCorner.Parent = DiscordLogoFrame
 
--- إطار متوهج للديسكورد
 local DiscordGlow3 = Instance.new("Frame")
 DiscordGlow3.Size = UDim2.new(1, 6, 1, 6)
 DiscordGlow3.Position = UDim2.new(0, -3, 0, -3)
@@ -1173,7 +1134,6 @@ local DiscordGlowCorner3 = Instance.new("UICorner")
 DiscordGlowCorner3.CornerRadius = UDim.new(0, 10)
 DiscordGlowCorner3.Parent = DiscordGlow3
 
--- أيقونة الديسكورد
 local DiscordIcon2 = Instance.new("TextLabel")
 DiscordIcon2.Size = UDim2.new(0, 60, 1, 0)
 DiscordIcon2.Position = UDim2.new(0, 10, 0, 0)
@@ -1186,7 +1146,6 @@ DiscordIcon2.TextXAlignment = Enum.TextXAlignment.Center
 DiscordIcon2.Parent = DiscordLogoFrame
 DiscordIcon2.ZIndex = 8
 
--- نص الديسكورد
 local DiscordText = Instance.new("TextLabel")
 DiscordText.Size = UDim2.new(1, -80, 0, 25)
 DiscordText.Position = UDim2.new(0, 75, 0, 12)
@@ -1199,7 +1158,6 @@ DiscordText.TextXAlignment = Enum.TextXAlignment.Left
 DiscordText.Parent = DiscordLogoFrame
 DiscordText.ZIndex = 8
 
--- رابط الديسكورد
 local DiscordLinkText = Instance.new("TextLabel")
 DiscordLinkText.Size = UDim2.new(1, -80, 0, 20)
 DiscordLinkText.Position = UDim2.new(0, 75, 0, 40)
@@ -1212,7 +1170,6 @@ DiscordLinkText.TextXAlignment = Enum.TextXAlignment.Left
 DiscordLinkText.Parent = DiscordLogoFrame
 DiscordLinkText.ZIndex = 8
 
--- زر نسخ الرابط
 local CopyLinkBtn = Instance.new("TextButton")
 CopyLinkBtn.Size = UDim2.new(0, 50, 0, 30)
 CopyLinkBtn.Position = UDim2.new(1, -60, 0.5, -15)
@@ -1244,29 +1201,24 @@ end)
 
 infoY = infoY + 87
 
--- عدد الميزات
 local card4 = createInfoCard2("⚡", "عدد الميزات", "8 ميزات (سرعة - قفز - جاذبية - اختفاء - اختراق - طيران - دوران - FOV)", Color3.fromRGB(255, 200, 0))
 card4.Position = UDim2.new(0.04, 0, 0, infoY)
 infoY = infoY + 62
 
--- عدد أماكن الانتقال
 local card5 = createInfoCard2("📍", "أماكن الانتقال الفوري", "22 مكان", Color3.fromRGB(0, 255, 150))
 card5.Position = UDim2.new(0.04, 0, 0, infoY)
 infoY = infoY + 62
 
--- حالة السكربت
 local card6 = createInfoCard2("✅", "حالة السكربت", "يعمل بكفاءة 100% 🟢", Color3.fromRGB(0, 255, 100))
 card6.Position = UDim2.new(0.04, 0, 0, infoY)
 infoY = infoY + 62
 
--- تاريخ الإصدار
 local card7 = createInfoCard2("📅", "آخر تحديث", "18 يوليو 2026", Color3.fromRGB(255, 150, 50))
 card7.Position = UDim2.new(0.04, 0, 0, infoY)
 infoY = infoY + 62
 
 InfoScroll.CanvasSize = UDim2.new(0, 0, 0, infoY + 30)
 
--- دالة إشعارات صفحة المعلومات
 function ShowInfoNotification(text)
     local notif = Instance.new("TextLabel")
     notif.Size = UDim2.new(0, 280, 0, 35)
@@ -1288,7 +1240,6 @@ function ShowInfoNotification(text)
     notif:Destroy()
 end
 
--- دالة عرض صفحة المعلومات
 local function ShowInfo()
     HomeContainer.Visible = false
     WelcomeContainer.Visible = false
@@ -1794,7 +1745,7 @@ TeleportFooter.Parent = TeleportFrame
 TeleportFooter.ZIndex = 6
 
 -- ============================================
--- محتوى صفحة الفلوس (Money) - مع سكربت التجميع الفوري
+-- محتوى صفحة الفلوس (Money)
 -- ============================================
 
 local MoneyFrame = Instance.new("Frame")
@@ -1809,7 +1760,6 @@ local MoneyFrameCorner = Instance.new("UICorner")
 MoneyFrameCorner.CornerRadius = UDim.new(0, 12)
 MoneyFrameCorner.Parent = MoneyFrame
 
--- عنوان الصفحة
 local MoneyTitle = Instance.new("TextLabel")
 MoneyTitle.Size = UDim2.new(1, 0, 0, 35)
 MoneyTitle.Position = UDim2.new(0, 0, 0, 5)
@@ -1821,11 +1771,6 @@ MoneyTitle.Font = Enum.Font.GothamBold
 MoneyTitle.Parent = MoneyFrame
 MoneyTitle.ZIndex = 6
 
--- ============================================
--- سكربت تجميع الفلوس الفوري V8 (محسن)
--- ============================================
-
--- زر التشغيل/الإيقاف
 local ToggleButtonMoney = Instance.new("TextButton")
 ToggleButtonMoney.Size = UDim2.new(0.8, 0, 0, 50)
 ToggleButtonMoney.Position = UDim2.new(0.1, 0, 0.2, 0)
@@ -1841,7 +1786,6 @@ local ToggleCornerMoney = Instance.new("UICorner")
 ToggleCornerMoney.CornerRadius = UDim.new(0, 10)
 ToggleCornerMoney.Parent = ToggleButtonMoney
 
--- إحصائيات الفلوس المجمعة
 local StatsFrame = Instance.new("Frame")
 StatsFrame.Size = UDim2.new(0.9, 0, 0, 60)
 StatsFrame.Position = UDim2.new(0.05, 0, 0.5, 0)
@@ -1854,7 +1798,6 @@ local StatsCorner = Instance.new("UICorner")
 StatsCorner.CornerRadius = UDim.new(0, 8)
 StatsCorner.Parent = StatsFrame
 
--- عدد الرزم المجمعة
 local CountLabel = Instance.new("TextLabel")
 CountLabel.Size = UDim2.new(0.5, 0, 1, 0)
 CountLabel.Position = UDim2.new(0, 0, 0, 0)
@@ -1867,7 +1810,6 @@ CountLabel.TextXAlignment = Enum.TextXAlignment.Center
 CountLabel.Parent = StatsFrame
 CountLabel.ZIndex = 8
 
--- حالة التشغيل
 local StatusLabel = Instance.new("TextLabel")
 StatusLabel.Size = UDim2.new(0.5, 0, 1, 0)
 StatusLabel.Position = UDim2.new(0.5, 0, 0, 0)
@@ -1880,7 +1822,6 @@ StatusLabel.TextXAlignment = Enum.TextXAlignment.Center
 StatusLabel.Parent = StatsFrame
 StatusLabel.ZIndex = 8
 
--- إشعار آخر عملية جمع
 local LastCollectLabel = Instance.new("TextLabel")
 LastCollectLabel.Size = UDim2.new(1, 0, 0, 20)
 LastCollectLabel.Position = UDim2.new(0, 0, 0.8, 0)
@@ -1893,13 +1834,11 @@ LastCollectLabel.TextXAlignment = Enum.TextXAlignment.Center
 LastCollectLabel.Parent = MoneyFrame
 LastCollectLabel.ZIndex = 8
 
--- متغيرات التشغيل
 _G.CashStealer = false
 local eventConnection = nil
 local collectedCount = 0
 local isProcessing = false
 
--- دالة عرض الإشعارات داخل الصفحة
 local function ShowMoneyNotification(text, isSuccess)
     local notif = Instance.new("TextLabel")
     notif.Size = UDim2.new(0, 250, 0, 35)
@@ -1921,7 +1860,6 @@ local function ShowMoneyNotification(text, isSuccess)
     notif:Destroy()
 end
 
--- دالة التحقق السريع والالتقاط الخاطف (نسخة محسنة V8)
 local function processItem(item)
     if not _G.CashStealer or isProcessing then return end
     isProcessing = true
@@ -2000,7 +1938,6 @@ local function processItem(item)
     isProcessing = false
 end
 
--- تشغيل نظام الرصد
 local function startStealing()
     for _, item in pairs(workspace:GetDescendants()) do
         if item.Name == "CashDrop" then
@@ -2015,7 +1952,6 @@ local function startStealing()
     end)
 end
 
--- زر التشغيل/الإيقاف
 ToggleButtonMoney.MouseButton1Click:Connect(function()
     _G.CashStealer = not _G.CashStealer
     if _G.CashStealer then
@@ -2042,7 +1978,6 @@ ToggleButtonMoney.MouseButton1Click:Connect(function()
     end
 end)
 
--- زر إعادة تعيين الإحصائيات
 local ResetBtn = Instance.new("TextButton")
 ResetBtn.Size = UDim2.new(0.3, 0, 0, 30)
 ResetBtn.Position = UDim2.new(0.35, 0, 0.72, 0)
@@ -2081,7 +2016,6 @@ local FishingFrameCorner = Instance.new("UICorner")
 FishingFrameCorner.CornerRadius = UDim.new(0, 12)
 FishingFrameCorner.Parent = FishingFrame
 
--- إطار متوهج للصيد
 local FishingGlow = Instance.new("Frame")
 FishingGlow.Size = UDim2.new(1, 6, 1, 6)
 FishingGlow.Position = UDim2.new(0, -3, 0, -3)
@@ -2095,7 +2029,6 @@ local FishingGlowCorner = Instance.new("UICorner")
 FishingGlowCorner.CornerRadius = UDim.new(0, 15)
 FishingGlowCorner.Parent = FishingGlow
 
--- عنوان الصفحة
 local FishingTitle = Instance.new("TextLabel")
 FishingTitle.Size = UDim2.new(1, 0, 0, 40)
 FishingTitle.Position = UDim2.new(0, 0, 0, 5)
@@ -2107,7 +2040,6 @@ FishingTitle.Font = Enum.Font.GothamBold
 FishingTitle.Parent = FishingFrame
 FishingTitle.ZIndex = 6
 
--- زر تشغيل الصيد
 local FishingToggleButton = Instance.new("TextButton")
 FishingToggleButton.Size = UDim2.new(0.7, 0, 0, 55)
 FishingToggleButton.Position = UDim2.new(0.15, 0, 0.2, 0)
@@ -2123,7 +2055,6 @@ local FishingToggleCorner = Instance.new("UICorner")
 FishingToggleCorner.CornerRadius = UDim.new(0, 10)
 FishingToggleCorner.Parent = FishingToggleButton
 
--- حالة الصيد
 local FishingStatus = Instance.new("TextLabel")
 FishingStatus.Size = UDim2.new(1, -20, 0, 30)
 FishingStatus.Position = UDim2.new(0, 10, 0.45, 0)
@@ -2136,7 +2067,6 @@ FishingStatus.TextXAlignment = Enum.TextXAlignment.Center
 FishingStatus.Parent = FishingFrame
 FishingStatus.ZIndex = 7
 
--- مربع معلومات
 local InfoBox = Instance.new("Frame")
 InfoBox.Size = UDim2.new(0.85, 0, 0, 80)
 InfoBox.Position = UDim2.new(0.075, 0, 0.55, 0)
@@ -2162,11 +2092,9 @@ InfoText.TextYAlignment = Enum.TextYAlignment.Center
 InfoText.Parent = InfoBox
 InfoText.ZIndex = 8
 
--- متغيرات الصيد
 local fishingActive = false
 local fishingConnection = nil
 
--- دالة تشغيل الصيد
 local function startFishing()
     if fishingActive then
         fishingActive = false
@@ -2418,10 +2346,6 @@ SettingsScroll.ScrollBarThickness = 4
 SettingsScroll.Parent = SettingsFrame
 SettingsScroll.ZIndex = 6
 
--- ============================================
--- متغيرات الإعدادات والميزات
--- ============================================
-
 local playerSettings = {
     speed = nil,
     jumpPower = nil,
@@ -2441,11 +2365,6 @@ local rotateConnection = nil
 local currentRotation = 0
 local originalFOV = Camera.FieldOfView
 
--- ============================================
--- دوال الميزات
--- ============================================
-
--- تطبيق الإعدادات الأساسية
 function ApplySettings()
     local character = LocalPlayer.Character
     if character then
@@ -2464,7 +2383,6 @@ function ApplySettings()
     end
 end
 
--- دالة الاختفاء (Invisible)
 local function toggleInvisible()
     features.invisible = not features.invisible
     local character = LocalPlayer.Character
@@ -2492,7 +2410,6 @@ local function toggleInvisible()
     return features.invisible
 end
 
--- دالة اختراق الجدران
 local function toggleNoclip()
     features.noclip = not features.noclip
     local character = LocalPlayer.Character
@@ -2506,7 +2423,6 @@ local function toggleNoclip()
     return features.noclip
 end
 
--- دالة الطيران
 local function toggleFly()
     local character = LocalPlayer.Character
     if not character then return end
@@ -2590,7 +2506,6 @@ local function toggleFly()
     return features.fly
 end
 
--- دالة الدوران التلقائي
 local function toggleAutoRotate()
     features.autoRotate = not features.autoRotate
     
@@ -2620,7 +2535,6 @@ local function toggleAutoRotate()
     return features.autoRotate
 end
 
--- دالة FOV 120
 local function toggleFOV120()
     features.fov120 = not features.fov120
     
@@ -2634,11 +2548,6 @@ local function toggleFOV120()
     return features.fov120
 end
 
--- ============================================
--- دوال إنشاء الأزرار
--- ============================================
-
--- دالة إنشاء زر مع شريط تمرير
 local function createSettingSlider(yOffset, labelText, minVal, maxVal, defaultValue, settingName)
     local container = Instance.new("Frame")
     container.Size = UDim2.new(0.92, 0, 0, 65)
@@ -2747,7 +2656,6 @@ local function createSettingSlider(yOffset, labelText, minVal, maxVal, defaultVa
     return container
 end
 
--- دالة إنشاء زر تبديل (Toggle)
 local function createToggleButton(yOffset, labelText, icon, settingName, color)
     local container = Instance.new("Frame")
     container.Size = UDim2.new(0.92, 0, 0, 45)
@@ -2788,8 +2696,6 @@ local function createToggleButton(yOffset, labelText, icon, settingName, color)
     toggleCorner.CornerRadius = UDim.new(0, 4)
     toggleCorner.Parent = toggleBtn
     
-    local isActive = false
-    
     toggleBtn.MouseButton1Click:Connect(function()
         local newState = false
         
@@ -2819,10 +2725,6 @@ local function createToggleButton(yOffset, labelText, icon, settingName, color)
     return container
 end
 
--- ============================================
--- إنشاء الأزرار في صفحة الإعدادات
--- ============================================
-
 local yOffset = 5
 
 createSettingSlider(yOffset, "🏃 سرعة اللاعب", 10, 100, 16, "speed")
@@ -2850,10 +2752,6 @@ createToggleButton(yOffset, "FOV 120", "👁️", "fov120")
 yOffset = yOffset + 50
 
 SettingsScroll.CanvasSize = UDim2.new(0, 0, 0, yOffset + 20)
-
--- ============================================
--- مراقبة دائمة للميزات
--- ============================================
 
 RunService.Heartbeat:Connect(function()
     local character = LocalPlayer.Character
