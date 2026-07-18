@@ -1,11 +1,11 @@
--- ABC HUB v15 - النسخة النهائية (مع إصلاح القفز اللانهائي)
+-- ABC HUB v15 - نسخة الهاتف (مع إصلاح القفز اللانهائي للهاتف والكمبيوتر)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
 local RunService = game:GetService("RunService")
-local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local Camera = workspace.CurrentCamera
+local ContextActionService = game:GetService("ContextActionService")
 
 -- منع تكرار الواجهة
 if game:GetService("CoreGui"):FindFirstChild("ABCHUBv15") then
@@ -264,7 +264,7 @@ SettingsContainer.ZIndex = 1
 SettingsContainer.Visible = false
 
 -- ============================================
--- المحتوى حق الصفحة الرئيسية (Home) - مختصر
+-- المحتوى حق الصفحة الرئيسية (Home)
 -- ============================================
 
 local avatarFrame = Instance.new("Frame")
@@ -520,7 +520,7 @@ FooterText.Parent = HomeContainer
 FooterText.ZIndex = 2
 
 -- ============================================
--- محتوى صفحة الترحيب (Welcome) - مختصر
+-- محتوى صفحة الترحيب (Welcome)
 -- ============================================
 
 local WelcomeFrame = Instance.new("Frame")
@@ -998,7 +998,7 @@ function ApplySettings()
     end
 end
 
--- دالة القفز اللانهائي (تم الإصلاح)
+-- دالة القفز اللانهائي (تم الإصلاح للهاتف والكمبيوتر)
 local function toggleInfiniteJump()
     features.infiniteJump = not features.infiniteJump
     return features.infiniteJump
@@ -1370,37 +1370,72 @@ yOffset = yOffset + 50
 SettingsScroll.CanvasSize = UDim2.new(0, 0, 0, yOffset + 20)
 
 -- ============================================
--- إصلاح القفز اللانهائي - الطريقة الصحيحة
+-- 🚀 إصلاح القفز اللانهائي للهاتف والكمبيوتر (100%)
 -- ============================================
 
--- الطريقة الأولى: استخدام InputBegan (الأفضل)
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if gameProcessed then return end
-    if input.KeyCode == Enum.KeyCode.Space and features.infiniteJump then
+-- الطريقة الأولى: استخدام ContextActionService للهاتف
+local function JumpAction(actionName, inputState, inputObject)
+    if actionName == "JumpAction" and features.infiniteJump then
         local character = LocalPlayer.Character
         if character then
             local humanoid = character:FindFirstChild("Humanoid")
             if humanoid and humanoid.Health > 0 then
-                -- نمنع القفز الطبيعي ونستخدم قفزتنا
-                humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+                local state = humanoid:GetState()
+                if state == Enum.HumanoidStateType.Landed or 
+                   state == Enum.HumanoidStateType.Running or
+                   state == Enum.HumanoidStateType.Walking or
+                   state == Enum.HumanoidStateType.Freefall or
+                   state == Enum.HumanoidStateType.GettingUp then
+                    humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+                end
+            end
+        end
+    end
+end
+
+-- تسجيل زر القفز للهاتف
+ContextActionService:BindAction("JumpAction", JumpAction, false, Enum.KeyCode.Space, Enum.KeyCode.ButtonR1)
+
+-- الطريقة الثانية: مراقبة مستمرة للقفز (للكمبيوتر والهاتف)
+task.spawn(function()
+    while ScreenGui do
+        task.wait(0.05) -- سرعة عالية للاستجابة السريعة
+        if features.infiniteJump and LocalPlayer.Character then
+            local humanoid = LocalPlayer.Character:FindFirstChild("Humanoid")
+            if humanoid and humanoid.Health > 0 then
+                -- للكمبيوتر: كشف زر Space
+                if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+                    local state = humanoid:GetState()
+                    if state == Enum.HumanoidStateType.Landed or 
+                       state == Enum.HumanoidStateType.Running or
+                       state == Enum.HumanoidStateType.Walking or
+                       state == Enum.HumanoidStateType.Freefall or
+                       state == Enum.HumanoidStateType.GettingUp then
+                        humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+                    end
+                end
             end
         end
     end
 end)
 
--- الطريقة الثانية: مراقبة مستمرة للتأكد
-task.spawn(function()
-    while ScreenGui do
-        task.wait(0.1)
-        if features.infiniteJump and LocalPlayer.Character then
-            local humanoid = LocalPlayer.Character:FindFirstChild("Humanoid")
-            if humanoid and humanoid.Health > 0 then
-                -- إذا كان اللاعب على الأرض أو يمشي، نمكنه من القفز
-                local state = humanoid:GetState()
-                if state == Enum.HumanoidStateType.Landed or 
-                   state == Enum.HumanoidStateType.Running or
-                   state == Enum.HumanoidStateType.Walking then
-                    -- نسمح للقفز الطبيعي بالعمل
+-- الطريقة الثالثة: استخدام InputBegan (احتياطي)
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if features.infiniteJump then
+        if input.KeyCode == Enum.KeyCode.Space or input.KeyCode == Enum.KeyCode.ButtonR1 then
+            local character = LocalPlayer.Character
+            if character then
+                local humanoid = character:FindFirstChild("Humanoid")
+                if humanoid and humanoid.Health > 0 then
+                    local state = humanoid:GetState()
+                    if state == Enum.HumanoidStateType.Landed or 
+                       state == Enum.HumanoidStateType.Running or
+                       state == Enum.HumanoidStateType.Walking or
+                       state == Enum.HumanoidStateType.Freefall or
+                       state == Enum.HumanoidStateType.GettingUp then
+                        humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+                    end
                 end
             end
         end
@@ -1580,5 +1615,6 @@ for _, child in pairs(Sidebar:GetChildren()) do
 end
 
 print("✅ ABC HUB v15 تم تحميله بنجاح!")
+print("📱 تم دعم الهاتف والكمبيوتر معاً!")
 print("🔧 جميع الميزات: سرعة، قفز، جاذبية، قفز لا نهائي، اختراق جدران، طيران، دوران")
 print("📍 " .. #places .. " مكاناً للانتقال الفوري!")
