@@ -1370,56 +1370,52 @@ yOffset = yOffset + 50
 SettingsScroll.CanvasSize = UDim2.new(0, 0, 0, yOffset + 20)
 
 -- ============================================
--- 🔥 القفز اللانهائي (فقط للهاتف - يعمل في الهواء)
+-- 🔥 القفز اللانهائي (فقط عند الضغط - مو تلقائي)
 -- ============================================
 
 -- إلغاء أي ربط سابق
 ContextActionService:UnbindAction("JumpAction")
 
--- دالة القفز - فقط للهاتف
+-- دالة القفز - فقط عند الضغط (مو تلقائي)
 local function handleJump(input, gameProcessed)
-    if gameProcessed then return end
-    if not features.infiniteJump then return end
+    if gameProcessed then return end  -- منع التداخل
+    if not features.infiniteJump then return end  -- إذا الميزة مفعلة
     
-    -- ❌ نمنع القفز على الكمبيوتر (كيبورد)
-    if input.KeyCode == Enum.KeyCode.Space then
-        return  -- ما يسوي شيء على الكمبيوتر
-    end
+    local character = LocalPlayer.Character
+    if not character then return end
     
-    -- ✅ فقط للهاتف (لمس + أزرار)
-    if input.UserInputType == Enum.UserInputType.Touch or
+    local humanoid = character:FindFirstChild("Humanoid")
+    if not humanoid or humanoid.Health <= 0 then return end
+    
+    -- ✅ فقط عند الضغط على زر القفز (مو تلقائي)
+    if input.KeyCode == Enum.KeyCode.Space or 
+       input.UserInputType == Enum.UserInputType.Touch or
        input.KeyCode == Enum.KeyCode.ButtonR1 or
        input.KeyCode == Enum.KeyCode.ButtonA then
         
-        local character = LocalPlayer.Character
-        if not character then return end
-        
-        local humanoid = character:FindFirstChild("Humanoid")
-        if not humanoid or humanoid.Health <= 0 then return end
-        
-        -- ✅ يسمح بالقفز في أي وقت (حتى في الجو)
+        -- ✅ يقفز في الهواء (فوق بعض) - فقط لما اضغط
         humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
     end
 end
 
--- ربط الضغط على زر القفز (للهاتف فقط)
+-- ربط الضغط (مرة واحدة لكل ضغطة)
 UserInputService.InputBegan:Connect(handleJump)
 
--- دعم إضافي لأزرار الهاتف عبر ContextActionService
+-- دعم إضافي للهاتف
 ContextActionService:BindAction("JumpAction", function(actionName, inputState, inputObject)
     if inputState == Enum.UserInputState.Begin and features.infiniteJump then
         local character = LocalPlayer.Character
         if character then
             local humanoid = character:FindFirstChild("Humanoid")
             if humanoid and humanoid.Health > 0 then
-                -- ✅ يقفز في أي مكان (فقط للهاتف)
+                -- ✅ يقفز مرة واحدة لكل ضغطة
                 humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
             end
         end
     end
-end, false, Enum.KeyCode.ButtonR1, Enum.KeyCode.ButtonA)  -- ✅ بدون Space
+end, false, Enum.KeyCode.Space, Enum.KeyCode.ButtonR1, Enum.KeyCode.ButtonA)
 
-print("📱 تم تفعيل القفز اللانهائي للهاتف فقط!")
+print("✅ القفز اللانهائي يعمل فقط عند الضغط (مو تلقائي)!")
 
 -- ============================================
 -- مراقبة دائمة للميزات
