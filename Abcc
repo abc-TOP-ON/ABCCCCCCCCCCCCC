@@ -1,1 +1,132 @@
+-- واجهة تجميع الفلوس الفورية فائقة السرعة والخالية من اللاق تماماً V7
+local ScreenGui = Instance.new("ScreenGui")
+local MainFrame = Instance.new("Frame")
+local ToggleButton = Instance.new("TextButton")
+local Title = Instance.new("TextLabel")
 
+ScreenGui.Parent = game.CoreGui
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+MainFrame.Name = "ArabsCashUltimateV7"
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+MainFrame.Position = UDim2.new(0.1, 0, 0.2, 0)
+MainFrame.Size = UDim2.new(0, 220, 0, 130)
+MainFrame.Active = true
+MainFrame.Draggable = true
+
+Title.Parent = MainFrame
+Title.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+Title.Size = UDim2.new(1, 0, 0, 30)
+Title.Font = Enum.Font.SourceSansBold
+Title.Text = "Arabs Ultimate V7 (No-Lag)"
+Title.TextColor3 = Color3.fromRGB(0, 255, 100)
+Title.TextSize = 13
+
+ToggleButton.Parent = MainFrame
+ToggleButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+ToggleButton.Position = UDim2.new(0.1, 0, 0.4, 0)
+ToggleButton.Size = UDim2.new(0.8, 0, 0, 45)
+ToggleButton.Font = Enum.Font.SourceSansBold
+ToggleButton.Text = "OFF"
+ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleButton.TextSize = 22
+
+_G.CashStealer = false
+local eventConnection -- اتصال مراقبة الملفات الجديدة
+
+-- دالة التحقق السريع والالتقاط الخاطف مع فلترة الموانع والطاولات
+local function processItem(item)
+    if not _G.CashStealer then return end
+    
+    -- رصد مجسم الفلوس الحقيقي
+    if item.Name == "CashDrop" and (item:IsA("Part") or item:IsA("MeshPart")) then
+        local fullName = item:GetFullName():lower()
+        
+        -- الفلاتر الصارمة لمنع الانتقال العشوائي للطاولات والمقاعد والحواجز
+        if not fullName:find("table") and 
+           not fullName:find("board") and 
+           not fullName:find("game") and 
+           not fullName:find("ludo") and 
+           not fullName:find("جلسة") and 
+           not fullName:find("طاولة") and
+           not fullName:find("seat") and         
+           not fullName:find("chair") and        
+           not fullName:find("bench") and        
+           not fullName:find("lockedframe") and  
+           not fullName:find("barrier") then
+            
+            -- فحص للتأكد من وجود اللوحة الرقمية للفلوس ($)
+            task.wait(0.02) -- وقت انتظار ضئيل جداً لضمان تحميل الخصائص بدون لاق
+            if item:FindFirstChildOfClass("BillboardGui") then
+                local player = game.Players.LocalPlayer
+                local character = player.Character or player.CharacterAdded:Wait()
+                local rootPart = character:FindFirstChild("HumanoidRootPart")
+                
+                if rootPart then
+                    -- 1. حفظ موقعك الأصلي بدقة
+                    local originalPosition = rootPart.CFrame
+                    
+                    -- 2. الانتقال الفوري الخاطف فوق الفلوس
+                    rootPart.CFrame = item.CFrame
+                    
+                    local remote = game:GetService("ReplicatedStorage"):FindFirstChild("CashDrop", true)
+                    
+                    -- 3. حلقة الضغط السريع حتى تختفي الرزمة تماماً وتُسجل في رصيدك
+                    while item and item.Parent and _G.CashStealer do
+                        if remote and remote:IsA("RemoteEvent") then
+                            remote:FireServer(item)
+                        end
+                        
+                        local prompt = item:FindFirstChildOfClass("ProximityPrompt")
+                        if prompt then fireproximityprompt(prompt) end
+                        
+                        local clicker = item:FindFirstChildOfClass("ClickDetector")
+                        if clicker then fireclickdetector(clicker) end
+                        
+                        task.wait(0.01) -- سرعة تفعيل قصوى
+                    end
+                    
+                    -- 4. العودة التلقائية الفورية لمكانك الأصلي الآمن
+                    if _G.CashStealer then
+                        rootPart.CFrame = originalPosition
+                    end
+                end
+            end
+        end
+    end
+end
+
+-- تشغيل نظام الرصد العميق والخفيف جداً على المعالج
+local function startStealing()
+    -- تجميع الفلوس المتواجدة بالفعل على الأرض لحظة التشغيل
+    for _, item in pairs(workspace:GetDescendants()) do
+        if item.Name == "CashDrop" then
+            spawn(function() pcall(processItem, item) end)
+        end
+    end
+    
+    -- مراقبة شجرة الملفات العميقة (DescendantAdded): أي رزمة تنزل في أي مجلد يتم صيدها فوراً وبدون أي لاق
+    eventConnection = workspace.DescendantAdded:Connect(function(item)
+        -- ميزة تصفية الأداء: السكربت يتجاهل أي ملف ليس له علاقة بالفلوس فوراً لتوفير المعالج %100
+        if item.Name == "CashDrop" then
+            pcall(processItem, item)
+        end
+    end)
+end
+
+ToggleButton.MouseButton1Click:Connect(function()
+    _G.CashStealer = not _G.CashStealer
+    if _G.CashStealer then
+        ToggleButton.Text = "ON"
+        ToggleButton.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
+        startStealing()
+    else
+        ToggleButton.Text = "OFF"
+        ToggleButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+        if eventConnection then
+            eventConnection:Disconnect() -- إنهاء الاتصال لإراحة جهازك تماماً عند الإطفاء
+            eventConnection = nil
+        end
+    end
+end)
