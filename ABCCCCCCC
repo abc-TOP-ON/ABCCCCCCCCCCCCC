@@ -1,4 +1,4 @@
--- ABC HUB v15 - نسخة الهاتف (مع سكربت تجميع الفلوس + إحصائيات)
+-- ABC HUB v15 - نسخة الهاتف (بدون تجميع فلوس)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -754,13 +754,13 @@ TeleportFooter.Parent = TeleportFrame
 TeleportFooter.ZIndex = 6
 
 -- ============================================
--- محتوى صفحة الفلوس (Money) - مع إحصائيات
+-- محتوى صفحة الفلوس (Money) - بدون سكربت تجميع
 -- ============================================
 
 local MoneyFrame = Instance.new("Frame")
 MoneyFrame.Size = UDim2.new(0.9, 0, 0.85, 0)
 MoneyFrame.Position = UDim2.new(0.05, 0, 0.05, 0)
-MoneyFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+MoneyFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 35)
 MoneyFrame.BorderSizePixel = 0
 MoneyFrame.Parent = MoneyContainer
 MoneyFrame.ZIndex = 5
@@ -771,334 +771,26 @@ MoneyFrameCorner.Parent = MoneyFrame
 
 -- عنوان الصفحة
 local MoneyTitle = Instance.new("TextLabel")
-MoneyTitle.Size = UDim2.new(1, 0, 0, 35)
-MoneyTitle.Position = UDim2.new(0, 0, 0, 5)
-MoneyTitle.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-MoneyTitle.Text = "💰 فلوس 💰"
-MoneyTitle.TextColor3 = Color3.fromRGB(255, 215, 0)
-MoneyTitle.TextSize = 18
+MoneyTitle.Size = UDim2.new(1, 0, 0, 50)
+MoneyTitle.Position = UDim2.new(0, 0, 0.3, 0)
+MoneyTitle.BackgroundTransparency = 1
+MoneyTitle.Text = "💰 قريباً 💰"
+MoneyTitle.TextColor3 = Color3.fromRGB(180, 0, 255)
+MoneyTitle.TextSize = 30
 MoneyTitle.Font = Enum.Font.GothamBold
 MoneyTitle.Parent = MoneyFrame
 MoneyTitle.ZIndex = 6
 
--- ============================================
--- واجهة الإحصائيات
--- ============================================
-
-local StatsFrame = Instance.new("Frame")
-StatsFrame.Size = UDim2.new(0.9, 0, 0, 80)
-StatsFrame.Position = UDim2.new(0.05, 0, 0.1, 0)
-StatsFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
-StatsFrame.BorderSizePixel = 0
-StatsFrame.Parent = MoneyFrame
-StatsFrame.ZIndex = 7
-
-local StatsCorner = Instance.new("UICorner")
-StatsCorner.CornerRadius = UDim.new(0, 8)
-StatsCorner.Parent = StatsFrame
-
--- إطار إحصائيات الفلوس
-local MoneyStat = Instance.new("Frame")
-MoneyStat.Size = UDim2.new(0.48, -5, 0.9, 0)
-MoneyStat.Position = UDim2.new(0.02, 0, 0.05, 0)
-MoneyStat.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
-MoneyStat.BorderSizePixel = 0
-MoneyStat.Parent = StatsFrame
-MoneyStat.ZIndex = 8
-
-local MoneyStatCorner = Instance.new("UICorner")
-MoneyStatCorner.CornerRadius = UDim.new(0, 6)
-MoneyStatCorner.Parent = MoneyStat
-
-local MoneyStatIcon = Instance.new("TextLabel")
-MoneyStatIcon.Size = UDim2.new(0, 30, 1, 0)
-MoneyStatIcon.Position = UDim2.new(0, 5, 0, 0)
-MoneyStatIcon.BackgroundTransparency = 1
-MoneyStatIcon.Text = "💰"
-MoneyStatIcon.TextColor3 = Color3.fromRGB(255, 215, 0)
-MoneyStatIcon.TextSize = 20
-MoneyStatIcon.Font = Enum.Font.GothamBold
-MoneyStatIcon.TextXAlignment = Enum.TextXAlignment.Center
-MoneyStatIcon.Parent = MoneyStat
-MoneyStatIcon.ZIndex = 9
-
-local MoneyStatLabel = Instance.new("TextLabel")
-MoneyStatLabel.Size = UDim2.new(1, -40, 0, 16)
-MoneyStatLabel.Position = UDim2.new(0, 40, 0, 4)
-MoneyStatLabel.BackgroundTransparency = 1
-MoneyStatLabel.Text = "الفلوس المجمعة"
-MoneyStatLabel.TextColor3 = Color3.fromRGB(180, 180, 200)
-MoneyStatLabel.TextSize = 10
-MoneyStatLabel.Font = Enum.Font.GothamMedium
-MoneyStatLabel.TextXAlignment = Enum.TextXAlignment.Left
-MoneyStatLabel.Parent = MoneyStat
-MoneyStatLabel.ZIndex = 9
-
-local MoneyStatValue = Instance.new("TextLabel")
-MoneyStatValue.Size = UDim2.new(1, -40, 0, 28)
-MoneyStatValue.Position = UDim2.new(0, 40, 0, 20)
-MoneyStatValue.BackgroundTransparency = 1
-MoneyStatValue.Text = "0 $"
-MoneyStatValue.TextColor3 = Color3.fromRGB(0, 255, 100)
-MoneyStatValue.TextSize = 20
-MoneyStatValue.Font = Enum.Font.GothamBold
-MoneyStatValue.TextXAlignment = Enum.TextXAlignment.Left
-MoneyStatValue.Parent = MoneyStat
-MoneyStatValue.ZIndex = 9
-
--- إطار إحصائيات الوقت
-local TimeStat = Instance.new("Frame")
-TimeStat.Size = UDim2.new(0.48, -5, 0.9, 0)
-TimeStat.Position = UDim2.new(0.5, 0, 0.05, 0)
-TimeStat.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
-TimeStat.BorderSizePixel = 0
-TimeStat.Parent = StatsFrame
-TimeStat.ZIndex = 8
-
-local TimeStatCorner = Instance.new("UICorner")
-TimeStatCorner.CornerRadius = UDim.new(0, 6)
-TimeStatCorner.Parent = TimeStat
-
-local TimeStatIcon = Instance.new("TextLabel")
-TimeStatIcon.Size = UDim2.new(0, 30, 1, 0)
-TimeStatIcon.Position = UDim2.new(0, 5, 0, 0)
-TimeStatIcon.BackgroundTransparency = 1
-TimeStatIcon.Text = "⏱️"
-TimeStatIcon.TextColor3 = Color3.fromRGB(100, 200, 255)
-TimeStatIcon.TextSize = 20
-TimeStatIcon.Font = Enum.Font.GothamBold
-TimeStatIcon.TextXAlignment = Enum.TextXAlignment.Center
-TimeStatIcon.Parent = TimeStat
-TimeStatIcon.ZIndex = 9
-
-local TimeStatLabel = Instance.new("TextLabel")
-TimeStatLabel.Size = UDim2.new(1, -40, 0, 16)
-TimeStatLabel.Position = UDim2.new(0, 40, 0, 4)
-TimeStatLabel.BackgroundTransparency = 1
-TimeStatLabel.Text = "مدة التشغيل"
-TimeStatLabel.TextColor3 = Color3.fromRGB(180, 180, 200)
-TimeStatLabel.TextSize = 10
-TimeStatLabel.Font = Enum.Font.GothamMedium
-TimeStatLabel.TextXAlignment = Enum.TextXAlignment.Left
-TimeStatLabel.Parent = TimeStat
-TimeStatLabel.ZIndex = 9
-
-local TimeStatValue = Instance.new("TextLabel")
-TimeStatValue.Size = UDim2.new(1, -40, 0, 28)
-TimeStatValue.Position = UDim2.new(0, 40, 0, 20)
-TimeStatValue.BackgroundTransparency = 1
-TimeStatValue.Text = "00:00:00"
-TimeStatValue.TextColor3 = Color3.fromRGB(100, 200, 255)
-TimeStatValue.TextSize = 20
-TimeStatValue.Font = Enum.Font.GothamBold
-TimeStatValue.TextXAlignment = Enum.TextXAlignment.Left
-TimeStatValue.Parent = TimeStat
-TimeStatValue.ZIndex = 9
-
--- زر التشغيل/الإيقاف
-local ToggleButton = Instance.new("TextButton")
-ToggleButton.Size = UDim2.new(0.8, 0, 0, 45)
-ToggleButton.Position = UDim2.new(0.1, 0, 0.38, 0)
-ToggleButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleButton.TextSize = 22
-ToggleButton.Font = Enum.Font.SourceSansBold
-ToggleButton.Text = "OFF ❌"
-ToggleButton.Parent = MoneyFrame
-ToggleButton.ZIndex = 7
-
-local ToggleCorner = Instance.new("UICorner")
-ToggleCorner.CornerRadius = UDim.new(0, 10)
-ToggleCorner.Parent = ToggleButton
-
--- حالة الصفحة
-local StatusLabel = Instance.new("TextLabel")
-StatusLabel.Size = UDim2.new(1, -20, 0, 25)
-StatusLabel.Position = UDim2.new(0, 10, 0.75, 0)
-StatusLabel.BackgroundTransparency = 1
-StatusLabel.Text = "📌 اضغط ON لبدء التجميع"
-StatusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-StatusLabel.TextSize = 13
-StatusLabel.Font = Enum.Font.SourceSans
-StatusLabel.Parent = MoneyFrame
-StatusLabel.ZIndex = 7
-
--- ============================================
--- متغيرات الإحصائيات
--- ============================================
-
-local CashStealer = false
-local eventConnection = nil
-local totalMoneyCollected = 0
-local startTime = 0
-local collectedCount = 0
-
--- ============================================
--- دالة تحديث الإحصائيات
--- ============================================
-
-local function UpdateStats()
-    MoneyStatValue.Text = string.format("%.0f $", totalMoneyCollected)
-    
-    if CashStealer and startTime > 0 then
-        local elapsed = tick() - startTime
-        local hours = math.floor(elapsed / 3600)
-        local minutes = math.floor((elapsed % 3600) / 60)
-        local seconds = math.floor(elapsed % 60)
-        TimeStatValue.Text = string.format("%02d:%02d:%02d", hours, minutes, seconds)
-    end
-end
-
--- تحديث الإحصائيات كل ثانية
-task.spawn(function()
-    while ScreenGui do
-        UpdateStats()
-        task.wait(1)
-    end
-end)
-
--- ============================================
--- دالة التحقق السريع والالتقاط الخاطف
--- ============================================
-
-local function processItem(item)
-    if not CashStealer then return end
-    
-    if item.Name == "CashDrop" and (item:IsA("Part") or item:IsA("MeshPart")) then
-        local fullName = item:GetFullName():lower()
-        
-        -- الفلاتر الصارمة
-        if not fullName:find("table") and 
-           not fullName:find("board") and 
-           not fullName:find("game") and 
-           not fullName:find("ludo") and 
-           not fullName:find("جلسة") and 
-           not fullName:find("طاولة") and
-           not fullName:find("seat") and         
-           not fullName:find("chair") and        
-           not fullName:find("bench") and        
-           not fullName:find("lockedframe") and  
-           not fullName:find("barrier") then
-            
-            task.wait(0.02)
-            if item:FindFirstChildOfClass("BillboardGui") then
-                local player = game.Players.LocalPlayer
-                local character = player.Character or player.CharacterAdded:Wait()
-                local rootPart = character:FindFirstChild("HumanoidRootPart")
-                
-                if rootPart then
-                    local originalPosition = rootPart.CFrame
-                    rootPart.CFrame = item.CFrame
-                    
-                    local remote = game:GetService("ReplicatedStorage"):FindFirstChild("CashDrop", true)
-                    
-                    while item and item.Parent and CashStealer do
-                        if remote and remote:IsA("RemoteEvent") then
-                            remote:FireServer(item)
-                        end
-                        
-                        local prompt = item:FindFirstChildOfClass("ProximityPrompt")
-                        if prompt then fireproximityprompt(prompt) end
-                        
-                        local clicker = item:FindFirstChildOfClass("ClickDetector")
-                        if clicker then fireclickdetector(clicker) end
-                        
-                        -- زيادة العداد عند كل محاولة
-                        collectedCount = collectedCount + 1
-                        totalMoneyCollected = totalMoneyCollected + 1
-                        
-                        task.wait(0.01)
-                    end
-                    
-                    if CashStealer then
-                        rootPart.CFrame = originalPosition
-                    end
-                end
-            end
-        end
-    end
-end
-
--- ============================================
--- تشغيل نظام الرصد
--- ============================================
-
-local function startStealing()
-    -- تجميع الفلوس الموجودة
-    for _, item in pairs(workspace:GetDescendants()) do
-        if item.Name == "CashDrop" then
-            spawn(function() pcall(processItem, item) end)
-        end
-    end
-    
-    -- مراقبة الملفات الجديدة
-    eventConnection = workspace.DescendantAdded:Connect(function(item)
-        if item.Name == "CashDrop" then
-            pcall(processItem, item)
-        end
-    end)
-end
-
--- ============================================
--- زر التشغيل/الإيقاف
--- ============================================
-
-ToggleButton.MouseButton1Click:Connect(function()
-    CashStealer = not CashStealer
-    if CashStealer then
-        ToggleButton.Text = "ON ✅"
-        ToggleButton.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
-        startTime = tick()
-        startStealing()
-        showNotification("✅ تم تشغيل تجميع الفلوس", MoneyFrame)
-    else
-        ToggleButton.Text = "OFF ❌"
-        ToggleButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-        if eventConnection then
-            eventConnection:Disconnect()
-            eventConnection = nil
-        end
-        showNotification("⛔ تم إيقاف تجميع الفلوس", MoneyFrame)
-    end
-end)
-
--- تحديث حالة التشغيل
-task.spawn(function()
-    while ScreenGui do
-        task.wait(0.5)
-        if CashStealer then
-            StatusLabel.Text = "🟢 جاري التجميع... | عدد الرزم: " .. collectedCount
-            StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 100)
-        else
-            StatusLabel.Text = "🔴 متوقف | تم جمع: " .. collectedCount .. " رزمة"
-            StatusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-        end
-    end
-end)
-
--- زر إعادة تعيين الإحصائيات
-local ResetBtn = Instance.new("TextButton")
-ResetBtn.Size = UDim2.new(0.3, 0, 0, 25)
-ResetBtn.Position = UDim2.new(0.35, 0, 0.65, 0)
-ResetBtn.BackgroundColor3 = Color3.fromRGB(200, 100, 50)
-ResetBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-ResetBtn.TextSize = 13
-ResetBtn.Font = Enum.Font.SourceSansBold
-ResetBtn.Text = "🔄 إعادة تعيين"
-ResetBtn.Parent = MoneyFrame
-ResetBtn.ZIndex = 7
-
-local ResetCorner = Instance.new("UICorner")
-ResetCorner.CornerRadius = UDim.new(0, 6)
-ResetCorner.Parent = ResetBtn
-
-ResetBtn.MouseButton1Click:Connect(function()
-    totalMoneyCollected = 0
-    collectedCount = 0
-    startTime = tick()
-    UpdateStats()
-    showNotification("🔄 تم إعادة تعيين الإحصائيات", MoneyFrame)
-end)
+local MoneySub = Instance.new("TextLabel")
+MoneySub.Size = UDim2.new(1, 0, 0, 30)
+MoneySub.Position = UDim2.new(0, 0, 0.5, 0)
+MoneySub.BackgroundTransparency = 1
+MoneySub.Text = "⏳ سيتم إضافة ميزات قريباً..."
+MoneySub.TextColor3 = Color3.fromRGB(150, 150, 180)
+MoneySub.TextSize = 16
+MoneySub.Font = Enum.Font.GothamMedium
+MoneySub.Parent = MoneyFrame
+MoneySub.ZIndex = 6
 
 -- ============================================
 -- محتوى صفحة اللاعبين (Player List)
@@ -1917,12 +1609,11 @@ local function ShowMoney()
     MoneyContainer.Visible = true
     PlayerContainer.Visible = false
     SettingsContainer.Visible = false
-    UpdateStats()
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
             if child.Text == "💰 فلوس" then
-                child.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
-                child.TextColor3 = Color3.fromRGB(0, 0, 0)
+                child.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
+                child.TextColor3 = Color3.fromRGB(255, 255, 255)
             else
                 child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
                 child.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -1995,5 +1686,4 @@ end
 print("✅ ABC HUB v15 تم تحميله بنجاح!")
 print("📱 تم دعم الهاتف والكمبيوتر معاً!")
 print("🔧 الميزات: سرعة، قفز، جاذبية، اختفاء، اختراق جدران، طيران، دوران، FOV 120")
-print("💰 صفحة فلوس مع إحصائيات!")
 print("📍 " .. #places .. " مكاناً للانتقال الفوري!")
