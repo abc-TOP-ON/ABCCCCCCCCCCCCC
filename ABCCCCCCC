@@ -1,4 +1,4 @@
--- ABC HUB v15 - النسخة النهائية مع أزرار انتقال وترحيب شغالة على التلفون
+-- ABC HUB v15 - النسخة النهائية مع أزرار شغالة 100%
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -110,14 +110,6 @@ local CloseCorner = Instance.new("UICorner")
 CloseCorner.CornerRadius = UDim.new(0, 8)
 CloseCorner.Parent = CloseX
 
-CloseX.MouseEnter:Connect(function()
-    CloseX.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-end)
-
-CloseX.MouseLeave:Connect(function()
-    CloseX.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
-end)
-
 CloseX.Activated:Connect(function()
     ScreenGui:Destroy()
 end)
@@ -135,14 +127,6 @@ local SidebarCorner = Instance.new("UICorner")
 SidebarCorner.CornerRadius = UDim.new(0, 12)
 SidebarCorner.Parent = Sidebar
 
-local SidebarFix = Instance.new("Frame")
-SidebarFix.Size = UDim2.new(0, 20, 1, 0)
-SidebarFix.Position = UDim2.new(1, -20, 0, 0)
-SidebarFix.BackgroundColor3 = Color3.fromRGB(22, 22, 30)
-SidebarFix.BorderSizePixel = 0
-SidebarFix.Parent = Sidebar
-SidebarFix.ZIndex = 15
-
 -- 8. شعار ABC HUB v15
 local LogoText = Instance.new("TextLabel")
 LogoText.Size = UDim2.new(1, 0, 0, 50)
@@ -154,15 +138,7 @@ LogoText.Font = Enum.Font.GothamBold
 LogoText.Parent = Sidebar
 LogoText.ZIndex = 16
 
-task.spawn(function()
-    while ScreenGui do
-        local brightness = 0.5 + math.sin(tick() * 1.5) * 0.5
-        LogoText.TextColor3 = Color3.new(0.5 + brightness * 0.2, 0, 0.7 + brightness * 0.3)
-        task.wait(0.05)
-    end
-end)
-
--- 9. أزرار القائمة الجانبية (مع دعم التلفون)
+-- 9. أزرار القائمة الجانبية
 local function createSidebarButton(text, posIndex, isActive, pageName)
     local Btn = Instance.new("TextButton")
     Btn.Size = UDim2.new(1, -20, 0, 40)
@@ -181,18 +157,6 @@ local function createSidebarButton(text, posIndex, isActive, pageName)
     BtnCorner.CornerRadius = UDim.new(0, 8)
     BtnCorner.Parent = Btn
     
-    Btn.MouseEnter:Connect(function()
-        if not isActive then
-            Btn.BackgroundColor3 = Color3.fromRGB(70, 70, 95)
-        end
-    end)
-    Btn.MouseLeave:Connect(function()
-        if not isActive then
-            Btn.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
-        end
-    end)
-    
-    -- استخدام Activated مع دالة منفصلة
     Btn.Activated:Connect(function()
         -- إخفاء كل الصفحات
         HomeContainer.Visible = false
@@ -233,13 +197,14 @@ local function createSidebarButton(text, posIndex, isActive, pageName)
     return Btn
 end
 
--- إنشاء الأزرار مع أسماء الصفحات
-local homeBtn = createSidebarButton("🏠 الرئيسية", 1, true, "Home")
-local welcomeBtn = createSidebarButton("🎉 ترحيب", 2, false, "Welcome")
-local teleportBtn = createSidebarButton("📍 الانتقال", 3, false, "Teleport")
-local settingsBtn = createSidebarButton("⚙️ الإعدادات", 4, false, "Settings")
+createSidebarButton("🏠 الرئيسية", 1, true, "Home")
+createSidebarButton("🎉 ترحيب", 2, false, "Welcome")
+createSidebarButton("📍 الانتقال", 3, false, "Teleport")
+createSidebarButton("⚙️ الإعدادات", 4, false, "Settings")
 
+-- ============================================
 -- 10. حاوية المحتوى الرئيسي
+-- ============================================
 local HomeContainer = Instance.new("Frame")
 HomeContainer.Name = "HomeContainer"
 HomeContainer.Size = UDim2.new(1, -150, 1, -20)
@@ -248,7 +213,9 @@ HomeContainer.BackgroundTransparency = 1
 HomeContainer.Parent = MainFrame
 HomeContainer.ZIndex = 1
 
+-- ============================================
 -- 11. صفحة الترحيب
+-- ============================================
 local WelcomeContainer = Instance.new("Frame")
 WelcomeContainer.Name = "WelcomeContainer"
 WelcomeContainer.Size = UDim2.new(1, -150, 1, -20)
@@ -324,7 +291,9 @@ WelcomeFooter.TextXAlignment = Enum.TextXAlignment.Center
 WelcomeFooter.Parent = WelcomeContainer
 WelcomeFooter.ZIndex = 5
 
+-- ============================================
 -- 12. صفحة الانتقال الفوري
+-- ============================================
 local TeleportContainer = Instance.new("Frame")
 TeleportContainer.Name = "TeleportContainer"
 TeleportContainer.Size = UDim2.new(1, -150, 1, -20)
@@ -355,6 +324,7 @@ TeleportDivider.BorderSizePixel = 0
 TeleportDivider.Parent = TeleportContainer
 TeleportDivider.ZIndex = 5
 
+-- إطار التمرير
 local ScrollFrame = Instance.new("ScrollingFrame")
 ScrollFrame.Size = UDim2.new(1, -10, 1, -55)
 ScrollFrame.Position = UDim2.new(0, 5, 0, 48)
@@ -365,7 +335,6 @@ ScrollFrame.CanvasSize = UDim2.new(0, 0, 0, 1200)
 ScrollFrame.ScrollBarThickness = 6
 ScrollFrame.Parent = TeleportContainer
 ScrollFrame.ZIndex = 5
-ScrollFrame.VerticalScrollBarInset = Enum.ScrollBarInset.ScrollBar
 
 local ScrollCorner = Instance.new("UICorner")
 ScrollCorner.CornerRadius = UDim.new(0, 8)
@@ -407,7 +376,7 @@ end
 -- دالة إنشاء زر انتقال
 local function createTeleportButton(text, color, positionY, cframe, placeName)
     local Btn = Instance.new("TextButton")
-    Btn.Size = UDim2.new(0.9, 0, 0, 45)
+    Btn.Size = UDim2.new(0.9, 0, 0, 50)
     Btn.Position = UDim2.new(0.05, 0, 0, positionY)
     Btn.BackgroundColor3 = color
     Btn.BorderSizePixel = 0
@@ -423,6 +392,7 @@ local function createTeleportButton(text, color, positionY, cframe, placeName)
     BtnCorner.CornerRadius = UDim.new(0, 8)
     BtnCorner.Parent = Btn
     
+    -- الإحداثيات
     local CoordsText = Instance.new("TextLabel")
     CoordsText.Size = UDim2.new(0.5, 0, 1, 0)
     CoordsText.Position = UDim2.new(0.5, 0, 0, 0)
@@ -439,19 +409,12 @@ local function createTeleportButton(text, color, positionY, cframe, placeName)
     CoordsText.Parent = Btn
     CoordsText.ZIndex = 11
     
-    Btn.MouseEnter:Connect(function()
-        Btn.BackgroundColor3 = Color3.new(color.R + 0.15, color.G + 0.15, color.B + 0.15)
-    end)
-    Btn.MouseLeave:Connect(function()
-        Btn.BackgroundColor3 = color
-    end)
-    
     Btn.Activated:Connect(function()
         teleportTo(cframe, placeName)
     end)
 end
 
--- 13. قائمة الأماكن
+-- قائمة الأماكن
 local teleportPlaces = {
     {name = "📍 البداية", color = Color3.fromRGB(100, 100, 100), cframe = CFrame.new(-154.62, 5.17, 4.80)},
     {name = "☕ الكوفي", color = Color3.fromRGB(0, 180, 100), cframe = CFrame.new(46.80, 4.86, -282.78)},
@@ -479,11 +442,13 @@ local teleportPlaces = {
 
 -- إنشاء الأزرار
 for i, place in ipairs(teleportPlaces) do
-    local yPos = 5 + ((i - 1) * 52)
+    local yPos = 5 + ((i - 1) * 55)
     createTeleportButton(place.name, place.color, yPos, place.cframe, place.name)
 end
 
--- 14. صفحة الإعدادات
+-- ============================================
+-- 13. صفحة الإعدادات
+-- ============================================
 local SettingsContainer = Instance.new("Frame")
 SettingsContainer.Name = "SettingsContainer"
 SettingsContainer.Size = UDim2.new(1, -150, 1, -20)
@@ -505,7 +470,9 @@ SettingsText.TextXAlignment = Enum.TextXAlignment.Center
 SettingsText.Parent = SettingsContainer
 SettingsText.ZIndex = 5
 
--- 15. صفحة الرئيسية
+-- ============================================
+-- 14. صفحة الرئيسية
+-- ============================================
 local avatarFrame = Instance.new("Frame")
 avatarFrame.Size = UDim2.new(0, 80, 0, 80)
 avatarFrame.Position = UDim2.new(0.5, -40, 0, 10)
@@ -604,13 +571,6 @@ local function createInfoCard(title, value, icon, row, col)
     local CardCorner = Instance.new("UICorner")
     CardCorner.CornerRadius = UDim.new(0, 8)
     CardCorner.Parent = Card
-
-    Card.MouseEnter:Connect(function()
-        Card.BackgroundColor3 = Color3.fromRGB(35, 35, 50)
-    end)
-    Card.MouseLeave:Connect(function()
-        Card.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-    end)
 
     local IconLabel = Instance.new("TextLabel")
     IconLabel.Size = UDim2.new(0, 32, 1, 0)
@@ -712,14 +672,6 @@ local DevNameCorner = Instance.new("UICorner")
 DevNameCorner.CornerRadius = UDim.new(0, 6)
 DevNameCorner.Parent = DevName
 
-DevName.MouseEnter:Connect(function()
-    DevName.BackgroundColor3 = Color3.fromRGB(50, 50, 75)
-end)
-
-DevName.MouseLeave:Connect(function()
-    DevName.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
-end)
-
 DevName.Activated:Connect(function()
     setclipboard("hamza000599")
     local Notification = Instance.new("TextLabel")
@@ -756,14 +708,6 @@ DevDiscord.AutoButtonColor = true
 local DevDiscordCorner = Instance.new("UICorner")
 DevDiscordCorner.CornerRadius = UDim.new(0, 6)
 DevDiscordCorner.Parent = DevDiscord
-
-DevDiscord.MouseEnter:Connect(function()
-    DevDiscord.BackgroundColor3 = Color3.fromRGB(50, 50, 75)
-end)
-
-DevDiscord.MouseLeave:Connect(function()
-    DevDiscord.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
-end)
 
 DevDiscord.Activated:Connect(function()
     setclipboard("hamza.abc0")
