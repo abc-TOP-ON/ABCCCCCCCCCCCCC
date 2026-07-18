@@ -1,4 +1,4 @@
--- 7MO HUB v15 - نسخة الهاتف (مع سكربت تجميع الفلوس الفوري + الصيد التلقائي + الأخبار)
+-- 7MO HUB v15 - نسخة الهاتف (مع سكربت تجميع الفلوس الفوري + الصيد التلقائي + الأخبار + المعلومات)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -366,7 +366,7 @@ task.spawn(function()
     end
 end)
 
--- أزرار القائمة الجانبية
+-- أزرار القائمة الجانبية (مع إضافة زر المعلومات)
 local function createSidebarButton(text, posIndex, isActive)
     local Btn = Instance.new("TextButton")
     Btn.Size = UDim2.new(1, -20, 0, 40)
@@ -413,6 +413,7 @@ local function createSidebarButton(text, posIndex, isActive)
     end
 end
 
+-- إنشاء الأزرار (مع زر المعلومات الجديد)
 createSidebarButton("🏠 الرئيسية", 1, true)
 createSidebarButton("🎉 ترحيب", 2, false)
 createSidebarButton("⚡ انتقال الفوري", 3, false)
@@ -420,7 +421,8 @@ createSidebarButton("💰 فلوس", 4, false)
 createSidebarButton("🎣 الصيد", 5, false)
 createSidebarButton("👥 لاعبين", 6, false)
 createSidebarButton("📰 الأخبار", 7, false)
-createSidebarButton("⚙️ لاعب", 8, false)
+createSidebarButton("📋 المعلومات", 8, false)
+createSidebarButton("⚙️ لاعب", 9, false)
 
 -- حاويات المحتوى
 local HomeContainer = Instance.new("Frame")
@@ -485,6 +487,19 @@ SettingsContainer.BackgroundTransparency = 1
 SettingsContainer.Parent = MainFrame
 SettingsContainer.ZIndex = 1
 SettingsContainer.Visible = false
+
+-- ============================================
+-- حاوية المعلومات (جديدة)
+-- ============================================
+
+local InfoContainer = Instance.new("Frame")
+InfoContainer.Name = "InfoContainer"
+InfoContainer.Size = UDim2.new(1, -150, 1, -20)
+InfoContainer.Position = UDim2.new(0, 150, 0, 10)
+InfoContainer.BackgroundTransparency = 1
+InfoContainer.Parent = MainFrame
+InfoContainer.ZIndex = 1
+InfoContainer.Visible = false
 
 -- ============================================
 -- حاوية الأخبار
@@ -862,6 +877,7 @@ local function ShowNews()
     PlayerContainer.Visible = false
     SettingsContainer.Visible = false
     NewsContainer.Visible = true
+    InfoContainer.Visible = false
     
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
@@ -874,6 +890,403 @@ local function ShowNews()
             end
         end
     end
+end
+
+-- ============================================
+-- محتوى صفحة المعلومات (مع المطورين وصورة الديسكورد)
+-- ============================================
+
+local InfoFrame = Instance.new("Frame")
+InfoFrame.Size = UDim2.new(0.9, 0, 0.85, 0)
+InfoFrame.Position = UDim2.new(0.05, 0, 0.05, 0)
+InfoFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 35)
+InfoFrame.BorderSizePixel = 0
+InfoFrame.Parent = InfoContainer
+InfoFrame.ZIndex = 5
+
+local InfoFrameCorner = Instance.new("UICorner")
+InfoFrameCorner.CornerRadius = UDim.new(0, 12)
+InfoFrameCorner.Parent = InfoFrame
+
+-- إطار متوهج
+local InfoGlow = Instance.new("Frame")
+InfoGlow.Size = UDim2.new(1, 6, 1, 6)
+InfoGlow.Position = UDim2.new(0, -3, 0, -3)
+InfoGlow.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
+InfoGlow.BackgroundTransparency = 0.3
+InfoGlow.BorderSizePixel = 0
+InfoGlow.Parent = InfoFrame
+InfoGlow.ZIndex = -1
+
+local InfoGlowCorner = Instance.new("UICorner")
+InfoGlowCorner.CornerRadius = UDim.new(0, 15)
+InfoGlowCorner.Parent = InfoGlow
+
+-- عنوان الصفحة
+local InfoTitle = Instance.new("TextLabel")
+InfoTitle.Size = UDim2.new(1, -40, 0, 40)
+InfoTitle.Position = UDim2.new(0, 20, 0, 8)
+InfoTitle.BackgroundTransparency = 1
+InfoTitle.Text = "📋 معلومات السكربت"
+InfoTitle.TextColor3 = Color3.fromRGB(0, 200, 255)
+InfoTitle.TextSize = 22
+InfoTitle.Font = Enum.Font.GothamBold
+InfoTitle.TextXAlignment = Enum.TextXAlignment.Center
+InfoTitle.Parent = InfoFrame
+InfoTitle.ZIndex = 6
+
+-- خط فاصل
+local InfoDivider = Instance.new("Frame")
+InfoDivider.Size = UDim2.new(0.6, 0, 0, 2)
+InfoDivider.Position = UDim2.new(0.2, 0, 0, 52)
+InfoDivider.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
+InfoDivider.BackgroundTransparency = 0.4
+InfoDivider.BorderSizePixel = 0
+InfoDivider.Parent = InfoFrame
+InfoDivider.ZIndex = 6
+
+-- حاوية البطاقات
+local InfoScroll = Instance.new("ScrollingFrame")
+InfoScroll.Size = UDim2.new(1, -10, 1, -75)
+InfoScroll.Position = UDim2.new(0, 5, 0, 58)
+InfoScroll.BackgroundTransparency = 1
+InfoScroll.BorderSizePixel = 0
+InfoScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+InfoScroll.ScrollBarThickness = 4
+InfoScroll.Parent = InfoFrame
+InfoScroll.ZIndex = 6
+
+-- دالة إنشاء بطاقة معلومات
+local function createInfoCard2(icon, title, value, color)
+    local card = Instance.new("Frame")
+    card.Size = UDim2.new(0.92, 0, 0, 55)
+    card.Position = UDim2.new(0.04, 0, 0, 5)
+    card.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+    card.BorderSizePixel = 0
+    card.Parent = InfoScroll
+    card.ZIndex = 7
+    
+    local cardCorner = Instance.new("UICorner")
+    cardCorner.CornerRadius = UDim.new(0, 8)
+    cardCorner.Parent = card
+    
+    -- أيقونة
+    local iconLabel = Instance.new("TextLabel")
+    iconLabel.Size = UDim2.new(0, 45, 1, 0)
+    iconLabel.Position = UDim2.new(0, 8, 0, 0)
+    iconLabel.BackgroundTransparency = 1
+    iconLabel.Text = icon
+    iconLabel.TextColor3 = color or Color3.fromRGB(255, 255, 255)
+    iconLabel.TextSize = 28
+    iconLabel.Font = Enum.Font.GothamBold
+    iconLabel.TextXAlignment = Enum.TextXAlignment.Center
+    iconLabel.Parent = card
+    iconLabel.ZIndex = 8
+    
+    -- العنوان
+    local titleLabel = Instance.new("TextLabel")
+    titleLabel.Size = UDim2.new(1, -60, 0, 20)
+    titleLabel.Position = UDim2.new(0, 55, 0, 4)
+    titleLabel.BackgroundTransparency = 1
+    titleLabel.Text = title
+    titleLabel.TextColor3 = Color3.fromRGB(200, 200, 220)
+    titleLabel.TextSize = 12
+    titleLabel.Font = Enum.Font.GothamMedium
+    titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    titleLabel.Parent = card
+    titleLabel.ZIndex = 8
+    
+    -- القيمة
+    local valueLabel = Instance.new("TextLabel")
+    valueLabel.Size = UDim2.new(1, -60, 0, 24)
+    valueLabel.Position = UDim2.new(0, 55, 0, 24)
+    valueLabel.BackgroundTransparency = 1
+    valueLabel.Text = value
+    valueLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    valueLabel.TextSize = 15
+    valueLabel.Font = Enum.Font.GothamBold
+    valueLabel.TextXAlignment = Enum.TextXAlignment.Left
+    valueLabel.TextWrapped = true
+    valueLabel.Parent = card
+    valueLabel.ZIndex = 8
+    
+    return card
+end
+
+-- دالة إنشاء بطاقة مطور مع صورة الديسكورد
+local function createDeveloperCard(icon, title, discordName, role, color, isOwner)
+    local card = Instance.new("Frame")
+    card.Size = UDim2.new(0.92, 0, 0, 70)
+    card.Position = UDim2.new(0.04, 0, 0, 5)
+    card.BackgroundColor3 = isOwner and Color3.fromRGB(40, 20, 20) or Color3.fromRGB(20, 30, 50)
+    card.BorderSizePixel = 0
+    card.Parent = InfoScroll
+    card.ZIndex = 7
+    
+    -- حدود ذهبية للأونر
+    if isOwner then
+        local border = Instance.new("Frame")
+        border.Size = UDim2.new(1, 0, 1, 0)
+        border.Position = UDim2.new(0, 0, 0, 0)
+        border.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
+        border.BackgroundTransparency = 0.6
+        border.BorderSizePixel = 0
+        border.Parent = card
+        border.ZIndex = 6
+        
+        local borderCorner = Instance.new("UICorner")
+        borderCorner.CornerRadius = UDim.new(0, 8)
+        borderCorner.Parent = border
+    end
+    
+    local cardCorner = Instance.new("UICorner")
+    cardCorner.CornerRadius = UDim.new(0, 8)
+    cardCorner.Parent = card
+    
+    -- أيقونة
+    local iconLabel = Instance.new("TextLabel")
+    iconLabel.Size = UDim2.new(0, 45, 1, 0)
+    iconLabel.Position = UDim2.new(0, 8, 0, 0)
+    iconLabel.BackgroundTransparency = 1
+    iconLabel.Text = icon
+    iconLabel.TextColor3 = color or Color3.fromRGB(255, 255, 255)
+    iconLabel.TextSize = 30
+    iconLabel.Font = Enum.Font.GothamBold
+    iconLabel.TextXAlignment = Enum.TextXAlignment.Center
+    iconLabel.Parent = card
+    iconLabel.ZIndex = 8
+    
+    -- دور المطور
+    local roleLabel = Instance.new("TextLabel")
+    roleLabel.Size = UDim2.new(1, -60, 0, 18)
+    roleLabel.Position = UDim2.new(0, 55, 0, 4)
+    roleLabel.BackgroundTransparency = 1
+    roleLabel.Text = role
+    roleLabel.TextColor3 = isOwner and Color3.fromRGB(255, 215, 0) or Color3.fromRGB(88, 101, 242)
+    roleLabel.TextSize = 11
+    roleLabel.Font = Enum.Font.GothamBold
+    roleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    roleLabel.Parent = card
+    roleLabel.ZIndex = 8
+    
+    -- اسم الديسكورد
+    local nameLabel = Instance.new("TextLabel")
+    nameLabel.Size = UDim2.new(1, -60, 0, 24)
+    nameLabel.Position = UDim2.new(0, 55, 0, 24)
+    nameLabel.BackgroundTransparency = 1
+    nameLabel.Text = discordName
+    nameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    nameLabel.TextSize = 16
+    nameLabel.Font = Enum.Font.GothamBold
+    nameLabel.TextXAlignment = Enum.TextXAlignment.Left
+    nameLabel.Parent = card
+    nameLabel.ZIndex = 8
+    
+    -- زر نسخ الديسكورد
+    local copyBtn = Instance.new("TextButton")
+    copyBtn.Size = UDim2.new(0, 30, 0, 30)
+    copyBtn.Position = UDim2.new(1, -38, 0.5, -15)
+    copyBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
+    copyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    copyBtn.TextSize = 16
+    copyBtn.Font = Enum.Font.GothamBold
+    copyBtn.Text = "📋"
+    copyBtn.Parent = card
+    copyBtn.ZIndex = 9
+    
+    local copyCorner = Instance.new("UICorner")
+    copyCorner.CornerRadius = UDim.new(0, 6)
+    copyCorner.Parent = copyBtn
+    
+    copyBtn.MouseEnter:Connect(function()
+        copyBtn.BackgroundColor3 = Color3.fromRGB(70, 70, 95)
+    end)
+    copyBtn.MouseLeave:Connect(function()
+        copyBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
+    end)
+    
+    copyBtn.MouseButton1Click:Connect(function()
+        if setclipboard then
+            setclipboard(discordName)
+            ShowInfoNotification("✅ تم نسخ ديسكورد: " .. discordName)
+        end
+    end)
+    
+    return card
+end
+
+-- إضافة البطاقات
+local infoY = 5
+
+-- السكربت
+local card1 = createInfoCard2("📦", "إصدار السكربت", "7MO HUB v15 - النسخة النهائية", Color3.fromRGB(180, 0, 255))
+card1.Position = UDim2.new(0.04, 0, 0, infoY)
+infoY = infoY + 62
+
+-- مطور السكربت (hamza.abc0)
+local cardDev = createDeveloperCard(
+    "👨‍💻", 
+    "مطور السكربت", 
+    "hamza.abc0", 
+    "👑 المطور الرئيسي", 
+    Color3.fromRGB(180, 0, 255),
+    false
+)
+cardDev.Position = UDim2.new(0.04, 0, 0, infoY)
+infoY = infoY + 77
+
+-- أونر الديسكورد (qóyt.)
+local cardOwner = createDeveloperCard(
+    "👑", 
+    "أونر الديسكورد", 
+    "qóyt.", 
+    "⭐ مالك السيرفر", 
+    Color3.fromRGB(255, 215, 0),
+    true
+)
+cardOwner.Position = UDim2.new(0.04, 0, 0, infoY)
+infoY = infoY + 77
+
+-- صورة الديسكورد (لوجو السيرفر)
+local DiscordLogoFrame = Instance.new("Frame")
+DiscordLogoFrame.Size = UDim2.new(0.92, 0, 0, 80)
+DiscordLogoFrame.Position = UDim2.new(0.04, 0, 0, infoY)
+DiscordLogoFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
+DiscordLogoFrame.BorderSizePixel = 0
+DiscordLogoFrame.Parent = InfoScroll
+DiscordLogoFrame.ZIndex = 7
+
+local DiscordLogoCorner = Instance.new("UICorner")
+DiscordLogoCorner.CornerRadius = UDim.new(0, 8)
+DiscordLogoCorner.Parent = DiscordLogoFrame
+
+-- إطار متوهج للديسكورد
+local DiscordGlow3 = Instance.new("Frame")
+DiscordGlow3.Size = UDim2.new(1, 6, 1, 6)
+DiscordGlow3.Position = UDim2.new(0, -3, 0, -3)
+DiscordGlow3.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
+DiscordGlow3.BackgroundTransparency = 0.3
+DiscordGlow3.BorderSizePixel = 0
+DiscordGlow3.Parent = DiscordLogoFrame
+DiscordGlow3.ZIndex = -1
+
+local DiscordGlowCorner3 = Instance.new("UICorner")
+DiscordGlowCorner3.CornerRadius = UDim.new(0, 10)
+DiscordGlowCorner3.Parent = DiscordGlow3
+
+-- أيقونة الديسكورد
+local DiscordIcon2 = Instance.new("TextLabel")
+DiscordIcon2.Size = UDim2.new(0, 60, 1, 0)
+DiscordIcon2.Position = UDim2.new(0, 10, 0, 0)
+DiscordIcon2.BackgroundTransparency = 1
+DiscordIcon2.Text = "💬"
+DiscordIcon2.TextColor3 = Color3.fromRGB(88, 101, 242)
+DiscordIcon2.TextSize = 40
+DiscordIcon2.Font = Enum.Font.GothamBold
+DiscordIcon2.TextXAlignment = Enum.TextXAlignment.Center
+DiscordIcon2.Parent = DiscordLogoFrame
+DiscordIcon2.ZIndex = 8
+
+-- نص الديسكورد
+local DiscordText = Instance.new("TextLabel")
+DiscordText.Size = UDim2.new(1, -80, 0, 25)
+DiscordText.Position = UDim2.new(0, 75, 0, 12)
+DiscordText.BackgroundTransparency = 1
+DiscordText.Text = "سيرفر الديسكورد الرسمي"
+DiscordText.TextColor3 = Color3.fromRGB(255, 255, 255)
+DiscordText.TextSize = 16
+DiscordText.Font = Enum.Font.GothamBold
+DiscordText.TextXAlignment = Enum.TextXAlignment.Left
+DiscordText.Parent = DiscordLogoFrame
+DiscordText.ZIndex = 8
+
+-- رابط الديسكورد
+local DiscordLinkText = Instance.new("TextLabel")
+DiscordLinkText.Size = UDim2.new(1, -80, 0, 20)
+DiscordLinkText.Position = UDim2.new(0, 75, 0, 40)
+DiscordLinkText.BackgroundTransparency = 1
+DiscordLinkText.Text = "https://discord.gg/w9FDeSx9f"
+DiscordLinkText.TextColor3 = Color3.fromRGB(88, 101, 242)
+DiscordLinkText.TextSize = 13
+DiscordLinkText.Font = Enum.Font.GothamMedium
+DiscordLinkText.TextXAlignment = Enum.TextXAlignment.Left
+DiscordLinkText.Parent = DiscordLogoFrame
+DiscordLinkText.ZIndex = 8
+
+-- زر نسخ الرابط
+local CopyLinkBtn = Instance.new("TextButton")
+CopyLinkBtn.Size = UDim2.new(0, 50, 0, 30)
+CopyLinkBtn.Position = UDim2.new(1, -60, 0.5, -15)
+CopyLinkBtn.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
+CopyLinkBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+CopyLinkBtn.TextSize = 14
+CopyLinkBtn.Font = Enum.Font.GothamBold
+CopyLinkBtn.Text = "📋"
+CopyLinkBtn.Parent = DiscordLogoFrame
+CopyLinkBtn.ZIndex = 9
+
+local CopyLinkCorner = Instance.new("UICorner")
+CopyLinkCorner.CornerRadius = UDim.new(0, 6)
+CopyLinkCorner.Parent = CopyLinkBtn
+
+CopyLinkBtn.MouseEnter:Connect(function()
+    CopyLinkBtn.BackgroundColor3 = Color3.fromRGB(110, 120, 260)
+end)
+CopyLinkBtn.MouseLeave:Connect(function()
+    CopyLinkBtn.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
+end)
+
+CopyLinkBtn.MouseButton1Click:Connect(function()
+    if setclipboard then
+        setclipboard("https://discord.gg/w9FDeSx9f")
+        ShowInfoNotification("✅ تم نسخ رابط الديسكورد!")
+    end
+end)
+
+infoY = infoY + 87
+
+-- عدد الميزات
+local card4 = createInfoCard2("⚡", "عدد الميزات", "8 ميزات (سرعة - قفز - جاذبية - اختفاء - اختراق - طيران - دوران - FOV)", Color3.fromRGB(255, 200, 0))
+card4.Position = UDim2.new(0.04, 0, 0, infoY)
+infoY = infoY + 62
+
+-- عدد أماكن الانتقال
+local card5 = createInfoCard2("📍", "أماكن الانتقال الفوري", tostring(#places) .. " مكان", Color3.fromRGB(0, 255, 150))
+card5.Position = UDim2.new(0.04, 0, 0, infoY)
+infoY = infoY + 62
+
+-- حالة السكربت
+local card6 = createInfoCard2("✅", "حالة السكربت", "يعمل بكفاءة 100% 🟢", Color3.fromRGB(0, 255, 100))
+card6.Position = UDim2.new(0.04, 0, 0, infoY)
+infoY = infoY + 62
+
+-- تاريخ الإصدار
+local card7 = createInfoCard2("📅", "آخر تحديث", "18 يوليو 2026", Color3.fromRGB(255, 150, 50))
+card7.Position = UDim2.new(0.04, 0, 0, infoY)
+infoY = infoY + 62
+
+InfoScroll.CanvasSize = UDim2.new(0, 0, 0, infoY + 30)
+
+-- دالة إشعارات صفحة المعلومات
+function ShowInfoNotification(text)
+    local notif = Instance.new("TextLabel")
+    notif.Size = UDim2.new(0, 280, 0, 35)
+    notif.Position = UDim2.new(0.5, -140, 0.85, 0)
+    notif.BackgroundColor3 = Color3.fromRGB(0, 80, 0)
+    notif.BackgroundTransparency = 0.2
+    notif.TextColor3 = Color3.fromRGB(0, 255, 150)
+    notif.TextSize = 13
+    notif.Font = Enum.Font.GothamBold
+    notif.Text = text
+    notif.Parent = InfoFrame
+    notif.ZIndex = 50
+    
+    local notifCorner = Instance.new("UICorner")
+    notifCorner.CornerRadius = UDim.new(0, 8)
+    notifCorner.Parent = notif
+    
+    task.wait(2)
+    notif:Destroy()
 end
 
 -- ============================================
@@ -1385,7 +1798,7 @@ MoneyTitle.Parent = MoneyFrame
 MoneyTitle.ZIndex = 6
 
 -- ============================================
--- واجهة سكربت تجميع الفلوس الفوري V7
+-- سكربت تجميع الفلوس الفوري V8 (محسن)
 -- ============================================
 
 -- زر التشغيل/الإيقاف
@@ -1443,20 +1856,55 @@ StatusLabel.TextXAlignment = Enum.TextXAlignment.Center
 StatusLabel.Parent = StatsFrame
 StatusLabel.ZIndex = 8
 
+-- إشعار آخر عملية جمع
+local LastCollectLabel = Instance.new("TextLabel")
+LastCollectLabel.Size = UDim2.new(1, 0, 0, 20)
+LastCollectLabel.Position = UDim2.new(0, 0, 0.8, 0)
+LastCollectLabel.BackgroundTransparency = 1
+LastCollectLabel.Text = "⏳ في انتظار الرزم..."
+LastCollectLabel.TextColor3 = Color3.fromRGB(150, 150, 180)
+LastCollectLabel.TextSize = 12
+LastCollectLabel.Font = Enum.Font.GothamMedium
+LastCollectLabel.TextXAlignment = Enum.TextXAlignment.Center
+LastCollectLabel.Parent = MoneyFrame
+LastCollectLabel.ZIndex = 8
+
 -- متغيرات التشغيل
 _G.CashStealer = false
 local eventConnection = nil
 local collectedCount = 0
+local isProcessing = false
 
--- دالة التحقق السريع والالتقاط الخاطف مع فلترة الموانع والطاولات
-local function processItem(item)
-    if not _G.CashStealer then return end
+-- دالة عرض الإشعارات داخل الصفحة
+local function ShowMoneyNotification(text, isSuccess)
+    local notif = Instance.new("TextLabel")
+    notif.Size = UDim2.new(0, 250, 0, 35)
+    notif.Position = UDim2.new(0.5, -125, 0.88, 0)
+    notif.BackgroundColor3 = isSuccess and Color3.fromRGB(0, 80, 0) or Color3.fromRGB(80, 0, 0)
+    notif.BackgroundTransparency = 0.2
+    notif.TextColor3 = isSuccess and Color3.fromRGB(0, 255, 150) or Color3.fromRGB(255, 150, 150)
+    notif.TextSize = 13
+    notif.Font = Enum.Font.GothamBold
+    notif.Text = text
+    notif.Parent = MoneyFrame
+    notif.ZIndex = 50
     
-    -- رصد مجسم الفلوس الحقيقي
+    local notifCorner = Instance.new("UICorner")
+    notifCorner.CornerRadius = UDim.new(0, 8)
+    notifCorner.Parent = notif
+    
+    task.wait(1.5)
+    notif:Destroy()
+end
+
+-- دالة التحقق السريع والالتقاط الخاطف (نسخة محسنة V8)
+local function processItem(item)
+    if not _G.CashStealer or isProcessing then return end
+    isProcessing = true
+    
     if item.Name == "CashDrop" and (item:IsA("Part") or item:IsA("MeshPart")) then
         local fullName = item:GetFullName():lower()
         
-        -- الفلاتر الصارمة لمنع الانتقال العشوائي للطاولات والمقاعد والحواجز
         if not fullName:find("table") and 
            not fullName:find("board") and 
            not fullName:find("game") and 
@@ -1469,24 +1917,23 @@ local function processItem(item)
            not fullName:find("lockedframe") and  
            not fullName:find("barrier") then
             
-            -- فحص للتأكد من وجود اللوحة الرقمية للفلوس ($)
-            task.wait(0.02) -- وقت انتظار ضئيل جداً لضمان تحميل الخصائص بدون لاق
+            task.wait(0.05)
             if item:FindFirstChildOfClass("BillboardGui") then
                 local player = game.Players.LocalPlayer
                 local character = player.Character or player.CharacterAdded:Wait()
                 local rootPart = character:FindFirstChild("HumanoidRootPart")
                 
                 if rootPart then
-                    -- 1. حفظ موقعك الأصلي بدقة
                     local originalPosition = rootPart.CFrame
-                    
-                    -- 2. الانتقال الفوري الخاطف فوق الفلوس
                     rootPart.CFrame = item.CFrame
                     
                     local remote = game:GetService("ReplicatedStorage"):FindFirstChild("CashDrop", true)
                     
-                    -- 3. حلقة الضغط السريع حتى تختفي الرزمة تماماً وتُسجل في رصيدك
-                    while item and item.Parent and _G.CashStealer do
+                    local maxAttempts = 10
+                    local attempts = 0
+                    local collected = false
+                    
+                    while item and item.Parent and _G.CashStealer and attempts < maxAttempts do
                         if remote and remote:IsA("RemoteEvent") then
                             remote:FireServer(item)
                         end
@@ -1497,16 +1944,27 @@ local function processItem(item)
                         local clicker = item:FindFirstChildOfClass("ClickDetector")
                         if clicker then fireclickdetector(clicker) end
                         
-                        task.wait(0.01) -- سرعة تفعيل قصوى
+                        attempts = attempts + 1
+                        
+                        if not item.Parent then
+                            collected = true
+                            break
+                        end
+                        
+                        task.wait(0.03)
                     end
                     
-                    -- زيادة العداد عند النجاح
-                    if _G.CashStealer then
+                    if collected then
                         collectedCount = collectedCount + 1
                         CountLabel.Text = "📦 " .. collectedCount
+                        LastCollectLabel.Text = "✅ تم جمع رزمة! (" .. collectedCount .. ")"
+                        LastCollectLabel.TextColor3 = Color3.fromRGB(0, 255, 100)
+                        ShowMoneyNotification("✅ تم جمع رزمة فلوس!", true)
+                    else
+                        LastCollectLabel.Text = "⚠️ الرزمة لم تُجمع (مشكلة في السيرفر)"
+                        LastCollectLabel.TextColor3 = Color3.fromRGB(255, 200, 0)
                     end
                     
-                    -- 4. العودة التلقائية الفورية لمكانك الأصلي الآمن
                     if _G.CashStealer then
                         rootPart.CFrame = originalPosition
                     end
@@ -1514,22 +1972,21 @@ local function processItem(item)
             end
         end
     end
+    
+    isProcessing = false
 end
 
--- تشغيل نظام الرصد العميق والخفيف جداً على المعالج
+-- تشغيل نظام الرصد
 local function startStealing()
-    -- تجميع الفلوس المتواجدة بالفعل على الأرض لحظة التشغيل
     for _, item in pairs(workspace:GetDescendants()) do
         if item.Name == "CashDrop" then
-            spawn(function() pcall(processItem, item) end)
+            task.spawn(function() pcall(processItem, item) end)
         end
     end
     
-    -- مراقبة شجرة الملفات العميقة (DescendantAdded): أي رزمة تنزل في أي مجلد يتم صيدها فوراً وبدون أي لاق
     eventConnection = workspace.DescendantAdded:Connect(function(item)
-        -- ميزة تصفية الأداء: السكربت يتجاهل أي ملف ليس له علاقة بالفلوس فوراً لتوفير المعالج %100
         if item.Name == "CashDrop" then
-            pcall(processItem, item)
+            task.spawn(function() pcall(processItem, item) end)
         end
     end)
 end
@@ -1544,18 +2001,20 @@ ToggleButtonMoney.MouseButton1Click:Connect(function()
         StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 100)
         collectedCount = 0
         CountLabel.Text = "📦 0"
+        LastCollectLabel.Text = "⏳ جاري التجميع..."
         startStealing()
-        showNotification("✅ تم تشغيل تجميع الفلوس الفوري!", MoneyFrame)
+        ShowMoneyNotification("✅ تم تشغيل تجميع الفلوس الفوري!", true)
     else
         ToggleButtonMoney.Text = "OFF ❌"
         ToggleButtonMoney.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
         StatusLabel.Text = "⏸️ متوقف"
         StatusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+        LastCollectLabel.Text = "⏸️ متوقف"
         if eventConnection then
             eventConnection:Disconnect()
             eventConnection = nil
         end
-        showNotification("⛔ تم إيقاف تجميع الفلوس", MoneyFrame)
+        ShowMoneyNotification("⛔ تم إيقاف تجميع الفلوس", false)
     end
 end)
 
@@ -1578,29 +2037,9 @@ ResetCorner.Parent = ResetBtn
 ResetBtn.MouseButton1Click:Connect(function()
     collectedCount = 0
     CountLabel.Text = "📦 0"
-    showNotification("🔄 تم إعادة تعيين العداد", MoneyFrame)
+    LastCollectLabel.Text = "🔄 تم إعادة التعيين"
+    ShowMoneyNotification("🔄 تم إعادة تعيين العداد", true)
 end)
-
--- دالة الإشعارات
-function showNotification(text, parent)
-    local notif = Instance.new("TextLabel")
-    notif.Size = UDim2.new(0, 220, 0, 30)
-    notif.Position = UDim2.new(0.5, -110, 0.85, 0)
-    notif.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
-    notif.BackgroundTransparency = 0.1
-    notif.TextColor3 = Color3.fromRGB(0, 255, 150)
-    notif.TextSize = 13
-    notif.Font = Enum.Font.GothamBold
-    notif.Text = text
-    notif.Parent = parent
-    
-    local notifCorner = Instance.new("UICorner")
-    notifCorner.CornerRadius = UDim.new(0, 8)
-    notifCorner.Parent = notif
-    
-    task.wait(1.5)
-    notif:Destroy()
-end
 
 -- ============================================
 -- محتوى صفحة الصيد (Fishing)
@@ -1716,7 +2155,7 @@ local function startFishing()
             fishingConnection:Disconnect()
             fishingConnection = nil
         end
-        showNotification("⛔ تم إيقاف الصيد التلقائي", FishingFrame)
+        ShowMoneyNotification("⛔ تم إيقاف الصيد التلقائي", false)
     else
         fishingActive = true
         FishingToggleButton.Text = "⏹️ إيقاف الصيد"
@@ -1730,9 +2169,9 @@ local function startFishing()
         end)
         
         if success then
-            showNotification("✅ تم تشغيل الصيد التلقائي!", FishingFrame)
+            ShowMoneyNotification("✅ تم تشغيل الصيد التلقائي!", true)
         else
-            showNotification("❌ فشل تحميل سكربت الصيد!", FishingFrame)
+            ShowMoneyNotification("❌ فشل تحميل سكربت الصيد!", false)
             fishingActive = false
             FishingToggleButton.Text = "🎣 تشغيل الصيد"
             FishingToggleButton.BackgroundColor3 = Color3.fromRGB(0, 150, 200)
@@ -2163,10 +2602,10 @@ local function toggleFOV120()
     
     if features.fov120 then
         Camera.FieldOfView = 120
-        showNotification("👁️ تم تفعيل FOV 120", SettingsFrame)
+        ShowMoneyNotification("👁️ تم تفعيل FOV 120", true)
     else
         Camera.FieldOfView = originalFOV
-        showNotification("👁️ تم إلغاء FOV 120", SettingsFrame)
+        ShowMoneyNotification("👁️ تم إلغاء FOV 120", true)
     end
     return features.fov120
 end
@@ -2269,7 +2708,7 @@ local function createSettingSlider(yOffset, labelText, minVal, maxVal, defaultVa
             label.Text = labelText .. ": " .. tostring(val)
             slider.Text = ""
             ApplySettings()
-            showNotification("✅ تم تطبيق " .. labelText .. " = " .. val, SettingsFrame)
+            ShowMoneyNotification("✅ تم تطبيق " .. labelText .. " = " .. val, true)
         end
     end)
     
@@ -2278,7 +2717,7 @@ local function createSettingSlider(yOffset, labelText, minVal, maxVal, defaultVa
         label.Text = labelText .. ": طبيعي"
         slider.Text = ""
         ApplySettings()
-        showNotification("🔄 تم إعادة " .. labelText .. " للطبيعي", SettingsFrame)
+        ShowMoneyNotification("🔄 تم إعادة " .. labelText .. " للطبيعي", true)
     end)
     
     return container
@@ -2465,6 +2904,34 @@ task.spawn(function()
 end)
 
 -- ============================================
+-- دالة عرض صفحة المعلومات
+-- ============================================
+
+local function ShowInfo()
+    HomeContainer.Visible = false
+    WelcomeContainer.Visible = false
+    TeleportContainer.Visible = false
+    MoneyContainer.Visible = false
+    FishingContainer.Visible = false
+    PlayerContainer.Visible = false
+    SettingsContainer.Visible = false
+    NewsContainer.Visible = false
+    InfoContainer.Visible = true
+    
+    for _, child in pairs(Sidebar:GetChildren()) do
+        if child:IsA("TextButton") then
+            if child.Text == "📋 المعلومات" then
+                child.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
+                child.TextColor3 = Color3.fromRGB(0, 0, 0)
+            else
+                child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
+                child.TextColor3 = Color3.fromRGB(255, 255, 255)
+            end
+        end
+    end
+end
+
+-- ============================================
 -- وظائف الأزرار (تبديل الصفحات)
 -- ============================================
 
@@ -2477,6 +2944,7 @@ local function ShowHome()
     PlayerContainer.Visible = false
     SettingsContainer.Visible = false
     NewsContainer.Visible = false
+    InfoContainer.Visible = false
     
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
@@ -2500,6 +2968,7 @@ local function ShowWelcome()
     PlayerContainer.Visible = false
     SettingsContainer.Visible = false
     NewsContainer.Visible = false
+    InfoContainer.Visible = false
     
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
@@ -2523,6 +2992,7 @@ local function ShowTeleport()
     PlayerContainer.Visible = false
     SettingsContainer.Visible = false
     NewsContainer.Visible = false
+    InfoContainer.Visible = false
     
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
@@ -2546,6 +3016,7 @@ local function ShowMoney()
     PlayerContainer.Visible = false
     SettingsContainer.Visible = false
     NewsContainer.Visible = false
+    InfoContainer.Visible = false
     
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
@@ -2569,6 +3040,7 @@ local function ShowFishing()
     PlayerContainer.Visible = false
     SettingsContainer.Visible = false
     NewsContainer.Visible = false
+    InfoContainer.Visible = false
     
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
@@ -2592,6 +3064,7 @@ local function ShowPlayers()
     PlayerContainer.Visible = true
     SettingsContainer.Visible = false
     NewsContainer.Visible = false
+    InfoContainer.Visible = false
     UpdatePlayerList()
     
     for _, child in pairs(Sidebar:GetChildren()) do
@@ -2616,6 +3089,7 @@ local function ShowSettings()
     PlayerContainer.Visible = false
     SettingsContainer.Visible = true
     NewsContainer.Visible = false
+    InfoContainer.Visible = false
     ApplySettings()
     
     for _, child in pairs(Sidebar:GetChildren()) do
@@ -2648,6 +3122,8 @@ for _, child in pairs(Sidebar:GetChildren()) do
             child.MouseButton1Click:Connect(ShowPlayers)
         elseif child.Text == "📰 الأخبار" then
             child.MouseButton1Click:Connect(ShowNews)
+        elseif child.Text == "📋 المعلومات" then
+            child.MouseButton1Click:Connect(ShowInfo)
         elseif child.Text == "⚙️ لاعب" then
             child.MouseButton1Click:Connect(ShowSettings)
         end
@@ -2657,8 +3133,11 @@ end
 print("✅ 7MO HUB v15 تم تحميله بنجاح!")
 print("📱 تم دعم الهاتف والكمبيوتر معاً!")
 print("🟣 زر دائري متحرك بأطراف بنفسجية!")
-print("💰 تم دمج سكربت تجميع الفلوس الفوري V7!")
+print("💰 تم دمج سكربت تجميع الفلوس الفوري V8!")
 print("🎣 تم إضافة صفحة الصيد التلقائي!")
 print("📰 تم إضافة صفحة الأخبار والتحديثات!")
-print("🔧 الميزات: سرعة، قفز، جاذبية، اختفاء، اختراق جدران، طيران، دوران، FOV 120")
+print("📋 تم إضافة صفحة المعلومات مع المطورين!")
+print("👨‍💻 المطور: hamza.abc0")
+print("👑 أونر الديسكورد: qóyt.")
+print("🔧 الميزات: سرعة، قفز، جاذبية، اختفاء، اختراق، طيران، دوران، FOV 120")
 print("📍 " .. #places .. " مكاناً للانتقال الفوري!")
