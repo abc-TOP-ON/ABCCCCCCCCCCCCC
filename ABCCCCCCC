@@ -1,9 +1,8 @@
--- ABC HUB v15 - النسخة النهائية مع أزرار شغالة 100%
+-- ABC HUB v15 - النسخة النهائية مع إصلاح الأزرار
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
 local RunService = game:GetService("RunService")
-local TweenService = game:GetService("TweenService")
 
 -- 1. منع تكرار الواجهة
 if game:GetService("CoreGui"):FindFirstChild("ABCHUBv15") then
@@ -138,7 +137,32 @@ LogoText.Font = Enum.Font.GothamBold
 LogoText.Parent = Sidebar
 LogoText.ZIndex = 16
 
--- 9. أزرار القائمة الجانبية
+-- 9. متغيرات الصفحات
+local currentPage = "Home"
+
+-- 10. دوال تبديل الصفحات
+local function showPage(pageName)
+    -- إخفاء كل الصفحات
+    HomeContainer.Visible = false
+    WelcomeContainer.Visible = false
+    TeleportContainer.Visible = false
+    SettingsContainer.Visible = false
+    
+    -- إظهار الصفحة المطلوبة
+    if pageName == "Home" then
+        HomeContainer.Visible = true
+    elseif pageName == "Welcome" then
+        WelcomeContainer.Visible = true
+    elseif pageName == "Teleport" then
+        TeleportContainer.Visible = true
+    elseif pageName == "Settings" then
+        SettingsContainer.Visible = true
+    end
+    
+    currentPage = pageName
+end
+
+-- 11. أزرار القائمة الجانبية
 local function createSidebarButton(text, posIndex, isActive, pageName)
     local Btn = Instance.new("TextButton")
     Btn.Size = UDim2.new(1, -20, 0, 40)
@@ -158,22 +182,7 @@ local function createSidebarButton(text, posIndex, isActive, pageName)
     BtnCorner.Parent = Btn
     
     Btn.Activated:Connect(function()
-        -- إخفاء كل الصفحات
-        HomeContainer.Visible = false
-        WelcomeContainer.Visible = false
-        TeleportContainer.Visible = false
-        SettingsContainer.Visible = false
-        
-        -- إظهار الصفحة المطلوبة
-        if pageName == "Home" then
-            HomeContainer.Visible = true
-        elseif pageName == "Welcome" then
-            WelcomeContainer.Visible = true
-        elseif pageName == "Teleport" then
-            TeleportContainer.Visible = true
-        elseif pageName == "Settings" then
-            SettingsContainer.Visible = true
-        end
+        showPage(pageName)
         
         -- تحديث حالة الأزرار
         for _, child in pairs(Sidebar:GetChildren()) do
@@ -203,7 +212,7 @@ createSidebarButton("📍 الانتقال", 3, false, "Teleport")
 createSidebarButton("⚙️ الإعدادات", 4, false, "Settings")
 
 -- ============================================
--- 10. حاوية المحتوى الرئيسي
+-- 12. حاوية المحتوى الرئيسي
 -- ============================================
 local HomeContainer = Instance.new("Frame")
 HomeContainer.Name = "HomeContainer"
@@ -214,7 +223,7 @@ HomeContainer.Parent = MainFrame
 HomeContainer.ZIndex = 1
 
 -- ============================================
--- 11. صفحة الترحيب
+-- 13. صفحة الترحيب
 -- ============================================
 local WelcomeContainer = Instance.new("Frame")
 WelcomeContainer.Name = "WelcomeContainer"
@@ -292,7 +301,7 @@ WelcomeFooter.Parent = WelcomeContainer
 WelcomeFooter.ZIndex = 5
 
 -- ============================================
--- 12. صفحة الانتقال الفوري
+-- 14. صفحة الانتقال الفوري
 -- ============================================
 local TeleportContainer = Instance.new("Frame")
 TeleportContainer.Name = "TeleportContainer"
@@ -376,13 +385,13 @@ end
 -- دالة إنشاء زر انتقال
 local function createTeleportButton(text, color, positionY, cframe, placeName)
     local Btn = Instance.new("TextButton")
-    Btn.Size = UDim2.new(0.9, 0, 0, 50)
+    Btn.Size = UDim2.new(0.9, 0, 0, 45)
     Btn.Position = UDim2.new(0.05, 0, 0, positionY)
     Btn.BackgroundColor3 = color
     Btn.BorderSizePixel = 0
     Btn.Text = text
     Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Btn.TextSize = 14
+    Btn.TextSize = 13
     Btn.Font = Enum.Font.GothamBold
     Btn.Parent = ScrollFrame
     Btn.ZIndex = 10
@@ -402,7 +411,7 @@ local function createTeleportButton(text, color, positionY, cframe, placeName)
     local z = math.floor(cframe.Z * 10) / 10
     CoordsText.Text = "(" .. x .. ", " .. y .. ", " .. z .. ")"
     CoordsText.TextColor3 = Color3.fromRGB(200, 200, 200)
-    CoordsText.TextSize = 11
+    CoordsText.TextSize = 10
     CoordsText.Font = Enum.Font.GothamMedium
     CoordsText.TextXAlignment = Enum.TextXAlignment.Right
     CoordsText.TextYAlignment = Enum.TextYAlignment.Center
@@ -442,12 +451,12 @@ local teleportPlaces = {
 
 -- إنشاء الأزرار
 for i, place in ipairs(teleportPlaces) do
-    local yPos = 5 + ((i - 1) * 55)
+    local yPos = 5 + ((i - 1) * 52)
     createTeleportButton(place.name, place.color, yPos, place.cframe, place.name)
 end
 
 -- ============================================
--- 13. صفحة الإعدادات
+-- 15. صفحة الإعدادات
 -- ============================================
 local SettingsContainer = Instance.new("Frame")
 SettingsContainer.Name = "SettingsContainer"
@@ -471,7 +480,7 @@ SettingsText.Parent = SettingsContainer
 SettingsText.ZIndex = 5
 
 -- ============================================
--- 14. صفحة الرئيسية
+-- 16. صفحة الرئيسية
 -- ============================================
 local avatarFrame = Instance.new("Frame")
 avatarFrame.Size = UDim2.new(0, 80, 0, 80)
