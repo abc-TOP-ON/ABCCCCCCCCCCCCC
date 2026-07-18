@@ -1,4 +1,4 @@
--- ABC HUB v15 - النسخة النهائية مع دعم التلفون
+-- ABC HUB v15 - النسخة النهائية مع دعم التلفون الكامل
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -104,7 +104,7 @@ CloseX.TextColor3 = Color3.fromRGB(255, 255, 255)
 CloseX.TextSize = 20
 CloseX.Font = Enum.Font.GothamBold
 CloseX.Parent = MainFrame
-CloseX.ZIndex = 20
+CloseX.ZIndex = 50
 
 local CloseCorner = Instance.new("UICorner")
 CloseCorner.CornerRadius = UDim.new(0, 8)
@@ -162,26 +162,20 @@ task.spawn(function()
     end
 end)
 
--- 9. أزرار القائمة الجانبية (مع دعم التلفون)
+-- 9. أزرار القائمة الجانبية
 local function createSidebarButton(text, posIndex, isActive, pageName)
     local Btn = Instance.new("TextButton")
     Btn.Size = UDim2.new(1, -20, 0, 40)
     Btn.Position = UDim2.new(0, 10, 0, 60 + ((posIndex - 1) * 48))
-    
-    if isActive then
-        Btn.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
-        Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    else
-        Btn.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
-        Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    end
-    
+    Btn.BackgroundColor3 = isActive and Color3.fromRGB(180, 0, 255) or Color3.fromRGB(45, 45, 65)
     Btn.BorderSizePixel = 0
     Btn.Text = text
+    Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
     Btn.TextSize = 14
     Btn.Font = Enum.Font.GothamBold
     Btn.Parent = Sidebar
-    Btn.ZIndex = 17
+    Btn.ZIndex = 20
+    Btn.AutoButtonColor = true
 
     local BtnCorner = Instance.new("UICorner")
     BtnCorner.CornerRadius = UDim.new(0, 8)
@@ -198,7 +192,6 @@ local function createSidebarButton(text, posIndex, isActive, pageName)
         end
     end)
     
-    -- استخدام Activated بدل MouseButton1Click لدعم التلفون
     Btn.Activated:Connect(function()
         HomeContainer.Visible = false
         WelcomeContainer.Visible = false
@@ -218,11 +211,9 @@ local function createSidebarButton(text, posIndex, isActive, pageName)
         for _, child in pairs(Sidebar:GetChildren()) do
             if child:IsA("TextButton") and child ~= Btn then
                 child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
-                child.TextColor3 = Color3.fromRGB(255, 255, 255)
             end
         end
         Btn.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
-        Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
     end)
     
     if isActive then
@@ -232,7 +223,7 @@ local function createSidebarButton(text, posIndex, isActive, pageName)
         Indicator.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
         Indicator.BorderSizePixel = 0
         Indicator.Parent = Btn
-        Indicator.ZIndex = 18
+        Indicator.ZIndex = 21
     end
     
     return Btn
@@ -359,22 +350,24 @@ TeleportDivider.BorderSizePixel = 0
 TeleportDivider.Parent = TeleportContainer
 TeleportDivider.ZIndex = 5
 
+-- إطار التمرير (مع إعدادات خاصة للتلفون)
 local ScrollFrame = Instance.new("ScrollingFrame")
 ScrollFrame.Size = UDim2.new(1, -10, 1, -55)
 ScrollFrame.Position = UDim2.new(0, 5, 0, 48)
 ScrollFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
 ScrollFrame.BackgroundTransparency = 0.2
 ScrollFrame.BorderSizePixel = 0
-ScrollFrame.CanvasSize = UDim2.new(0, 0, 0, 1150)
-ScrollFrame.ScrollBarThickness = 4
+ScrollFrame.CanvasSize = UDim2.new(0, 0, 0, 1200)
+ScrollFrame.ScrollBarThickness = 6
 ScrollFrame.Parent = TeleportContainer
 ScrollFrame.ZIndex = 5
+ScrollFrame.VerticalScrollBarInset = Enum.ScrollBarInset.ScrollBar
 
 local ScrollCorner = Instance.new("UICorner")
 ScrollCorner.CornerRadius = UDim.new(0, 8)
 ScrollCorner.Parent = ScrollFrame
 
--- دالة الانتقال مع رسالة تأكيد
+-- دالة الانتقال
 local function teleportTo(cframe, placeName)
     local character = LocalPlayer.Character
     if character and character:FindFirstChild("HumanoidRootPart") then
@@ -386,7 +379,7 @@ local function teleportTo(cframe, placeName)
         notif.BackgroundColor3 = Color3.fromRGB(25, 25, 40)
         notif.BorderSizePixel = 0
         notif.Parent = MainFrame
-        notif.ZIndex = 50
+        notif.ZIndex = 100
         
         local notifCorner = Instance.new("UICorner")
         notifCorner.CornerRadius = UDim.new(0, 10)
@@ -407,7 +400,7 @@ local function teleportTo(cframe, placeName)
     end
 end
 
--- دالة إنشاء زر انتقال (مع دعم التلفون)
+-- دالة إنشاء زر انتقال
 local function createTeleportButton(text, color, positionY, cframe, placeName)
     local Btn = Instance.new("TextButton")
     Btn.Size = UDim2.new(0.9, 0, 0, 45)
@@ -419,12 +412,14 @@ local function createTeleportButton(text, color, positionY, cframe, placeName)
     Btn.TextSize = 14
     Btn.Font = Enum.Font.GothamBold
     Btn.Parent = ScrollFrame
-    Btn.ZIndex = 6
+    Btn.ZIndex = 10
+    Btn.AutoButtonColor = true
 
     local BtnCorner = Instance.new("UICorner")
     BtnCorner.CornerRadius = UDim.new(0, 8)
     BtnCorner.Parent = Btn
     
+    -- الإحداثيات
     local CoordsText = Instance.new("TextLabel")
     CoordsText.Size = UDim2.new(0.5, 0, 1, 0)
     CoordsText.Position = UDim2.new(0.5, 0, 0, 0)
@@ -439,18 +434,15 @@ local function createTeleportButton(text, color, positionY, cframe, placeName)
     CoordsText.TextXAlignment = Enum.TextXAlignment.Right
     CoordsText.TextYAlignment = Enum.TextYAlignment.Center
     CoordsText.Parent = Btn
-    CoordsText.ZIndex = 7
+    CoordsText.ZIndex = 11
     
     Btn.MouseEnter:Connect(function()
         Btn.BackgroundColor3 = Color3.new(color.R + 0.15, color.G + 0.15, color.B + 0.15)
-        Btn.Size = UDim2.new(0.92, 0, 0, 47)
     end)
     Btn.MouseLeave:Connect(function()
         Btn.BackgroundColor3 = color
-        Btn.Size = UDim2.new(0.9, 0, 0, 45)
     end)
     
-    -- استخدام Activated بدل MouseButton1Click لدعم التلفون
     Btn.Activated:Connect(function()
         teleportTo(cframe, placeName)
     end)
@@ -482,7 +474,7 @@ local teleportPlaces = {
     {name = "🎣 الصيد 5", color = Color3.fromRGB(115, 145, 95), cframe = CFrame.new(-59.19, 15.25, 454.89)}
 }
 
--- إنشاء الأزرار من القائمة
+-- إنشاء الأزرار
 for i, place in ipairs(teleportPlaces) do
     local yPos = 5 + ((i - 1) * 52)
     createTeleportButton(place.name, place.color, yPos, place.cframe, place.name)
@@ -510,7 +502,7 @@ SettingsText.TextXAlignment = Enum.TextXAlignment.Center
 SettingsText.Parent = SettingsContainer
 SettingsText.ZIndex = 5
 
--- 15. صفحة الرئيسية (Home Page)
+-- 15. صفحة الرئيسية
 local avatarFrame = Instance.new("Frame")
 avatarFrame.Size = UDim2.new(0, 80, 0, 80)
 avatarFrame.Position = UDim2.new(0.5, -40, 0, 10)
@@ -710,7 +702,7 @@ DevName.TextColor3 = Color3.fromRGB(180, 0, 255)
 DevName.TextSize = 12
 DevName.Font = Enum.Font.GothamBold
 DevName.Parent = DevContainer
-DevName.ZIndex = 6
+DevName.ZIndex = 10
 
 local DevNameCorner = Instance.new("UICorner")
 DevNameCorner.CornerRadius = UDim.new(0, 6)
@@ -718,12 +710,10 @@ DevNameCorner.Parent = DevName
 
 DevName.MouseEnter:Connect(function()
     DevName.BackgroundColor3 = Color3.fromRGB(50, 50, 75)
-    DevName.TextColor3 = Color3.fromRGB(220, 100, 255)
 end)
 
 DevName.MouseLeave:Connect(function()
     DevName.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
-    DevName.TextColor3 = Color3.fromRGB(180, 0, 255)
 end)
 
 DevName.Activated:Connect(function()
@@ -738,7 +728,7 @@ DevName.Activated:Connect(function()
     Notification.TextSize = 14
     Notification.Font = Enum.Font.GothamBold
     Notification.Parent = MainFrame
-    Notification.ZIndex = 50
+    Notification.ZIndex = 100
     local NotifCorner = Instance.new("UICorner")
     NotifCorner.CornerRadius = UDim.new(0, 8)
     NotifCorner.Parent = Notification
@@ -756,7 +746,7 @@ DevDiscord.TextColor3 = Color3.fromRGB(180, 0, 255)
 DevDiscord.TextSize = 12
 DevDiscord.Font = Enum.Font.GothamBold
 DevDiscord.Parent = DevContainer
-DevDiscord.ZIndex = 6
+DevDiscord.ZIndex = 10
 
 local DevDiscordCorner = Instance.new("UICorner")
 DevDiscordCorner.CornerRadius = UDim.new(0, 6)
@@ -764,12 +754,10 @@ DevDiscordCorner.Parent = DevDiscord
 
 DevDiscord.MouseEnter:Connect(function()
     DevDiscord.BackgroundColor3 = Color3.fromRGB(50, 50, 75)
-    DevDiscord.TextColor3 = Color3.fromRGB(220, 100, 255)
 end)
 
 DevDiscord.MouseLeave:Connect(function()
     DevDiscord.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
-    DevDiscord.TextColor3 = Color3.fromRGB(180, 0, 255)
 end)
 
 DevDiscord.Activated:Connect(function()
@@ -784,7 +772,7 @@ DevDiscord.Activated:Connect(function()
     Notification.TextSize = 14
     Notification.Font = Enum.Font.GothamBold
     Notification.Parent = MainFrame
-    Notification.ZIndex = 50
+    Notification.ZIndex = 100
     local NotifCorner = Instance.new("UICorner")
     NotifCorner.CornerRadius = UDim.new(0, 8)
     NotifCorner.Parent = Notification
