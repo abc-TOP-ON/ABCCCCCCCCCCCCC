@@ -214,7 +214,7 @@ end
 createSidebarButton("🏠 الرئيسية", 1, true)
 createSidebarButton("🎉 ترحيب", 2, false)
 createSidebarButton("⚡ انتقال الفوري", 3, false)
-createSidebarButton("💰 الفلوس", 4, false)
+createSidebarButton("💰 فلوس", 4, false)
 createSidebarButton("👥 لاعبين", 5, false)
 createSidebarButton("⚙️ لاعب", 6, false)
 
@@ -774,10 +774,10 @@ local MoneyTitle = Instance.new("TextLabel")
 MoneyTitle.Size = UDim2.new(1, 0, 0, 35)
 MoneyTitle.Position = UDim2.new(0, 0, 0, 5)
 MoneyTitle.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-MoneyTitle.Text = "💰 Arabs Ultimate V7 (No-Lag) 💰"
-MoneyTitle.TextColor3 = Color3.fromRGB(0, 255, 100)
-MoneyTitle.TextSize = 14
-MoneyTitle.Font = Enum.Font.SourceSansBold
+MoneyTitle.Text = "💰 فلوس 💰"
+MoneyTitle.TextColor3 = Color3.fromRGB(255, 215, 0)
+MoneyTitle.TextSize = 18
+MoneyTitle.Font = Enum.Font.GothamBold
 MoneyTitle.Parent = MoneyFrame
 MoneyTitle.ZIndex = 6
 
@@ -1920,7 +1920,7 @@ local function ShowMoney()
     UpdateStats()
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
-            if child.Text == "💰 الفلوس" then
+            if child.Text == "💰 فلوس" then
                 child.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
                 child.TextColor3 = Color3.fromRGB(0, 0, 0)
             else
@@ -1982,7 +1982,7 @@ for _, child in pairs(Sidebar:GetChildren()) do
             child.MouseButton1Click:Connect(ShowWelcome)
         elseif child.Text == "⚡ انتقال الفوري" then
             child.MouseButton1Click:Connect(ShowTeleport)
-        elseif child.Text == "💰 الفلوس" then
+        elseif child.Text == "💰 فلوس" then
             child.MouseButton1Click:Connect(ShowMoney)
         elseif child.Text == "👥 لاعبين" then
             child.MouseButton1Click:Connect(ShowPlayers)
@@ -1995,5 +1995,5 @@ end
 print("✅ ABC HUB v15 تم تحميله بنجاح!")
 print("📱 تم دعم الهاتف والكمبيوتر معاً!")
 print("🔧 الميزات: سرعة، قفز، جاذبية، اختفاء، اختراق جدران، طيران، دوران، FOV 120")
-print("💰 سكربت ArabsCashUltimateV7 مع إحصائيات!")
+print("💰 صفحة فلوس مع إحصائيات!")
 print("📍 " .. #places .. " مكاناً للانتقال الفوري!")
