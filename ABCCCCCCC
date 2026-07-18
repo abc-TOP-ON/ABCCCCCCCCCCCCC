@@ -420,7 +420,7 @@ createSidebarButton("💰 فلوس", 4, false)
 createSidebarButton("🎣 الصيد", 5, false)
 createSidebarButton("👥 لاعبين", 6, false)
 createSidebarButton("📰 الأخبار", 7, false)
-createSidebarButton("📋 المعلومات", 8, false) -- زر المعلومات الجديد
+createSidebarButton("📋 المعلومات", 8, false)
 createSidebarButton("⚙️ لاعب", 9, false)
 
 -- حاويات المحتوى
@@ -488,7 +488,7 @@ SettingsContainer.ZIndex = 1
 SettingsContainer.Visible = false
 
 -- ============================================
--- حاوية المعلومات (جديدة)
+-- حاوية المعلومات
 -- ============================================
 
 local InfoContainer = Instance.new("Frame")
@@ -892,7 +892,7 @@ local function ShowNews()
 end
 
 -- ============================================
--- محتوى صفحة المعلومات (جديد)
+-- محتوى صفحة المعلومات
 -- ============================================
 
 local InfoFrame = Instance.new("Frame")
