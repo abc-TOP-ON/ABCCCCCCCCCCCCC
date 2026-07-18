@@ -1355,7 +1355,7 @@ createSettingSlider(yOffset, "🌍 الجاذبية", 0, 500, 196.2, "gravity")
 yOffset = yOffset + 70
 
 -- الميزات الإضافية
-createToggleButton(yOffset, "قفز لا نهائي", "🚀", "infiniteJump")
+createToggleButton(yOffset, "قفز لا نهائي (هاتف فقط)", "📱", "infiniteJump")
 yOffset = yOffset + 50
 
 createToggleButton(yOffset, "اختراق الجدران", "🧱", "noclip")
@@ -1370,40 +1370,39 @@ yOffset = yOffset + 50
 SettingsScroll.CanvasSize = UDim2.new(0, 0, 0, yOffset + 20)
 
 -- ============================================
--- 🔥 إصلاح القفز اللانهائي (نسخة واحدة فقط للهاتف والكمبيوتر)
+-- 🔥 القفز اللانهائي (فقط للهاتف - يعمل في الهواء)
 -- ============================================
 
 -- إلغاء أي ربط سابق
 ContextActionService:UnbindAction("JumpAction")
 
--- دالة القفز الموحدة
+-- دالة القفز - فقط للهاتف
 local function handleJump(input, gameProcessed)
-    if gameProcessed then return end  -- منع التداخل مع الكتابة
+    if gameProcessed then return end
     if not features.infiniteJump then return end
     
-    local character = LocalPlayer.Character
-    if not character then return end
+    -- ❌ نمنع القفز على الكمبيوتر (كيبورد)
+    if input.KeyCode == Enum.KeyCode.Space then
+        return  -- ما يسوي شيء على الكمبيوتر
+    end
     
-    local humanoid = character:FindFirstChild("Humanoid")
-    if not humanoid or humanoid.Health <= 0 then return end
-    
-    -- دعم الكمبيوتر (Space) والهاتف (لمس + أزرار)
-    if input.KeyCode == Enum.KeyCode.Space or 
-       input.UserInputType == Enum.UserInputType.Touch or
+    -- ✅ فقط للهاتف (لمس + أزرار)
+    if input.UserInputType == Enum.UserInputType.Touch or
        input.KeyCode == Enum.KeyCode.ButtonR1 or
        input.KeyCode == Enum.KeyCode.ButtonA then
-        local state = humanoid:GetState()
-        if state == Enum.HumanoidStateType.Landed or 
-           state == Enum.HumanoidStateType.Running or
-           state == Enum.HumanoidStateType.Walking or
-           state == Enum.HumanoidStateType.Freefall or
-           state == Enum.HumanoidStateType.GettingUp then
-            humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-        end
+        
+        local character = LocalPlayer.Character
+        if not character then return end
+        
+        local humanoid = character:FindFirstChild("Humanoid")
+        if not humanoid or humanoid.Health <= 0 then return end
+        
+        -- ✅ يسمح بالقفز في أي وقت (حتى في الجو)
+        humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
     end
 end
 
--- ربط الطريقة الرئيسية (لللمس والكيبورد)
+-- ربط الضغط على زر القفز (للهاتف فقط)
 UserInputService.InputBegan:Connect(handleJump)
 
 -- دعم إضافي لأزرار الهاتف عبر ContextActionService
@@ -1413,18 +1412,14 @@ ContextActionService:BindAction("JumpAction", function(actionName, inputState, i
         if character then
             local humanoid = character:FindFirstChild("Humanoid")
             if humanoid and humanoid.Health > 0 then
-                local state = humanoid:GetState()
-                if state == Enum.HumanoidStateType.Landed or 
-                   state == Enum.HumanoidStateType.Running or
-                   state == Enum.HumanoidStateType.Walking or
-                   state == Enum.HumanoidStateType.Freefall or
-                   state == Enum.HumanoidStateType.GettingUp then
-                    humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-                end
+                -- ✅ يقفز في أي مكان (فقط للهاتف)
+                humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
             end
         end
     end
-end, false, Enum.KeyCode.Space, Enum.KeyCode.ButtonR1, Enum.KeyCode.ButtonA)
+end, false, Enum.KeyCode.ButtonR1, Enum.KeyCode.ButtonA)  -- ✅ بدون Space
+
+print("📱 تم تفعيل القفز اللانهائي للهاتف فقط!")
 
 -- ============================================
 -- مراقبة دائمة للميزات
@@ -1600,5 +1595,5 @@ end
 
 print("✅ ABC HUB v15 تم تحميله بنجاح!")
 print("📱 تم دعم الهاتف والكمبيوتر معاً!")
-print("🔧 جميع الميزات: سرعة، قفز، جاذبية، قفز لا نهائي، اختراق جدران، طيران، دوران")
+print("🔧 جميع الميزات: سرعة، قفز، جاذبية، قفز لا نهائي (هاتف فقط)، اختراق جدران، طيران، دوران")
 print("📍 " .. #places .. " مكاناً للانتقال الفوري!")
