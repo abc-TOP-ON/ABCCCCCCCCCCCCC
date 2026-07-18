@@ -769,15 +769,16 @@ local MoneyFrameCorner = Instance.new("UICorner")
 MoneyFrameCorner.CornerRadius = UDim.new(0, 12)
 MoneyFrameCorner.Parent = MoneyFrame
 
--- عنوان الصفحة
+-- عنوان الصفحة (بنفسجي مع خط مميز)
 local MoneyTitle = Instance.new("TextLabel")
-MoneyTitle.Size = UDim2.new(1, 0, 0, 35)
+MoneyTitle.Size = UDim2.new(1, 0, 0, 40)
 MoneyTitle.Position = UDim2.new(0, 0, 0, 5)
-MoneyTitle.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-MoneyTitle.Text = "💰 فلوس 💰"
-MoneyTitle.TextColor3 = Color3.fromRGB(255, 215, 0)
-MoneyTitle.TextSize = 18
+MoneyTitle.BackgroundColor3 = Color3.fromRGB(25, 25, 40)
+MoneyTitle.Text = "✨ فلوس ✨"
+MoneyTitle.TextColor3 = Color3.fromRGB(180, 0, 255)
+MoneyTitle.TextSize = 22
 MoneyTitle.Font = Enum.Font.GothamBold
+MoneyTitle.TextScaled = false
 MoneyTitle.Parent = MoneyFrame
 MoneyTitle.ZIndex = 6
 
@@ -787,7 +788,7 @@ MoneyTitle.ZIndex = 6
 
 local StatsFrame = Instance.new("Frame")
 StatsFrame.Size = UDim2.new(0.9, 0, 0, 80)
-StatsFrame.Position = UDim2.new(0.05, 0, 0.1, 0)
+StatsFrame.Position = UDim2.new(0.05, 0, 0.12, 0)
 StatsFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
 StatsFrame.BorderSizePixel = 0
 StatsFrame.Parent = MoneyFrame
@@ -898,7 +899,7 @@ TimeStatValue.ZIndex = 9
 -- زر التشغيل/الإيقاف
 local ToggleButton = Instance.new("TextButton")
 ToggleButton.Size = UDim2.new(0.8, 0, 0, 45)
-ToggleButton.Position = UDim2.new(0.1, 0, 0.38, 0)
+ToggleButton.Position = UDim2.new(0.1, 0, 0.42, 0)
 ToggleButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
 ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 ToggleButton.TextSize = 22
@@ -914,7 +915,7 @@ ToggleCorner.Parent = ToggleButton
 -- حالة الصفحة
 local StatusLabel = Instance.new("TextLabel")
 StatusLabel.Size = UDim2.new(1, -20, 0, 25)
-StatusLabel.Position = UDim2.new(0, 10, 0.75, 0)
+StatusLabel.Position = UDim2.new(0, 10, 0.78, 0)
 StatusLabel.BackgroundTransparency = 1
 StatusLabel.Text = "📌 اضغط ON لبدء التجميع"
 StatusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
@@ -991,6 +992,7 @@ local function processItem(item)
                     rootPart.CFrame = item.CFrame
                     
                     local remote = game:GetService("ReplicatedStorage"):FindFirstChild("CashDrop", true)
+                    local collected = false
                     
                     while item and item.Parent and CashStealer do
                         if remote and remote:IsA("RemoteEvent") then
@@ -1003,9 +1005,30 @@ local function processItem(item)
                         local clicker = item:FindFirstChildOfClass("ClickDetector")
                         if clicker then fireclickdetector(clicker) end
                         
-                        -- زيادة العداد عند كل محاولة
-                        collectedCount = collectedCount + 1
-                        totalMoneyCollected = totalMoneyCollected + 1
+                        -- ✅ نحسب الفلوس فقط إذا كانت الرزمة موجودة (يعني أخذناها)
+                        if item and item.Parent then
+                            if not collected then
+                                collected = true
+                                collectedCount = collectedCount + 1
+                                -- نحاول نجيب قيمة الفلوس من الـ Billboard
+                                local billboard = item:FindFirstChildOfClass("BillboardGui")
+                                if billboard then
+                                    local textLabel = billboard:FindFirstChildOfClass("TextLabel")
+                                    if textLabel then
+                                        local value = tonumber(textLabel.Text:gsub("[^%d]", ""))
+                                        if value then
+                                            totalMoneyCollected = totalMoneyCollected + value
+                                        else
+                                            totalMoneyCollected = totalMoneyCollected + 1
+                                        end
+                                    else
+                                        totalMoneyCollected = totalMoneyCollected + 1
+                                    end
+                                else
+                                    totalMoneyCollected = totalMoneyCollected + 1
+                                end
+                            end
+                        end
                         
                         task.wait(0.01)
                     end
@@ -1079,7 +1102,7 @@ end)
 -- زر إعادة تعيين الإحصائيات
 local ResetBtn = Instance.new("TextButton")
 ResetBtn.Size = UDim2.new(0.3, 0, 0, 25)
-ResetBtn.Position = UDim2.new(0.35, 0, 0.65, 0)
+ResetBtn.Position = UDim2.new(0.35, 0, 0.7, 0)
 ResetBtn.BackgroundColor3 = Color3.fromRGB(200, 100, 50)
 ResetBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 ResetBtn.TextSize = 13
@@ -1921,8 +1944,8 @@ local function ShowMoney()
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
             if child.Text == "💰 فلوس" then
-                child.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
-                child.TextColor3 = Color3.fromRGB(0, 0, 0)
+                child.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
+                child.TextColor3 = Color3.fromRGB(255, 255, 255)
             else
                 child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
                 child.TextColor3 = Color3.fromRGB(255, 255, 255)
