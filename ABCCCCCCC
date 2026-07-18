@@ -212,7 +212,7 @@ end
 createSidebarButton("🏠 الرئيسية", 1, true)
 createSidebarButton("🎉 ترحيب", 2, false)
 createSidebarButton("⚙️ الإعدادات", 3, false)
-createSidebarButton("⚡ انتقال الفوري", 4, false) -- الزر الجديد
+createSidebarButton("⚡ انتقال الفوري", 4, false)
 
 -- 10. حاوية المحتوى (الصفحة الرئيسية)
 local HomeContainer = Instance.new("Frame")
@@ -669,36 +669,11 @@ WelcomePlayer.TextXAlignment = Enum.TextXAlignment.Center
 WelcomePlayer.Parent = WelcomeFrame
 WelcomePlayer.ZIndex = 6
 
--- 28. زر العودة للرئيسية
-local BackButton = Instance.new("TextButton")
-BackButton.Size = UDim2.new(0.4, 0, 0, 40)
-BackButton.Position = UDim2.new(0.3, 0, 0, 330)
-BackButton.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
-BackButton.BorderSizePixel = 0
-BackButton.Text = "🏠 العودة للرئيسية"
-BackButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-BackButton.TextSize = 14
-BackButton.Font = Enum.Font.GothamBold
-BackButton.Parent = WelcomeFrame
-BackButton.ZIndex = 7
-
-local BackCorner = Instance.new("UICorner")
-BackCorner.CornerRadius = UDim.new(0, 8)
-BackCorner.Parent = BackButton
-
-BackButton.MouseEnter:Connect(function()
-    BackButton.BackgroundColor3 = Color3.fromRGB(220, 0, 255)
-end)
-
-BackButton.MouseLeave:Connect(function()
-    BackButton.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
-end)
-
 -- ============================================
 -- محتوى صفحة الانتقال الفوري (Teleport)
 -- ============================================
 
--- 29. إطار الانتقال الفوري
+-- 28. إطار الانتقال الفوري
 local TeleportFrame = Instance.new("Frame")
 TeleportFrame.Size = UDim2.new(0.9, 0, 0.85, 0)
 TeleportFrame.Position = UDim2.new(0.05, 0, 0.05, 0)
@@ -725,7 +700,7 @@ local TeleportGlowCorner = Instance.new("UICorner")
 TeleportGlowCorner.CornerRadius = UDim.new(0, 15)
 TeleportGlowCorner.Parent = TeleportGlow
 
--- 30. عنوان الانتقال الفوري
+-- 29. عنوان الانتقال الفوري
 local TeleportTitle = Instance.new("TextLabel")
 TeleportTitle.Size = UDim2.new(1, -40, 0, 45)
 TeleportTitle.Position = UDim2.new(0, 20, 0, 10)
@@ -738,7 +713,7 @@ TeleportTitle.TextXAlignment = Enum.TextXAlignment.Center
 TeleportTitle.Parent = TeleportFrame
 TeleportTitle.ZIndex = 6
 
--- 31. خط فاصل
+-- 30. خط فاصل
 local TeleportDivider = Instance.new("Frame")
 TeleportDivider.Size = UDim2.new(0.6, 0, 0, 2)
 TeleportDivider.Position = UDim2.new(0.2, 0, 0, 62)
@@ -748,7 +723,7 @@ TeleportDivider.BorderSizePixel = 0
 TeleportDivider.Parent = TeleportFrame
 TeleportDivider.ZIndex = 6
 
--- 32. زر الانتقال للسباون
+-- 31. زر الانتقال للسباون
 local TeleportSpawn = Instance.new("TextButton")
 TeleportSpawn.Size = UDim2.new(0.4, 0, 0, 45)
 TeleportSpawn.Position = UDim2.new(0.05, 0, 0, 80)
@@ -774,13 +749,13 @@ TeleportSpawn.MouseLeave:Connect(function()
 end)
 
 TeleportSpawn.MouseButton1Click:Connect(function()
-    local spawnLocation = game:GetService("Workspace").SpawnLocation
-    if spawnLocation then
+    local spawnLocation = game:GetService("Workspace"):FindFirstChild("SpawnLocation")
+    if spawnLocation and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
         LocalPlayer.Character.HumanoidRootPart.CFrame = spawnLocation.CFrame
     end
 end)
 
--- 33. زر الانتقال لنقطة محددة
+-- 32. زر الانتقال لنقطة محددة
 local TeleportPoint = Instance.new("TextButton")
 TeleportPoint.Size = UDim2.new(0.4, 0, 0, 45)
 TeleportPoint.Position = UDim2.new(0.55, 0, 0, 80)
@@ -806,11 +781,12 @@ TeleportPoint.MouseLeave:Connect(function()
 end)
 
 TeleportPoint.MouseButton1Click:Connect(function()
-    -- غير الإحداثيات حسب رغبتك
-    LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(0, 10, 0)
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(0, 10, 0) -- غير الإحداثيات حسب رغبتك
+    end
 end)
 
--- 34. زر الانتقال للاعب عشوائي
+-- 33. زر الانتقال للاعب عشوائي
 local TeleportRandom = Instance.new("TextButton")
 TeleportRandom.Size = UDim2.new(0.4, 0, 0, 45)
 TeleportRandom.Position = UDim2.new(0.3, 0, 0, 140)
@@ -838,35 +814,56 @@ end)
 TeleportRandom.MouseButton1Click:Connect(function()
     local players = Players:GetPlayers()
     local target = players[math.random(#players)]
-    if target and target.Character and target.Character.HumanoidRootPart then
-        LocalPlayer.Character.HumanoidRootPart.CFrame = target.Character.HumanoidRootPart.CFrame
+    if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
+        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            LocalPlayer.Character.HumanoidRootPart.CFrame = target.Character.HumanoidRootPart.CFrame
+        end
     end
 end)
 
--- 35. زر العودة للرئيسية من صفحة الانتقال
-local TeleportBackButton = Instance.new("TextButton")
-TeleportBackButton.Size = UDim2.new(0.3, 0, 0, 40)
-TeleportBackButton.Position = UDim2.new(0.35, 0, 0, 210)
-TeleportBackButton.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
-TeleportBackButton.BorderSizePixel = 0
-TeleportBackButton.Text = "🏠 العودة للرئيسية"
-TeleportBackButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-TeleportBackButton.TextSize = 14
-TeleportBackButton.Font = Enum.Font.GothamBold
-TeleportBackButton.Parent = TeleportFrame
-TeleportBackButton.ZIndex = 7
+-- 34. زر الانتقال لنقطة عالية (مثال إضافي)
+local TeleportHigh = Instance.new("TextButton")
+TeleportHigh.Size = UDim2.new(0.4, 0, 0, 45)
+TeleportHigh.Position = UDim2.new(0.55, 0, 0, 140)
+TeleportHigh.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
+TeleportHigh.BorderSizePixel = 0
+TeleportHigh.Text = "☁️ نقطة عالية"
+TeleportHigh.TextColor3 = Color3.fromRGB(255, 255, 255)
+TeleportHigh.TextSize = 16
+TeleportHigh.Font = Enum.Font.GothamBold
+TeleportHigh.Parent = TeleportFrame
+TeleportHigh.ZIndex = 7
 
-local TeleportBackCorner = Instance.new("UICorner")
-TeleportBackCorner.CornerRadius = UDim.new(0, 8)
-TeleportBackCorner.Parent = TeleportBackButton
+local TeleportHighCorner = Instance.new("UICorner")
+TeleportHighCorner.CornerRadius = UDim.new(0, 8)
+TeleportHighCorner.Parent = TeleportHigh
 
-TeleportBackButton.MouseEnter:Connect(function()
-    TeleportBackButton.BackgroundColor3 = Color3.fromRGB(220, 0, 255)
+TeleportHigh.MouseEnter:Connect(function()
+    TeleportHigh.BackgroundColor3 = Color3.fromRGB(220, 0, 255)
 end)
 
-TeleportBackButton.MouseLeave:Connect(function()
-    TeleportBackButton.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
+TeleportHigh.MouseLeave:Connect(function()
+    TeleportHigh.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
 end)
+
+TeleportHigh.MouseButton1Click:Connect(function()
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(0, 500, 0)
+    end
+end)
+
+-- 35. رسالة أسفل الصفحة
+local TeleportFooter = Instance.new("TextLabel")
+TeleportFooter.Size = UDim2.new(1, -40, 0, 20)
+TeleportFooter.Position = UDim2.new(0, 20, 0, 210)
+TeleportFooter.BackgroundTransparency = 1
+TeleportFooter.Text = "💜 اختر وجهتك وانتقل فوراً"
+TeleportFooter.TextColor3 = Color3.fromRGB(150, 150, 180)
+TeleportFooter.TextSize = 13
+TeleportFooter.Font = Enum.Font.GothamMedium
+TeleportFooter.TextXAlignment = Enum.TextXAlignment.Center
+TeleportFooter.Parent = TeleportFrame
+TeleportFooter.ZIndex = 6
 
 -- ============================================
 -- 36. وظائف الأزرار (تبديل الصفحات)
@@ -941,9 +938,5 @@ for _, child in pairs(Sidebar:GetChildren()) do
         end
     end
 end
-
--- ربط أزرار العودة
-BackButton.MouseButton1Click:Connect(ShowHome)
-TeleportBackButton.MouseButton1Click:Connect(ShowHome)
 
 print("✅ ABC HUB v15 تم تحميله بنجاح!")
