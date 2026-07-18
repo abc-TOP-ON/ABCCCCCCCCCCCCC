@@ -1,4 +1,4 @@
--- ABC HUB v15 - نسخة الهاتف (مع ميزات جديدة)
+-- ABC HUB v15 - نسخة الهاتف (مع سكربت تجميع الفلوس)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -754,13 +754,13 @@ TeleportFooter.Parent = TeleportFrame
 TeleportFooter.ZIndex = 6
 
 -- ============================================
--- محتوى صفحة الفلوس (Money)
+-- محتوى صفحة الفلوس (Money) - سكربت ArabsCashUltimateV7
 -- ============================================
 
 local MoneyFrame = Instance.new("Frame")
 MoneyFrame.Size = UDim2.new(0.9, 0, 0.85, 0)
 MoneyFrame.Position = UDim2.new(0.05, 0, 0.05, 0)
-MoneyFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 35)
+MoneyFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 MoneyFrame.BorderSizePixel = 0
 MoneyFrame.Parent = MoneyContainer
 MoneyFrame.ZIndex = 5
@@ -769,347 +769,154 @@ local MoneyFrameCorner = Instance.new("UICorner")
 MoneyFrameCorner.CornerRadius = UDim.new(0, 12)
 MoneyFrameCorner.Parent = MoneyFrame
 
-local MoneyGlow = Instance.new("Frame")
-MoneyGlow.Size = UDim2.new(1, 6, 1, 6)
-MoneyGlow.Position = UDim2.new(0, -3, 0, -3)
-MoneyGlow.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
-MoneyGlow.BackgroundTransparency = 0.3
-MoneyGlow.BorderSizePixel = 0
-MoneyGlow.Parent = MoneyFrame
-MoneyGlow.ZIndex = -1
-
-local MoneyGlowCorner = Instance.new("UICorner")
-MoneyGlowCorner.CornerRadius = UDim.new(0, 15)
-MoneyGlowCorner.Parent = MoneyGlow
-
+-- عنوان الصفحة
 local MoneyTitle = Instance.new("TextLabel")
-MoneyTitle.Size = UDim2.new(1, -40, 0, 40)
-MoneyTitle.Position = UDim2.new(0, 20, 0, 8)
-MoneyTitle.BackgroundTransparency = 1
-MoneyTitle.Text = "💰 إدارة الفلوس 💰"
-MoneyTitle.TextColor3 = Color3.fromRGB(255, 215, 0)
-MoneyTitle.TextSize = 22
-MoneyTitle.Font = Enum.Font.GothamBold
-MoneyTitle.TextXAlignment = Enum.TextXAlignment.Center
+MoneyTitle.Size = UDim2.new(1, 0, 0, 35)
+MoneyTitle.Position = UDim2.new(0, 0, 0, 5)
+MoneyTitle.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+MoneyTitle.Text = "💰 Arabs Ultimate V7 (No-Lag) 💰"
+MoneyTitle.TextColor3 = Color3.fromRGB(0, 255, 100)
+MoneyTitle.TextSize = 14
+MoneyTitle.Font = Enum.Font.SourceSansBold
 MoneyTitle.Parent = MoneyFrame
 MoneyTitle.ZIndex = 6
 
-local MoneyDivider = Instance.new("Frame")
-MoneyDivider.Size = UDim2.new(0.6, 0, 0, 2)
-MoneyDivider.Position = UDim2.new(0.2, 0, 0, 52)
-MoneyDivider.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
-MoneyDivider.BackgroundTransparency = 0.4
-MoneyDivider.BorderSizePixel = 0
-MoneyDivider.Parent = MoneyFrame
-MoneyDivider.ZIndex = 6
+-- زر التشغيل/الإيقاف
+local ToggleButton = Instance.new("TextButton")
+ToggleButton.Size = UDim2.new(0.8, 0, 0, 55)
+ToggleButton.Position = UDim2.new(0.1, 0, 0.35, 0)
+ToggleButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleButton.TextSize = 24
+ToggleButton.Font = Enum.Font.SourceSansBold
+ToggleButton.Text = "OFF"
+ToggleButton.Parent = MoneyFrame
+ToggleButton.ZIndex = 7
 
--- عرض الرصيد الحالي
-local BalanceFrame = Instance.new("Frame")
-BalanceFrame.Size = UDim2.new(0.9, 0, 0, 60)
-BalanceFrame.Position = UDim2.new(0.05, 0, 0, 65)
-BalanceFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
-BalanceFrame.BorderSizePixel = 0
-BalanceFrame.Parent = MoneyFrame
-BalanceFrame.ZIndex = 7
+local ToggleCorner = Instance.new("UICorner")
+ToggleCorner.CornerRadius = UDim.new(0, 10)
+ToggleCorner.Parent = ToggleButton
 
-local BalanceCorner = Instance.new("UICorner")
-BalanceCorner.CornerRadius = UDim.new(0, 10)
-BalanceCorner.Parent = BalanceFrame
+-- حالة السكربت
+local CashStealer = false
+local eventConnection = nil
 
-local BalanceIcon = Instance.new("TextLabel")
-BalanceIcon.Size = UDim2.new(0, 40, 1, 0)
-BalanceIcon.Position = UDim2.new(0, 10, 0, 0)
-BalanceIcon.BackgroundTransparency = 1
-BalanceIcon.Text = "💰"
-BalanceIcon.TextColor3 = Color3.fromRGB(255, 215, 0)
-BalanceIcon.TextSize = 30
-BalanceIcon.Font = Enum.Font.GothamBold
-BalanceIcon.TextXAlignment = Enum.TextXAlignment.Center
-BalanceIcon.Parent = BalanceFrame
-BalanceIcon.ZIndex = 8
-
-local BalanceLabel = Instance.new("TextLabel")
-BalanceLabel.Size = UDim2.new(1, -60, 0, 20)
-BalanceLabel.Position = UDim2.new(0, 60, 0, 8)
-BalanceLabel.BackgroundTransparency = 1
-BalanceLabel.Text = "الرصيد الحالي"
-BalanceLabel.TextColor3 = Color3.fromRGB(180, 180, 200)
-BalanceLabel.TextSize = 12
-BalanceLabel.Font = Enum.Font.GothamMedium
-BalanceLabel.TextXAlignment = Enum.TextXAlignment.Left
-BalanceLabel.Parent = BalanceFrame
-BalanceLabel.ZIndex = 8
-
-local BalanceValue = Instance.new("TextLabel")
-BalanceValue.Size = UDim2.new(1, -60, 0, 30)
-BalanceValue.Position = UDim2.new(0, 60, 0, 28)
-BalanceValue.BackgroundTransparency = 1
-BalanceValue.Text = "0 $"
-BalanceValue.TextColor3 = Color3.fromRGB(255, 215, 0)
-BalanceValue.TextSize = 24
-BalanceValue.Font = Enum.Font.GothamBold
-BalanceValue.TextXAlignment = Enum.TextXAlignment.Left
-BalanceValue.Parent = BalanceFrame
-BalanceValue.ZIndex = 8
-
--- أزرار التحكم بالفلوس
-local MoneyScroll = Instance.new("ScrollingFrame")
-MoneyScroll.Size = UDim2.new(1, -10, 1, -155)
-MoneyScroll.Position = UDim2.new(0, 5, 0, 135)
-MoneyScroll.BackgroundTransparency = 1
-MoneyScroll.BorderSizePixel = 0
-MoneyScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
-MoneyScroll.ScrollBarThickness = 4
-MoneyScroll.Parent = MoneyFrame
-MoneyScroll.ZIndex = 6
-
--- دالة تحديث الرصيد
-local function UpdateBalance()
-    local character = LocalPlayer.Character
-    if character then
-        local humanoid = character:FindFirstChild("Humanoid")
-        if humanoid then
-            -- محاولة جلب الفلوس من اللعبة
-            local success, value = pcall(function()
-                return LocalPlayer:GetAttribute("Money") or 
-                       LocalPlayer:GetAttribute("Cash") or 
-                       LocalPlayer:GetAttribute("Coins") or
-                       LocalPlayer:GetAttribute("Gold") or 0
-            end)
-            if success then
-                local amount = tonumber(value) or 0
-                BalanceValue.Text = string.format("%.0f $", amount)
-            else
-                BalanceValue.Text = "⚠️ غير متوفر"
+-- دالة التحقق السريع والالتقاط الخاطف
+local function processItem(item)
+    if not CashStealer then return end
+    
+    if item.Name == "CashDrop" and (item:IsA("Part") or item:IsA("MeshPart")) then
+        local fullName = item:GetFullName():lower()
+        
+        -- الفلاتر الصارمة
+        if not fullName:find("table") and 
+           not fullName:find("board") and 
+           not fullName:find("game") and 
+           not fullName:find("ludo") and 
+           not fullName:find("جلسة") and 
+           not fullName:find("طاولة") and
+           not fullName:find("seat") and         
+           not fullName:find("chair") and        
+           not fullName:find("bench") and        
+           not fullName:find("lockedframe") and  
+           not fullName:find("barrier") then
+            
+            task.wait(0.02)
+            if item:FindFirstChildOfClass("BillboardGui") then
+                local player = game.Players.LocalPlayer
+                local character = player.Character or player.CharacterAdded:Wait()
+                local rootPart = character:FindFirstChild("HumanoidRootPart")
+                
+                if rootPart then
+                    local originalPosition = rootPart.CFrame
+                    rootPart.CFrame = item.CFrame
+                    
+                    local remote = game:GetService("ReplicatedStorage"):FindFirstChild("CashDrop", true)
+                    
+                    while item and item.Parent and CashStealer do
+                        if remote and remote:IsA("RemoteEvent") then
+                            remote:FireServer(item)
+                        end
+                        
+                        local prompt = item:FindFirstChildOfClass("ProximityPrompt")
+                        if prompt then fireproximityprompt(prompt) end
+                        
+                        local clicker = item:FindFirstChildOfClass("ClickDetector")
+                        if clicker then fireclickdetector(clicker) end
+                        
+                        task.wait(0.01)
+                    end
+                    
+                    if CashStealer then
+                        rootPart.CFrame = originalPosition
+                    end
+                end
             end
         end
     end
 end
 
--- تحديث الرصيد كل 3 ثواني
+-- تشغيل نظام الرصد
+local function startStealing()
+    -- تجميع الفلوس الموجودة
+    for _, item in pairs(workspace:GetDescendants()) do
+        if item.Name == "CashDrop" then
+            spawn(function() pcall(processItem, item) end)
+        end
+    end
+    
+    -- مراقبة الملفات الجديدة
+    eventConnection = workspace.DescendantAdded:Connect(function(item)
+        if item.Name == "CashDrop" then
+            pcall(processItem, item)
+        end
+    end)
+end
+
+-- زر التشغيل/الإيقاف
+ToggleButton.MouseButton1Click:Connect(function()
+    CashStealer = not CashStealer
+    if CashStealer then
+        ToggleButton.Text = "ON ✅"
+        ToggleButton.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
+        startStealing()
+        showNotification("✅ تم تشغيل تجميع الفلوس", MoneyFrame)
+    else
+        ToggleButton.Text = "OFF ❌"
+        ToggleButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+        if eventConnection then
+            eventConnection:Disconnect()
+            eventConnection = nil
+        end
+        showNotification("⛔ تم إيقاف تجميع الفلوس", MoneyFrame)
+    end
+end)
+
+-- حالة الصفحة
+local StatusLabel = Instance.new("TextLabel")
+StatusLabel.Size = UDim2.new(1, -20, 0, 25)
+StatusLabel.Position = UDim2.new(0, 10, 0.75, 0)
+StatusLabel.BackgroundTransparency = 1
+StatusLabel.Text = "📌 اضغط ON لبدء التجميع"
+StatusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+StatusLabel.TextSize = 13
+StatusLabel.Font = Enum.Font.SourceSans
+StatusLabel.Parent = MoneyFrame
+StatusLabel.ZIndex = 7
+
+-- تحديث الحالة
 task.spawn(function()
     while ScreenGui do
-        UpdateBalance()
-        task.wait(3)
-    end
-end)
-
--- دالة إنشاء زر الفلوس
-local function createMoneyButton(yOffset, labelText, icon, amount, color)
-    local container = Instance.new("Frame")
-    container.Size = UDim2.new(0.92, 0, 0, 50)
-    container.Position = UDim2.new(0.04, 0, 0, yOffset)
-    container.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
-    container.BorderSizePixel = 0
-    container.Parent = MoneyScroll
-    container.ZIndex = 7
-    
-    local containerCorner = Instance.new("UICorner")
-    containerCorner.CornerRadius = UDim.new(0, 8)
-    containerCorner.Parent = container
-    
-    local iconLabel = Instance.new("TextLabel")
-    iconLabel.Size = UDim2.new(0, 40, 1, 0)
-    iconLabel.Position = UDim2.new(0, 5, 0, 0)
-    iconLabel.BackgroundTransparency = 1
-    iconLabel.Text = icon
-    iconLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    iconLabel.TextSize = 25
-    iconLabel.Font = Enum.Font.GothamBold
-    iconLabel.TextXAlignment = Enum.TextXAlignment.Center
-    iconLabel.Parent = container
-    iconLabel.ZIndex = 8
-    
-    local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(0.5, 0, 1, 0)
-    label.Position = UDim2.new(0, 55, 0, 0)
-    label.BackgroundTransparency = 1
-    label.Text = labelText
-    label.TextColor3 = Color3.fromRGB(255, 255, 255)
-    label.TextSize = 14
-    label.Font = Enum.Font.GothamSemibold
-    label.TextXAlignment = Enum.TextXAlignment.Left
-    label.Parent = container
-    label.ZIndex = 8
-    
-    local amountLabel = Instance.new("TextLabel")
-    amountLabel.Size = UDim2.new(0.3, 0, 1, 0)
-    amountLabel.Position = UDim2.new(0.7, -30, 0, 0)
-    amountLabel.BackgroundTransparency = 1
-    amountLabel.Text = amount
-    amountLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
-    amountLabel.TextSize = 14
-    amountLabel.Font = Enum.Font.GothamBold
-    amountLabel.TextXAlignment = Enum.TextXAlignment.Right
-    amountLabel.Parent = container
-    amountLabel.ZIndex = 8
-    
-    local actionBtn = Instance.new("TextButton")
-    actionBtn.Size = UDim2.new(0.25, 0, 0, 30)
-    actionBtn.Position = UDim2.new(0.72, 0, 0.5, -15)
-    actionBtn.BackgroundColor3 = color or Color3.fromRGB(180, 0, 255)
-    actionBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    actionBtn.TextSize = 12
-    actionBtn.Font = Enum.Font.GothamBold
-    actionBtn.Text = "تطبيق"
-    actionBtn.Parent = container
-    actionBtn.ZIndex = 9
-    
-    local actionCorner = Instance.new("UICorner")
-    actionCorner.CornerRadius = UDim.new(0, 6)
-    actionCorner.Parent = actionBtn
-    
-    actionBtn.MouseEnter:Connect(function()
-        actionBtn.BackgroundColor3 = Color3.new(
-            math.min(color.R + 0.2, 1),
-            math.min(color.G + 0.2, 1),
-            math.min(color.B + 0.2, 1)
-        )
-    end)
-    actionBtn.MouseLeave:Connect(function()
-        actionBtn.BackgroundColor3 = color or Color3.fromRGB(180, 0, 255)
-    end)
-    
-    return container, actionBtn
-end
-
--- أزرار الفلوس
-local moneyYOffset = 5
-
--- إضافة فلوس
-local addBtn1, addAction1 = createMoneyButton(moneyYOffset, "إضافة 1000 $", "➕", "+1000", Color3.fromRGB(50, 200, 50))
-moneyYOffset = moneyYOffset + 55
-
-local addBtn2, addAction2 = createMoneyButton(moneyYOffset, "إضافة 5000 $", "➕", "+5000", Color3.fromRGB(50, 200, 50))
-moneyYOffset = moneyYOffset + 55
-
-local addBtn3, addAction3 = createMoneyButton(moneyYOffset, "إضافة 10000 $", "➕", "+10000", Color3.fromRGB(50, 200, 50))
-moneyYOffset = moneyYOffset + 55
-
-local addBtn4, addAction4 = createMoneyButton(moneyYOffset, "إضافة 50000 $", "➕", "+50000", Color3.fromRGB(50, 200, 50))
-moneyYOffset = moneyYOffset + 55
-
-local addBtn5, addAction5 = createMoneyButton(moneyYOffset, "إضافة 100000 $", "➕", "+100000", Color3.fromRGB(50, 200, 50))
-moneyYOffset = moneyYOffset + 55
-
--- خط فاصل
-local divider2 = Instance.new("Frame")
-divider2.Size = UDim2.new(0.9, 0, 0, 1)
-divider2.Position = UDim2.new(0.05, 0, 0, moneyYOffset)
-divider2.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
-divider2.BackgroundTransparency = 0.3
-divider2.BorderSizePixel = 0
-divider2.Parent = MoneyScroll
-divider2.ZIndex = 7
-moneyYOffset = moneyYOffset + 10
-
--- خصم فلوس
-local subBtn1, subAction1 = createMoneyButton(moneyYOffset, "خصم 1000 $", "➖", "-1000", Color3.fromRGB(200, 50, 50))
-moneyYOffset = moneyYOffset + 55
-
-local subBtn2, subAction2 = createMoneyButton(moneyYOffset, "خصم 5000 $", "➖", "-5000", Color3.fromRGB(200, 50, 50))
-moneyYOffset = moneyYOffset + 55
-
-local subBtn3, subAction3 = createMoneyButton(moneyYOffset, "خصم 10000 $", "➖", "-10000", Color3.fromRGB(200, 50, 50))
-moneyYOffset = moneyYOffset + 55
-
-local subBtn4, subAction4 = createMoneyButton(moneyYOffset, "خصم 50000 $", "➖", "-50000", Color3.fromRGB(200, 50, 50))
-moneyYOffset = moneyYOffset + 55
-
-local subBtn5, subAction5 = createMoneyButton(moneyYOffset, "خصم 100000 $", "➖", "-100000", Color3.fromRGB(200, 50, 50))
-moneyYOffset = moneyYOffset + 55
-
--- خط فاصل
-local divider3 = Instance.new("Frame")
-divider3.Size = UDim2.new(0.9, 0, 0, 1)
-divider3.Position = UDim2.new(0.05, 0, 0, moneyYOffset)
-divider3.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
-divider3.BackgroundTransparency = 0.3
-divider3.BorderSizePixel = 0
-divider3.Parent = MoneyScroll
-divider3.ZIndex = 7
-moneyYOffset = moneyYOffset + 10
-
--- تعيين الفلوس
-local setBtn1, setAction1 = createMoneyButton(moneyYOffset, "تعيين 1000 $", "⚡", "=1000", Color3.fromRGB(0, 150, 255))
-moneyYOffset = moneyYOffset + 55
-
-local setBtn2, setAction2 = createMoneyButton(moneyYOffset, "تعيين 10000 $", "⚡", "=10000", Color3.fromRGB(0, 150, 255))
-moneyYOffset = moneyYOffset + 55
-
-local setBtn3, setAction3 = createMoneyButton(moneyYOffset, "تعيين 100000 $", "⚡", "=100000", Color3.fromRGB(0, 150, 255))
-moneyYOffset = moneyYOffset + 55
-
-local setBtn4, setAction4 = createMoneyButton(moneyYOffset, "تعيين 1000000 $", "⚡", "=1M", Color3.fromRGB(0, 150, 255))
-moneyYOffset = moneyYOffset + 55
-
--- دالة تغيير الفلوس
-local function ModifyMoney(amount)
-    local character = LocalPlayer.Character
-    if character then
-        local humanoid = character:FindFirstChild("Humanoid")
-        if humanoid then
-            -- محاولة تغيير الفلوس
-            local success = pcall(function()
-                local current = LocalPlayer:GetAttribute("Money") or 0
-                LocalPlayer:SetAttribute("Money", current + amount)
-            end)
-            if not success then
-                pcall(function()
-                    local current = LocalPlayer:GetAttribute("Cash") or 0
-                    LocalPlayer:SetAttribute("Cash", current + amount)
-                end)
-            end
-            UpdateBalance()
-            showNotification("✅ تم تعديل الرصيد", MoneyFrame)
+        task.wait(0.5)
+        if CashStealer then
+            StatusLabel.Text = "🟢 جاري التجميع..."
+            StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 100)
+        else
+            StatusLabel.Text = "🔴 متوقف"
+            StatusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
         end
     end
-end
-
--- ربط أزرار الإضافة
-addAction1.MouseButton1Click:Connect(function() ModifyMoney(1000) end)
-addAction2.MouseButton1Click:Connect(function() ModifyMoney(5000) end)
-addAction3.MouseButton1Click:Connect(function() ModifyMoney(10000) end)
-addAction4.MouseButton1Click:Connect(function() ModifyMoney(50000) end)
-addAction5.MouseButton1Click:Connect(function() ModifyMoney(100000) end)
-
--- ربط أزرار الخصم
-subAction1.MouseButton1Click:Connect(function() ModifyMoney(-1000) end)
-subAction2.MouseButton1Click:Connect(function() ModifyMoney(-5000) end)
-subAction3.MouseButton1Click:Connect(function() ModifyMoney(-10000) end)
-subAction4.MouseButton1Click:Connect(function() ModifyMoney(-50000) end)
-subAction5.MouseButton1Click:Connect(function() ModifyMoney(-100000) end)
-
--- ربط أزرار التعيين
-setAction1.MouseButton1Click:Connect(function()
-    pcall(function() LocalPlayer:SetAttribute("Money", 1000) end)
-    pcall(function() LocalPlayer:SetAttribute("Cash", 1000) end)
-    UpdateBalance()
-    showNotification("✅ تم تعيين الرصيد إلى 1000 $", MoneyFrame)
 end)
-
-setAction2.MouseButton1Click:Connect(function()
-    pcall(function() LocalPlayer:SetAttribute("Money", 10000) end)
-    pcall(function() LocalPlayer:SetAttribute("Cash", 10000) end)
-    UpdateBalance()
-    showNotification("✅ تم تعيين الرصيد إلى 10000 $", MoneyFrame)
-end)
-
-setAction3.MouseButton1Click:Connect(function()
-    pcall(function() LocalPlayer:SetAttribute("Money", 100000) end)
-    pcall(function() LocalPlayer:SetAttribute("Cash", 100000) end)
-    UpdateBalance()
-    showNotification("✅ تم تعيين الرصيد إلى 100000 $", MoneyFrame)
-end)
-
-setAction4.MouseButton1Click:Connect(function()
-    pcall(function() LocalPlayer:SetAttribute("Money", 1000000) end)
-    pcall(function() LocalPlayer:SetAttribute("Cash", 1000000) end)
-    UpdateBalance()
-    showNotification("✅ تم تعيين الرصيد إلى 1000000 $", MoneyFrame)
-end)
-
-MoneyScroll.CanvasSize = UDim2.new(0, 0, 0, moneyYOffset + 20)
 
 -- ============================================
 -- محتوى صفحة اللاعبين (Player List)
@@ -1928,7 +1735,6 @@ local function ShowMoney()
     MoneyContainer.Visible = true
     PlayerContainer.Visible = false
     SettingsContainer.Visible = false
-    UpdateBalance()
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
             if child.Text == "💰 الفلوس" then
@@ -2006,5 +1812,5 @@ end
 print("✅ ABC HUB v15 تم تحميله بنجاح!")
 print("📱 تم دعم الهاتف والكمبيوتر معاً!")
 print("🔧 الميزات: سرعة، قفز، جاذبية، اختفاء، اختراق جدران، طيران، دوران، FOV 120")
-print("💰 صفحة الفلوس مضافة!")
+print("💰 سكربت ArabsCashUltimateV7 (No-Lag) مدمج!")
 print("📍 " .. #places .. " مكاناً للانتقال الفوري!")
