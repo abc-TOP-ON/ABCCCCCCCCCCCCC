@@ -1,138 +1,102 @@
 -- ============================================
--- ميزة الأخبار - 7MO HUB
+-- حاوية المعلومات
 -- ============================================
 
--- ============================================
--- 1. إنشاء حاوية الأخبار
--- ============================================
-
-local NewsContainer = Instance.new("Frame")
-NewsContainer.Name = "NewsContainer"
-NewsContainer.Size = UDim2.new(1, -150, 1, -20)
-NewsContainer.Position = UDim2.new(0, 150, 0, 10)
-NewsContainer.BackgroundTransparency = 1
-NewsContainer.Parent = MainFrame  -- تأكد من وجود MainFrame
-NewsContainer.ZIndex = 1
-NewsContainer.Visible = false
+local InfoContainer = Instance.new("Frame")
+InfoContainer.Name = "InfoContainer"
+InfoContainer.Size = UDim2.new(1, -150, 1, -20)
+InfoContainer.Position = UDim2.new(0, 150, 0, 10)
+InfoContainer.BackgroundTransparency = 1
+InfoContainer.Parent = MainFrame
+InfoContainer.ZIndex = 1
+InfoContainer.Visible = false
 
 -- ============================================
--- 2. إطار الأخبار الرئيسي
+-- محتوى صفحة المعلومات
 -- ============================================
 
-local NewsFrame = Instance.new("Frame")
-NewsFrame.Size = UDim2.new(0.92, 0, 0.88, 0)
-NewsFrame.Position = UDim2.new(0.04, 0, 0.04, 0)
-NewsFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 30)
-NewsFrame.BorderSizePixel = 0
-NewsFrame.Parent = NewsContainer
-NewsFrame.ZIndex = 5
+local InfoFrame = Instance.new("Frame")
+InfoFrame.Size = UDim2.new(0.9, 0, 0.85, 0)
+InfoFrame.Position = UDim2.new(0.05, 0, 0.05, 0)
+InfoFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 35)
+InfoFrame.BorderSizePixel = 0
+InfoFrame.Parent = InfoContainer
+InfoFrame.ZIndex = 5
 
-local NewsFrameCorner = Instance.new("UICorner")
-NewsFrameCorner.CornerRadius = UDim.new(0, 12)
-NewsFrameCorner.Parent = NewsFrame
+local InfoFrameCorner = Instance.new("UICorner")
+InfoFrameCorner.CornerRadius = UDim.new(0, 12)
+InfoFrameCorner.Parent = InfoFrame
 
--- ============================================
--- 3. إطار متوهج (Glow Effect)
--- ============================================
+-- إطار متوهج
+local InfoGlow = Instance.new("Frame")
+InfoGlow.Size = UDim2.new(1, 6, 1, 6)
+InfoGlow.Position = UDim2.new(0, -3, 0, -3)
+InfoGlow.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
+InfoGlow.BackgroundTransparency = 0.3
+InfoGlow.BorderSizePixel = 0
+InfoGlow.Parent = InfoFrame
+InfoGlow.ZIndex = -1
 
-local NewsGlow = Instance.new("Frame")
-NewsGlow.Size = UDim2.new(1, 6, 1, 6)
-NewsGlow.Position = UDim2.new(0, -3, 0, -3)
-NewsGlow.BackgroundColor3 = Color3.fromRGB(255, 200, 0)
-NewsGlow.BackgroundTransparency = 0.3
-NewsGlow.BorderSizePixel = 0
-NewsGlow.Parent = NewsFrame
-NewsGlow.ZIndex = -1
+local InfoGlowCorner = Instance.new("UICorner")
+InfoGlowCorner.CornerRadius = UDim.new(0, 15)
+InfoGlowCorner.Parent = InfoGlow
 
-local NewsGlowCorner = Instance.new("UICorner")
-NewsGlowCorner.CornerRadius = UDim.new(0, 15)
-NewsGlowCorner.Parent = NewsGlow
+-- عنوان الصفحة
+local InfoTitle = Instance.new("TextLabel")
+InfoTitle.Size = UDim2.new(1, -40, 0, 40)
+InfoTitle.Position = UDim2.new(0, 20, 0, 8)
+InfoTitle.BackgroundTransparency = 1
+InfoTitle.Text = "📋 معلومات السكربت"
+InfoTitle.TextColor3 = Color3.fromRGB(0, 200, 255)
+InfoTitle.TextSize = 22
+InfoTitle.Font = Enum.Font.GothamBold
+InfoTitle.TextXAlignment = Enum.TextXAlignment.Center
+InfoTitle.Parent = InfoFrame
+InfoTitle.ZIndex = 6
 
--- ============================================
--- 4. عنوان الصفحة
--- ============================================
+-- خط فاصل
+local InfoDivider = Instance.new("Frame")
+InfoDivider.Size = UDim2.new(0.6, 0, 0, 2)
+InfoDivider.Position = UDim2.new(0.2, 0, 0, 52)
+InfoDivider.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
+InfoDivider.BackgroundTransparency = 0.4
+InfoDivider.BorderSizePixel = 0
+InfoDivider.Parent = InfoFrame
+InfoDivider.ZIndex = 6
 
-local NewsTitle = Instance.new("TextLabel")
-NewsTitle.Size = UDim2.new(1, -40, 0, 40)
-NewsTitle.Position = UDim2.new(0, 20, 0, 5)
-NewsTitle.BackgroundTransparency = 1
-NewsTitle.Text = "📰 آخر الأخبار والتحديثات"
-NewsTitle.TextColor3 = Color3.fromRGB(255, 200, 0)
-NewsTitle.TextSize = 20
-NewsTitle.Font = Enum.Font.GothamBold
-NewsTitle.TextXAlignment = Enum.TextXAlignment.Center
-NewsTitle.Parent = NewsFrame
-NewsTitle.ZIndex = 6
+-- حاوية البطاقات
+local InfoScroll = Instance.new("ScrollingFrame")
+InfoScroll.Size = UDim2.new(1, -10, 1, -75)
+InfoScroll.Position = UDim2.new(0, 5, 0, 58)
+InfoScroll.BackgroundTransparency = 1
+InfoScroll.BorderSizePixel = 0
+InfoScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+InfoScroll.ScrollBarThickness = 4
+InfoScroll.Parent = InfoFrame
+InfoScroll.ZIndex = 6
 
--- ============================================
--- 5. خط فاصل
--- ============================================
-
-local NewsDivider = Instance.new("Frame")
-NewsDivider.Size = UDim2.new(0.7, 0, 0, 2)
-NewsDivider.Position = UDim2.new(0.15, 0, 0, 50)
-NewsDivider.BackgroundColor3 = Color3.fromRGB(255, 200, 0)
-NewsDivider.BackgroundTransparency = 0.4
-NewsDivider.BorderSizePixel = 0
-NewsDivider.Parent = NewsFrame
-NewsDivider.ZIndex = 6
-
--- ============================================
--- 6. سكرول للأخبار (Scrolling Frame)
--- ============================================
-
-local NewsScroll = Instance.new("ScrollingFrame")
-NewsScroll.Size = UDim2.new(1, -10, 1, -75)
-NewsScroll.Position = UDim2.new(0, 5, 0, 55)
-NewsScroll.BackgroundTransparency = 1
-NewsScroll.BorderSizePixel = 0
-NewsScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
-NewsScroll.ScrollBarThickness = 4
-NewsScroll.Parent = NewsFrame
-NewsScroll.ZIndex = 6
-
-local newsY = 5
-
--- ============================================
--- 7. دالة إنشاء بطاقة خبر
--- ============================================
-
-local function createNewsCard(icon, title, desc, color, isImportant)
+-- دالة إنشاء بطاقة معلومات
+local function createInfoCard2(icon, title, value, color)
     local card = Instance.new("Frame")
-    card.Size = UDim2.new(0.94, 0, 0, isImportant and 70 or 60)
-    card.Position = UDim2.new(0.03, 0, 0, newsY)
-    card.BackgroundColor3 = isImportant and Color3.fromRGB(40, 20, 20) or Color3.fromRGB(28, 28, 42)
+    card.Size = UDim2.new(0.92, 0, 0, 55)
+    card.Position = UDim2.new(0.04, 0, 0, 5)
+    card.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
     card.BorderSizePixel = 0
-    card.Parent = NewsScroll
+    card.Parent = InfoScroll
     card.ZIndex = 7
     
     local cardCorner = Instance.new("UICorner")
     cardCorner.CornerRadius = UDim.new(0, 8)
     cardCorner.Parent = card
     
-    -- إضاءة جانبية للأخبار المهمة
-    if isImportant then
-        local glowBar = Instance.new("Frame")
-        glowBar.Size = UDim2.new(0, 4, 1, -8)
-        glowBar.Position = UDim2.new(0, 0, 0, 4)
-        glowBar.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
-        glowBar.BorderSizePixel = 0
-        glowBar.Parent = card
-        glowBar.ZIndex = 8
-        
-        local glowBarCorner = Instance.new("UICorner")
-        glowBarCorner.CornerRadius = UDim.new(0, 4)
-        glowBarCorner.Parent = glowBar
-    end
-    
-    -- الأيقونة
+    -- أيقونة
     local iconLabel = Instance.new("TextLabel")
-    iconLabel.Size = UDim2.new(0, 40, 1, 0)
-    iconLabel.Position = UDim2.new(0, 6, 0, 0)
+    iconLabel.Size = UDim2.new(0, 45, 1, 0)
+    iconLabel.Position = UDim2.new(0, 8, 0, 0)
     iconLabel.BackgroundTransparency = 1
     iconLabel.Text = icon
     iconLabel.TextColor3 = color or Color3.fromRGB(255, 255, 255)
-    iconLabel.TextSize = isImportant and 26 or 22
+    iconLabel.TextSize = 28
     iconLabel.Font = Enum.Font.GothamBold
     iconLabel.TextXAlignment = Enum.TextXAlignment.Center
     iconLabel.Parent = card
@@ -140,280 +104,312 @@ local function createNewsCard(icon, title, desc, color, isImportant)
     
     -- العنوان
     local titleLabel = Instance.new("TextLabel")
-    titleLabel.Size = UDim2.new(1, -55, 0, 22)
-    titleLabel.Position = UDim2.new(0, 50, 0, 4)
+    titleLabel.Size = UDim2.new(1, -60, 0, 20)
+    titleLabel.Position = UDim2.new(0, 55, 0, 4)
     titleLabel.BackgroundTransparency = 1
     titleLabel.Text = title
-    titleLabel.TextColor3 = isImportant and Color3.fromRGB(255, 100, 100) or Color3.fromRGB(255, 200, 0)
-    titleLabel.TextSize = isImportant and 15 or 14
-    titleLabel.Font = Enum.Font.GothamBold
+    titleLabel.TextColor3 = Color3.fromRGB(200, 200, 220)
+    titleLabel.TextSize = 12
+    titleLabel.Font = Enum.Font.GothamMedium
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.Parent = card
     titleLabel.ZIndex = 8
     
-    -- الوصف
-    local descLabel = Instance.new("TextLabel")
-    descLabel.Size = UDim2.new(1, -55, 0, isImportant and 34 or 28)
-    descLabel.Position = UDim2.new(0, 50, 0, 26)
-    descLabel.BackgroundTransparency = 1
-    descLabel.Text = desc
-    descLabel.TextColor3 = isImportant and Color3.fromRGB(255, 200, 200) or Color3.fromRGB(180, 180, 200)
-    descLabel.TextSize = 12
-    descLabel.Font = Enum.Font.GothamMedium
-    descLabel.TextXAlignment = Enum.TextXAlignment.Left
-    descLabel.TextWrapped = true
-    descLabel.Parent = card
-    descLabel.ZIndex = 8
+    -- القيمة
+    local valueLabel = Instance.new("TextLabel")
+    valueLabel.Size = UDim2.new(1, -60, 0, 24)
+    valueLabel.Position = UDim2.new(0, 55, 0, 24)
+    valueLabel.BackgroundTransparency = 1
+    valueLabel.Text = value
+    valueLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    valueLabel.TextSize = 15
+    valueLabel.Font = Enum.Font.GothamBold
+    valueLabel.TextXAlignment = Enum.TextXAlignment.Left
+    valueLabel.TextWrapped = true
+    valueLabel.Parent = card
+    valueLabel.ZIndex = 8
     
-    newsY = newsY + (isImportant and 78 or 68)
     return card
 end
 
--- ============================================
--- 8. إضافة الأخبار
--- ============================================
+-- دالة إنشاء بطاقة مطور
+local function createDeveloperCard(icon, title, discordName, role, color, isOwner)
+    local card = Instance.new("Frame")
+    card.Size = UDim2.new(0.92, 0, 0, 70)
+    card.Position = UDim2.new(0.04, 0, 0, 5)
+    card.BackgroundColor3 = isOwner and Color3.fromRGB(40, 20, 20) or Color3.fromRGB(20, 30, 50)
+    card.BorderSizePixel = 0
+    card.Parent = InfoScroll
+    card.ZIndex = 7
+    
+    -- حدود ذهبية للأونر
+    if isOwner then
+        local border = Instance.new("Frame")
+        border.Size = UDim2.new(1, 0, 1, 0)
+        border.Position = UDim2.new(0, 0, 0, 0)
+        border.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
+        border.BackgroundTransparency = 0.6
+        border.BorderSizePixel = 0
+        border.Parent = card
+        border.ZIndex = 6
+        
+        local borderCorner = Instance.new("UICorner")
+        borderCorner.CornerRadius = UDim.new(0, 8)
+        borderCorner.Parent = border
+    end
+    
+    local cardCorner = Instance.new("UICorner")
+    cardCorner.CornerRadius = UDim.new(0, 8)
+    cardCorner.Parent = card
+    
+    -- أيقونة
+    local iconLabel = Instance.new("TextLabel")
+    iconLabel.Size = UDim2.new(0, 45, 1, 0)
+    iconLabel.Position = UDim2.new(0, 8, 0, 0)
+    iconLabel.BackgroundTransparency = 1
+    iconLabel.Text = icon
+    iconLabel.TextColor3 = color or Color3.fromRGB(255, 255, 255)
+    iconLabel.TextSize = 30
+    iconLabel.Font = Enum.Font.GothamBold
+    iconLabel.TextXAlignment = Enum.TextXAlignment.Center
+    iconLabel.Parent = card
+    iconLabel.ZIndex = 8
+    
+    -- دور المطور
+    local roleLabel = Instance.new("TextLabel")
+    roleLabel.Size = UDim2.new(1, -60, 0, 18)
+    roleLabel.Position = UDim2.new(0, 55, 0, 4)
+    roleLabel.BackgroundTransparency = 1
+    roleLabel.Text = role
+    roleLabel.TextColor3 = isOwner and Color3.fromRGB(255, 215, 0) or Color3.fromRGB(88, 101, 242)
+    roleLabel.TextSize = 11
+    roleLabel.Font = Enum.Font.GothamBold
+    roleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    roleLabel.Parent = card
+    roleLabel.ZIndex = 8
+    
+    -- اسم الديسكورد
+    local nameLabel = Instance.new("TextLabel")
+    nameLabel.Size = UDim2.new(1, -60, 0, 24)
+    nameLabel.Position = UDim2.new(0, 55, 0, 24)
+    nameLabel.BackgroundTransparency = 1
+    nameLabel.Text = discordName
+    nameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    nameLabel.TextSize = 16
+    nameLabel.Font = Enum.Font.GothamBold
+    nameLabel.TextXAlignment = Enum.TextXAlignment.Left
+    nameLabel.Parent = card
+    nameLabel.ZIndex = 8
+    
+    -- زر نسخ الديسكورد
+    local copyBtn = Instance.new("TextButton")
+    copyBtn.Size = UDim2.new(0, 30, 0, 30)
+    copyBtn.Position = UDim2.new(1, -38, 0.5, -15)
+    copyBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
+    copyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    copyBtn.TextSize = 16
+    copyBtn.Font = Enum.Font.GothamBold
+    copyBtn.Text = "📋"
+    copyBtn.Parent = card
+    copyBtn.ZIndex = 9
+    
+    local copyCorner = Instance.new("UICorner")
+    copyCorner.CornerRadius = UDim.new(0, 6)
+    copyCorner.Parent = copyBtn
+    
+    copyBtn.MouseEnter:Connect(function()
+        copyBtn.BackgroundColor3 = Color3.fromRGB(70, 70, 95)
+    end)
+    copyBtn.MouseLeave:Connect(function()
+        copyBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
+    end)
+    
+    copyBtn.MouseButton1Click:Connect(function()
+        if setclipboard then
+            setclipboard(discordName)
+            ShowInfoNotification("✅ تم نسخ ديسكورد: " .. discordName)
+        end
+    end)
+    
+    return card
+end
 
--- === أخبار تم إضافتها ===
-createNewsCard("✅", "تم إضافة نظام سرقة الفلوس التلقائي V7!",
-    "الآن يمكنك تجميع الفلوس من الأرض تلقائياً وبسرعة فائقة! يدعم جميع أنواع الفلوس ويتجاهل الطاولات والمقاعد.",
-    Color3.fromRGB(0, 255, 100), true)
+-- إضافة البطاقات
+local infoY = 5
 
-createNewsCard("🎣", "تم إضافة نظام الصيد التلقائي!",
-    "اضغط على زر 'تشغيل الصيد' وابدأ بصيد الأسماك تلقائياً دون عناء! يعمل مع جميع أنواع الصنارات.",
-    Color3.fromRGB(0, 200, 255), false)
+-- السكربت
+local card1 = createInfoCard2("📦", "إصدار السكربت", "7MO HUB v15 - النسخة النهائية", Color3.fromRGB(180, 0, 255))
+card1.Position = UDim2.new(0.04, 0, 0, infoY)
+infoY = infoY + 62
 
-createNewsCard("🔄", "تحسين أداء السكربت بنسبة 40%!",
-    "قمنا بتحسين الكود وتقليل استهلاك المعالج ليعمل بسلاسة حتى على الأجهزة الضعيفة.",
-    Color3.fromRGB(100, 200, 255), false)
+-- مطور السكربت (hamza.abc0)
+local cardDev = createDeveloperCard(
+    "👨‍💻", 
+    "مطور السكربت", 
+    "hamza.abc0", 
+    "👑 المطور الرئيسي", 
+    Color3.fromRGB(180, 0, 255),
+    false
+)
+cardDev.Position = UDim2.new(0.04, 0, 0, infoY)
+infoY = infoY + 77
 
-createNewsCard("📱", "دعم كامل للهاتف والكمبيوتر!",
-    "السكربت الآن يدعم جميع الأجهزة مع واجهة متجاوبة وسهلة الاستخدام.",
-    Color3.fromRGB(100, 255, 200), false)
+-- أونر الديسكورد (qóyt.)
+local cardOwner = createDeveloperCard(
+    "👑", 
+    "أونر الديسكورد", 
+    "qóyt.", 
+    "⭐ مالك السيرفر", 
+    Color3.fromRGB(255, 215, 0),
+    true
+)
+cardOwner.Position = UDim2.new(0.04, 0, 0, infoY)
+infoY = infoY + 77
 
--- === الميزات القادمة ===
-createNewsCard("⏳", "🔜 قريباً: نظام الكلبشة التلقائي!",
-    "جاري العمل على نظام كلبشة تلقائي للاعبين سيتم إضافته في التحديث القادم.",
-    Color3.fromRGB(255, 200, 0), false)
+-- صورة الديسكورد (لوجو السيرفر)
+local DiscordLogoFrame = Instance.new("Frame")
+DiscordLogoFrame.Size = UDim2.new(0.92, 0, 0, 80)
+DiscordLogoFrame.Position = UDim2.new(0.04, 0, 0, infoY)
+DiscordLogoFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
+DiscordLogoFrame.BorderSizePixel = 0
+DiscordLogoFrame.Parent = InfoScroll
+DiscordLogoFrame.ZIndex = 7
 
-createNewsCard("⏳", "🔜 قريباً: نظام الحماية من الحظر!",
-    "سنضيف نظام حماية متقدم يمنع اكتشاف السكربت في السيرفرات.",
-    Color3.fromRGB(255, 200, 0), false)
+local DiscordLogoCorner = Instance.new("UICorner")
+DiscordLogoCorner.CornerRadius = UDim.new(0, 8)
+DiscordLogoCorner.Parent = DiscordLogoFrame
 
-createNewsCard("⏳", "🔜 قريباً: نظام التجميع التلقائي للموارد!",
-    "سيتم إضافة نظام يجمع جميع الموارد حولك تلقائياً.",
-    Color3.fromRGB(255, 200, 0), false)
+-- إطار متوهج للديسكورد
+local DiscordGlow3 = Instance.new("Frame")
+DiscordGlow3.Size = UDim2.new(1, 6, 1, 6)
+DiscordGlow3.Position = UDim2.new(0, -3, 0, -3)
+DiscordGlow3.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
+DiscordGlow3.BackgroundTransparency = 0.3
+DiscordGlow3.BorderSizePixel = 0
+DiscordGlow3.Parent = DiscordLogoFrame
+DiscordGlow3.ZIndex = -1
 
-createNewsCard("⏳", "🔜 قريباً: نظام التليفون التلقائي!",
-    "جاري العمل على نظام يرد على المكالمات تلقائياً.",
-    Color3.fromRGB(255, 200, 0), false)
+local DiscordGlowCorner3 = Instance.new("UICorner")
+DiscordGlowCorner3.CornerRadius = UDim.new(0, 10)
+DiscordGlowCorner3.Parent = DiscordGlow3
 
-createNewsCard("⏳", "🔜 قريباً: نظام القيادة التلقائي!",
-    "سيتم إضافة نظام يقود السيارات تلقائياً.",
-    Color3.fromRGB(255, 200, 0), false)
+-- أيقونة الديسكورد
+local DiscordIcon2 = Instance.new("TextLabel")
+DiscordIcon2.Size = UDim2.new(0, 60, 1, 0)
+DiscordIcon2.Position = UDim2.new(0, 10, 0, 0)
+DiscordIcon2.BackgroundTransparency = 1
+DiscordIcon2.Text = "💬"
+DiscordIcon2.TextColor3 = Color3.fromRGB(88, 101, 242)
+DiscordIcon2.TextSize = 40
+DiscordIcon2.Font = Enum.Font.GothamBold
+DiscordIcon2.TextXAlignment = Enum.TextXAlignment.Center
+DiscordIcon2.Parent = DiscordLogoFrame
+DiscordIcon2.ZIndex = 8
 
--- ============================================
--- 9. قسم الإبلاغ عن الأخطاء
--- ============================================
+-- نص الديسكورد
+local DiscordText = Instance.new("TextLabel")
+DiscordText.Size = UDim2.new(1, -80, 0, 25)
+DiscordText.Position = UDim2.new(0, 75, 0, 12)
+DiscordText.BackgroundTransparency = 1
+DiscordText.Text = "سيرفر الديسكورد الرسمي"
+DiscordText.TextColor3 = Color3.fromRGB(255, 255, 255)
+DiscordText.TextSize = 16
+DiscordText.Font = Enum.Font.GothamBold
+DiscordText.TextXAlignment = Enum.TextXAlignment.Left
+DiscordText.Parent = DiscordLogoFrame
+DiscordText.ZIndex = 8
 
-local ReportSection = Instance.new("Frame")
-ReportSection.Size = UDim2.new(0.94, 0, 0, 90)
-ReportSection.Position = UDim2.new(0.03, 0, 0, newsY + 5)
-ReportSection.BackgroundColor3 = Color3.fromRGB(30, 20, 30)
-ReportSection.BorderSizePixel = 0
-ReportSection.Parent = NewsScroll
-ReportSection.ZIndex = 7
+-- رابط الديسكورد
+local DiscordLinkText = Instance.new("TextLabel")
+DiscordLinkText.Size = UDim2.new(1, -80, 0, 20)
+DiscordLinkText.Position = UDim2.new(0, 75, 0, 40)
+DiscordLinkText.BackgroundTransparency = 1
+DiscordLinkText.Text = "https://discord.gg/w9FDeSx9f"
+DiscordLinkText.TextColor3 = Color3.fromRGB(88, 101, 242)
+DiscordLinkText.TextSize = 13
+DiscordLinkText.Font = Enum.Font.GothamMedium
+DiscordLinkText.TextXAlignment = Enum.TextXAlignment.Left
+DiscordLinkText.Parent = DiscordLogoFrame
+DiscordLinkText.ZIndex = 8
 
-local ReportCorner = Instance.new("UICorner")
-ReportCorner.CornerRadius = UDim.new(0, 8)
-ReportCorner.Parent = ReportSection
+-- زر نسخ الرابط
+local CopyLinkBtn = Instance.new("TextButton")
+CopyLinkBtn.Size = UDim2.new(0, 50, 0, 30)
+CopyLinkBtn.Position = UDim2.new(1, -60, 0.5, -15)
+CopyLinkBtn.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
+CopyLinkBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+CopyLinkBtn.TextSize = 14
+CopyLinkBtn.Font = Enum.Font.GothamBold
+CopyLinkBtn.Text = "📋"
+CopyLinkBtn.Parent = DiscordLogoFrame
+CopyLinkBtn.ZIndex = 9
 
-local ReportIcon = Instance.new("TextLabel")
-ReportIcon.Size = UDim2.new(0, 40, 1, 0)
-ReportIcon.Position = UDim2.new(0, 6, 0, 0)
-ReportIcon.BackgroundTransparency = 1
-ReportIcon.Text = "🐛"
-ReportIcon.TextColor3 = Color3.fromRGB(255, 200, 100)
-ReportIcon.TextSize = 28
-ReportIcon.Font = Enum.Font.GothamBold
-ReportIcon.TextXAlignment = Enum.TextXAlignment.Center
-ReportIcon.Parent = ReportSection
-ReportIcon.ZIndex = 8
+local CopyLinkCorner = Instance.new("UICorner")
+CopyLinkCorner.CornerRadius = UDim.new(0, 6)
+CopyLinkCorner.Parent = CopyLinkBtn
 
-local ReportTitle = Instance.new("TextLabel")
-ReportTitle.Size = UDim2.new(1, -55, 0, 22)
-ReportTitle.Position = UDim2.new(0, 50, 0, 4)
-ReportTitle.BackgroundTransparency = 1
-ReportTitle.Text = "🐛 الإبلاغ عن أخطاء"
-ReportTitle.TextColor3 = Color3.fromRGB(255, 200, 100)
-ReportTitle.TextSize = 15
-ReportTitle.Font = Enum.Font.GothamBold
-ReportTitle.TextXAlignment = Enum.TextXAlignment.Left
-ReportTitle.Parent = ReportSection
-ReportTitle.ZIndex = 8
+CopyLinkBtn.MouseEnter:Connect(function()
+    CopyLinkBtn.BackgroundColor3 = Color3.fromRGB(110, 120, 260)
+end)
+CopyLinkBtn.MouseLeave:Connect(function()
+    CopyLinkBtn.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
+end)
 
-local ReportDesc = Instance.new("TextLabel")
-ReportDesc.Size = UDim2.new(1, -55, 0, 28)
-ReportDesc.Position = UDim2.new(0, 50, 0, 26)
-ReportDesc.BackgroundTransparency = 1
-ReportDesc.Text = "إذا وجدت أي خطأ في السكربت، أرسل تفاصيله في سيرفر الديسكورد."
-ReportDesc.TextColor3 = Color3.fromRGB(180, 180, 200)
-ReportDesc.TextSize = 11
-ReportDesc.Font = Enum.Font.GothamMedium
-ReportDesc.TextXAlignment = Enum.TextXAlignment.Left
-ReportDesc.TextWrapped = true
-ReportDesc.Parent = ReportSection
-ReportDesc.ZIndex = 8
-
-newsY = newsY + 100
-
--- ============================================
--- 10. رابط ديسكورد
--- ============================================
-
-local DiscordSection = Instance.new("Frame")
-DiscordSection.Size = UDim2.new(0.94, 0, 0, 75)
-DiscordSection.Position = UDim2.new(0.03, 0, 0, newsY + 5)
-DiscordSection.BackgroundColor3 = Color3.fromRGB(20, 30, 50)
-DiscordSection.BorderSizePixel = 0
-DiscordSection.Parent = NewsScroll
-DiscordSection.ZIndex = 7
-
-local DiscordCorner = Instance.new("UICorner")
-DiscordCorner.CornerRadius = UDim.new(0, 8)
-DiscordCorner.Parent = DiscordSection
-
--- إضاءة ديسكورد
-local DiscordGlow2 = Instance.new("Frame")
-DiscordGlow2.Size = UDim2.new(1, 6, 1, 6)
-DiscordGlow2.Position = UDim2.new(0, -3, 0, -3)
-DiscordGlow2.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
-DiscordGlow2.BackgroundTransparency = 0.3
-DiscordGlow2.BorderSizePixel = 0
-DiscordGlow2.Parent = DiscordSection
-DiscordGlow2.ZIndex = -1
-
-local DiscordGlowCorner2 = Instance.new("UICorner")
-DiscordGlowCorner2.CornerRadius = UDim.new(0, 10)
-DiscordGlowCorner2.Parent = DiscordGlow2
-
-local DiscordIcon = Instance.new("TextLabel")
-DiscordIcon.Size = UDim2.new(0, 45, 1, 0)
-DiscordIcon.Position = UDim2.new(0, 6, 0, 0)
-DiscordIcon.BackgroundTransparency = 1
-DiscordIcon.Text = "💬"
-DiscordIcon.TextColor3 = Color3.fromRGB(88, 101, 242)
-DiscordIcon.TextSize = 30
-DiscordIcon.Font = Enum.Font.GothamBold
-DiscordIcon.TextXAlignment = Enum.TextXAlignment.Center
-DiscordIcon.Parent = DiscordSection
-DiscordIcon.ZIndex = 8
-
-local DiscordTitle = Instance.new("TextLabel")
-DiscordTitle.Size = UDim2.new(1, -60, 0, 22)
-DiscordTitle.Position = UDim2.new(0, 55, 0, 4)
-DiscordTitle.BackgroundTransparency = 1
-DiscordTitle.Text = "💬 سيرفر ديسكورد"
-DiscordTitle.TextColor3 = Color3.fromRGB(88, 101, 242)
-DiscordTitle.TextSize = 15
-DiscordTitle.Font = Enum.Font.GothamBold
-DiscordTitle.TextXAlignment = Enum.TextXAlignment.Left
-DiscordTitle.Parent = DiscordSection
-DiscordTitle.ZIndex = 8
-
-local DiscordLink = Instance.new("TextButton")
-DiscordLink.Size = UDim2.new(1, -60, 0, 30)
-DiscordLink.Position = UDim2.new(0, 55, 0, 30)
-DiscordLink.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
-DiscordLink.TextColor3 = Color3.fromRGB(255, 255, 255)
-DiscordLink.TextSize = 12
-DiscordLink.Font = Enum.Font.GothamBold
-DiscordLink.Text = "🔗 https://discord.gg/w9FDeSx9f"
-DiscordLink.Parent = DiscordSection
-DiscordLink.ZIndex = 8
-
-local DiscordLinkCorner = Instance.new("UICorner")
-DiscordLinkCorner.CornerRadius = UDim.new(0, 6)
-DiscordLinkCorner.Parent = DiscordLink
-
-DiscordLink.MouseButton1Click:Connect(function()
+CopyLinkBtn.MouseButton1Click:Connect(function()
     if setclipboard then
         setclipboard("https://discord.gg/w9FDeSx9f")
+        ShowInfoNotification("✅ تم نسخ رابط الديسكورد!")
     end
-    showNotification("✅ تم نسخ رابط الديسكورد!", NewsFrame)
 end)
 
-DiscordLink.MouseEnter:Connect(function()
-    DiscordLink.BackgroundColor3 = Color3.fromRGB(110, 120, 260)
-end)
-DiscordLink.MouseLeave:Connect(function()
-    DiscordLink.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
-end)
+infoY = infoY + 87
 
-newsY = newsY + 85
+-- عدد الميزات
+local card4 = createInfoCard2("⚡", "عدد الميزات", "8 ميزات (سرعة - قفز - جاذبية - اختفاء - اختراق - طيران - دوران - FOV)", Color3.fromRGB(255, 200, 0))
+card4.Position = UDim2.new(0.04, 0, 0, infoY)
+infoY = infoY + 62
 
--- ============================================
--- 11. قسم الأخطاء الشائعة وحلولها
--- ============================================
+-- عدد أماكن الانتقال
+local card5 = createInfoCard2("📍", "أماكن الانتقال الفوري", "22 مكان", Color3.fromRGB(0, 255, 150))
+card5.Position = UDim2.new(0.04, 0, 0, infoY)
+infoY = infoY + 62
 
-local ErrorSection = Instance.new("Frame")
-ErrorSection.Size = UDim2.new(0.94, 0, 0, 65)
-ErrorSection.Position = UDim2.new(0.03, 0, 0, newsY + 5)
-ErrorSection.BackgroundColor3 = Color3.fromRGB(40, 20, 20)
-ErrorSection.BorderSizePixel = 0
-ErrorSection.Parent = NewsScroll
-ErrorSection.ZIndex = 7
+-- حالة السكربت
+local card6 = createInfoCard2("✅", "حالة السكربت", "يعمل بكفاءة 100% 🟢", Color3.fromRGB(0, 255, 100))
+card6.Position = UDim2.new(0.04, 0, 0, infoY)
+infoY = infoY + 62
 
-local ErrorCorner = Instance.new("UICorner")
-ErrorCorner.CornerRadius = UDim.new(0, 8)
-ErrorCorner.Parent = ErrorSection
+-- تاريخ الإصدار
+local card7 = createInfoCard2("📅", "آخر تحديث", "18 يوليو 2026", Color3.fromRGB(255, 150, 50))
+card7.Position = UDim2.new(0.04, 0, 0, infoY)
+infoY = infoY + 62
 
-local ErrorIcon2 = Instance.new("TextLabel")
-ErrorIcon2.Size = UDim2.new(0, 40, 1, 0)
-ErrorIcon2.Position = UDim2.new(0, 6, 0, 0)
-ErrorIcon2.BackgroundTransparency = 1
-ErrorIcon2.Text = "⚠️"
-ErrorIcon2.TextColor3 = Color3.fromRGB(255, 200, 50)
-ErrorIcon2.TextSize = 26
-ErrorIcon2.Font = Enum.Font.GothamBold
-ErrorIcon2.TextXAlignment = Enum.TextXAlignment.Center
-ErrorIcon2.Parent = ErrorSection
-ErrorIcon2.ZIndex = 8
+InfoScroll.CanvasSize = UDim2.new(0, 0, 0, infoY + 30)
 
-local ErrorTitle2 = Instance.new("TextLabel")
-ErrorTitle2.Size = UDim2.new(1, -55, 0, 22)
-ErrorTitle2.Position = UDim2.new(0, 50, 0, 4)
-ErrorTitle2.BackgroundTransparency = 1
-ErrorTitle2.Text = "⚠️ أخطاء معروفة وحلولها"
-ErrorTitle2.TextColor3 = Color3.fromRGB(255, 200, 50)
-ErrorTitle2.TextSize = 14
-ErrorTitle2.Font = Enum.Font.GothamBold
-ErrorTitle2.TextXAlignment = Enum.TextXAlignment.Left
-ErrorTitle2.Parent = ErrorSection
-ErrorTitle2.ZIndex = 8
+-- دالة إشعارات صفحة المعلومات
+function ShowInfoNotification(text)
+    local notif = Instance.new("TextLabel")
+    notif.Size = UDim2.new(0, 280, 0, 35)
+    notif.Position = UDim2.new(0.5, -140, 0.85, 0)
+    notif.BackgroundColor3 = Color3.fromRGB(0, 80, 0)
+    notif.BackgroundTransparency = 0.2
+    notif.TextColor3 = Color3.fromRGB(0, 255, 150)
+    notif.TextSize = 13
+    notif.Font = Enum.Font.GothamBold
+    notif.Text = text
+    notif.Parent = InfoFrame
+    notif.ZIndex = 50
+    
+    local notifCorner = Instance.new("UICorner")
+    notifCorner.CornerRadius = UDim.new(0, 8)
+    notifCorner.Parent = notif
+    
+    task.wait(2)
+    notif:Destroy()
+end
 
-local ErrorDesc2 = Instance.new("TextLabel")
-ErrorDesc2.Size = UDim2.new(1, -55, 0, 32)
-ErrorDesc2.Position = UDim2.new(0, 50, 0, 26)
-ErrorDesc2.BackgroundTransparency = 1
-ErrorDesc2.Text = "• مشكلة اختفاء الزر: أعد تشغيل السكربت • مشكلة جمع الفلوس: تأكد من وجود فلوس حولك"
-ErrorDesc2.TextColor3 = Color3.fromRGB(200, 180, 180)
-ErrorDesc2.TextSize = 11
-ErrorDesc2.Font = Enum.Font.GothamMedium
-ErrorDesc2.TextXAlignment = Enum.TextXAlignment.Left
-ErrorDesc2.TextWrapped = true
-ErrorDesc2.Parent = ErrorSection
-ErrorDesc2.ZIndex = 8
-
-newsY = newsY + 75
-
-NewsScroll.CanvasSize = UDim2.new(0, 0, 0, newsY + 30)
-
--- ============================================
--- 12. دالة عرض الأخبار
--- ============================================
-
-local function ShowNews()
-    -- إخفاء جميع الصفحات الأخرى
+-- دالة عرض صفحة المعلومات
+local function ShowInfo()
     HomeContainer.Visible = false
     WelcomeContainer.Visible = false
     TeleportContainer.Visible = false
@@ -421,14 +417,13 @@ local function ShowNews()
     FishingContainer.Visible = false
     PlayerContainer.Visible = false
     SettingsContainer.Visible = false
-    -- إظهار الأخبار
-    NewsContainer.Visible = true
+    NewsContainer.Visible = false
+    InfoContainer.Visible = true
     
-    -- تغيير ألوان الأزرار
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
-            if child.Text == "📰 الأخبار" then
-                child.BackgroundColor3 = Color3.fromRGB(255, 200, 0)
+            if child.Text == "📋 المعلومات" then
+                child.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
                 child.TextColor3 = Color3.fromRGB(0, 0, 0)
             else
                 child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
@@ -437,47 +432,3 @@ local function ShowNews()
         end
     end
 end
-
--- ============================================
--- 13. ربط زر الأخبار
--- ============================================
-
--- البحث عن زر الأخبار
-local newsButton = nil
-for _, child in pairs(Sidebar:GetChildren()) do
-    if child:IsA("TextButton") and child.Text == "📰 الأخبار" then
-        newsButton = child
-        break
-    end
-end
-
--- إذا ما لقى الزر، نضيفه
-if not newsButton then
-    newsButton = Instance.new("TextButton")
-    newsButton.Size = UDim2.new(1, -20, 0, 40)
-    newsButton.Position = UDim2.new(0, 10, 0, 60 + (7 * 48))
-    newsButton.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
-    newsButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    newsButton.BorderSizePixel = 0
-    newsButton.Text = "📰 الأخبار"
-    newsButton.TextSize = 14
-    newsButton.Font = Enum.Font.GothamBold
-    newsButton.Parent = Sidebar
-    newsButton.ZIndex = 17
-
-    local NewsBtnCorner = Instance.new("UICorner")
-    NewsBtnCorner.CornerRadius = UDim.new(0, 8)
-    NewsBtnCorner.Parent = newsButton
-    
-    newsButton.MouseEnter:Connect(function()
-        newsButton.BackgroundColor3 = Color3.fromRGB(70, 70, 95)
-    end)
-    newsButton.MouseLeave:Connect(function()
-        newsButton.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
-    end)
-end
-
--- ربط زر الأخبار
-newsButton.MouseButton1Click:Connect(ShowNews)
-
-print("📰 ميزة الأخبار تم تحميلها بنجاح!")
