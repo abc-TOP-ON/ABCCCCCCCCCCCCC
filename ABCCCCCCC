@@ -1,4 +1,4 @@
--- ABC HUB v15 - النسخة العربية الكاملة (تم إزالة: الطيران، الدوران، منظور الآيباد)
+-- ABC HUB v15 - النسخة المعدلة (بدون قفز لانهائي وبدون اختراق جدران + إصلاح السرعة)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -728,6 +728,9 @@ local function createTeleportButtons()
         button.MouseButton1Click:Connect(function()
             if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
                 LocalPlayer.Character.HumanoidRootPart.CFrame = place.cf
+                -- إعادة تطبيق الإعدادات بعد الانتقال
+                task.wait(0.1)
+                updatePlayerProperties()
             end
         end)
         
@@ -752,7 +755,7 @@ TeleportFooter.Parent = TeleportFrame
 TeleportFooter.ZIndex = 6
 
 -- ============================================
--- محتوى صفحة اللاعبين (Player List)
+-- محتوى صفحة اللاعبين (Player List) - مع إصلاح مشكلة السرعة
 -- ============================================
 
 local PlayerFrame = Instance.new("Frame")
@@ -884,6 +887,9 @@ local function UpdatePlayerList()
                 if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
                     if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
                         LocalPlayer.Character.HumanoidRootPart.CFrame = player.Character.HumanoidRootPart.CFrame
+                        -- إعادة تطبيق الإعدادات بعد الانتقال للاعب
+                        task.wait(0.1)
+                        updatePlayerProperties()
                     end
                 end
             end)
@@ -901,7 +907,7 @@ Players.PlayerAdded:Connect(function() UpdatePlayerList() end)
 Players.PlayerRemoving:Connect(function() UpdatePlayerList() end)
 
 -- ============================================
--- محتوى صفحة إعدادات اللاعب (Player Settings) - تم إزالة الطيران، الدوران، الآيباد
+-- محتوى صفحة إعدادات اللاعب (بدون قفز لانهائي وبدون اختراق جدران)
 -- ============================================
 
 local SettingsFrame = Instance.new("Frame")
@@ -960,24 +966,24 @@ SettingsScroll.ScrollBarThickness = 4
 SettingsScroll.Parent = SettingsFrame
 SettingsScroll.ZIndex = 6
 
--- متغيرات الإعدادات (تم إزالة flySpeed, autoRotate, ipadView)
+-- متغيرات الإعدادات (بدون noclip وبدون infiniteJump)
 local playerSettings = {
     speed = 16,
     jumpPower = 50,
-    gravity = 196.2,
-    noclip = false,
-    infiniteJump = false
+    gravity = 196.2
 }
 
--- دالة تحديث خصائص اللاعب
+-- دالة تحديث خصائص اللاعب (مع إصلاح السرعة)
 local function updatePlayerProperties()
     local character = LocalPlayer.Character
     if character then
         local humanoid = character:FindFirstChild("Humanoid")
         if humanoid then
+            -- تطبيق الإعدادات مع التأكد من القيم
             humanoid.WalkSpeed = playerSettings.speed
             humanoid.JumpPower = playerSettings.jumpPower
             humanoid.Gravity = playerSettings.gravity
+            print("✅ تم تحديث الإعدادات: سرعة=" .. playerSettings.speed .. ", قفز=" .. playerSettings.jumpPower .. ", جاذبية=" .. playerSettings.gravity)
         end
     end
 end
@@ -1060,80 +1066,6 @@ local function createSettingSlider(yOffset, labelText, minVal, maxVal, defaultVa
     return container
 end
 
--- دالة إنشاء زر تبديل (Toggle)
-local function createToggleButton(yOffset, labelText, settingName, defaultValue)
-    local container = Instance.new("Frame")
-    container.Size = UDim2.new(0.92, 0, 0, 45)
-    container.Position = UDim2.new(0.04, 0, 0, yOffset)
-    container.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
-    container.BorderSizePixel = 0
-    container.Parent = SettingsScroll
-    container.ZIndex = 7
-    
-    local containerCorner = Instance.new("UICorner")
-    containerCorner.CornerRadius = UDim.new(0, 6)
-    containerCorner.Parent = container
-    
-    local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(0.6, 0, 1, 0)
-    label.Position = UDim2.new(0, 5, 0, 0)
-    label.BackgroundTransparency = 1
-    label.Text = labelText
-    label.TextColor3 = Color3.fromRGB(255, 255, 255)
-    label.TextSize = 14
-    label.Font = Enum.Font.GothamSemibold
-    label.TextXAlignment = Enum.TextXAlignment.Left
-    label.Parent = container
-    label.ZIndex = 8
-    
-    local toggleBtn = Instance.new("TextButton")
-    toggleBtn.Size = UDim2.new(0.2, 0, 0, 30)
-    toggleBtn.Position = UDim2.new(0.76, 0, 0.5, -15)
-    toggleBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-    toggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    toggleBtn.TextSize = 12
-    toggleBtn.Font = Enum.Font.GothamBold
-    toggleBtn.Text = "إيقاف"
-    toggleBtn.Parent = container
-    toggleBtn.ZIndex = 8
-    
-    local toggleCorner = Instance.new("UICorner")
-    toggleCorner.CornerRadius = UDim.new(0, 4)
-    toggleCorner.Parent = toggleBtn
-    
-    local isActive = defaultValue
-    playerSettings[settingName] = defaultValue
-    
-    toggleBtn.MouseButton1Click:Connect(function()
-        isActive = not isActive
-        playerSettings[settingName] = isActive
-        
-        if isActive then
-            toggleBtn.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
-            toggleBtn.Text = "تفعيل"
-            label.TextColor3 = Color3.fromRGB(0, 255, 150)
-        else
-            toggleBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-            toggleBtn.Text = "إيقاف"
-            label.TextColor3 = Color3.fromRGB(255, 255, 255)
-        end
-        
-        -- تطبيق الإعدادات الخاصة
-        if settingName == "noclip" then
-            local character = LocalPlayer.Character
-            if character then
-                for _, part in pairs(character:GetDescendants()) do
-                    if part:IsA("BasePart") then
-                        part.CanCollide = not isActive
-                    end
-                end
-            end
-        end
-    end)
-    
-    return container
-end
-
 -- إنشاء الأزرار في صفحة الإعدادات
 local yOffset = 5
 
@@ -1149,63 +1081,37 @@ yOffset = yOffset + 65
 createSettingSlider(yOffset, "🌍 الجاذبية", 0, 500, 196.2, "gravity")
 yOffset = yOffset + 65
 
--- 4. قفز لا نهائي
-createToggleButton(yOffset, "🚀 قفز لا نهائي", "infiniteJump", false)
-yOffset = yOffset + 50
-
--- 5. اختراق الجدران
-createToggleButton(yOffset, "🧱 اختراق الجدران", "noclip", false)
-yOffset = yOffset + 50
-
 SettingsScroll.CanvasSize = UDim2.new(0, 0, 0, yOffset + 20)
 
 -- ============================================
--- تشغيل الإعدادات (Heartbeat)
+-- مراقبة تغيير الشخصية وإعادة تطبيق الإعدادات
 -- ============================================
-
--- القفز اللانهائي واختراق الجدران
-RunService.Heartbeat:Connect(function()
-    -- القفز اللانهائي
-    if playerSettings.infiniteJump and LocalPlayer.Character then
-        local humanoid = LocalPlayer.Character:FindFirstChild("Humanoid")
-        if humanoid and humanoid.Health > 0 then
-            if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
-                local state = humanoid:GetState()
-                if state == Enum.HumanoidStateType.Landed or 
-                   state == Enum.HumanoidStateType.Running or
-                   state == Enum.HumanoidStateType.Walking or
-                   state == Enum.HumanoidStateType.Freefall or
-                   state == Enum.HumanoidStateType.GettingUp then
-                    humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-                end
-            end
-        end
-    end
-    
-    -- اختراق الجدران
-    if playerSettings.noclip and LocalPlayer.Character then
-        local character = LocalPlayer.Character
-        for _, part in pairs(character:GetDescendants()) do
-            if part:IsA("BasePart") then
-                part.CanCollide = false
-            end
-        end
-    end
-end)
 
 -- تحديث خصائص اللاعب عند تغيير الشخصية
 LocalPlayer.CharacterAdded:Connect(function()
-    task.wait(0.5)
-    local character = LocalPlayer.Character
-    if character then
-        if playerSettings.noclip then
-            for _, part in pairs(character:GetDescendants()) do
-                if part:IsA("BasePart") then
-                    part.CanCollide = false
+    task.wait(1)
+    updatePlayerProperties()
+end)
+
+-- تحديث كل 5 ثواني للتأكد من بقاء الإعدادات (حل لمشكلة السرعة)
+task.spawn(function()
+    while ScreenGui do
+        task.wait(3)
+        if LocalPlayer.Character then
+            local humanoid = LocalPlayer.Character:FindFirstChild("Humanoid")
+            if humanoid then
+                -- التأكد من أن السرعة مطابقة للإعدادات
+                if humanoid.WalkSpeed ~= playerSettings.speed then
+                    humanoid.WalkSpeed = playerSettings.speed
+                end
+                if humanoid.JumpPower ~= playerSettings.jumpPower then
+                    humanoid.JumpPower = playerSettings.jumpPower
+                end
+                if humanoid.Gravity ~= playerSettings.gravity then
+                    humanoid.Gravity = playerSettings.gravity
                 end
             end
         end
-        updatePlayerProperties()
     end
 end)
 
@@ -1327,6 +1233,11 @@ for _, child in pairs(Sidebar:GetChildren()) do
     end
 end
 
+-- تحديث الإعدادات عند التحميل
+task.wait(1)
+updatePlayerProperties()
+
 print("✅ ABC HUB v15 تم تحميله بنجاح!")
 print("📍 " .. #places .. " مكاناً للانتقال الفوري!")
-print("🔧 تم إزالة: الطيران، الدوران التلقائي، منظور الآيباد")
+print("🔧 تم إزالة: القفز اللانهائي، اختراق الجدران")
+print("🔧 تم إصلاح مشكلة السرعة - تبقى ثابتة حتى بعد الانتقال!")
