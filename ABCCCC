@@ -1,24 +1,184 @@
--- ABC HUB v15 - نسخة الهاتف (مع سكربت تجميع الفلوس الفوري + الصيد التلقائي)
+-- 7MO HUB v15 - نسخة الهاتف (مع سكربت تجميع الفلوس الفوري + الصيد التلقائي)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local Camera = workspace.CurrentCamera
-local ContextActionService = game:GetService("ContextActionService")
+local TweenService = game:GetService("TweenService")
 
 -- منع تكرار الواجهة
-if game:GetService("CoreGui"):FindFirstChild("ABCHUBv15") then
-    game:GetService("CoreGui"):FindFirstChild("ABCHUBv15"):Destroy()
+if game:GetService("CoreGui"):FindFirstChild("7MOHUBv15") then
+    game:GetService("CoreGui"):FindFirstChild("7MOHUBv15"):Destroy()
 end
 
--- الحاوية الأساسية
+-- المتغيرات العامة
+local isOpen = false
+local buttonSize = 60
+
+-- ============================================
+-- زر الدخول والخروج الدائري
+-- ============================================
+
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "ABCHUBv15"
+ScreenGui.Name = "7MOHUBv15"
 ScreenGui.Parent = game:GetService("CoreGui")
 ScreenGui.ResetOnSpawn = false
 
--- النافذة الرئيسية
+-- الزر الدائري الرئيسي
+local ToggleButton = Instance.new("ImageButton")
+ToggleButton.Name = "ToggleButton"
+ToggleButton.Size = UDim2.new(0, buttonSize, 0, buttonSize)
+ToggleButton.Position = UDim2.new(0.05, 0, 0.5, -buttonSize/2)
+ToggleButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+ToggleButton.BackgroundTransparency = 0
+ToggleButton.Image = "rbxassetid://0"
+ToggleButton.Parent = ScreenGui
+ToggleButton.ZIndex = 100
+
+-- جعل الزر دائري
+local ButtonCorner = Instance.new("UICorner")
+ButtonCorner.CornerRadius = UDim.new(1, 0)
+ButtonCorner.Parent = ToggleButton
+
+-- حلقة متحركة (Glow Ring)
+local GlowRing = Instance.new("ImageLabel")
+GlowRing.Name = "GlowRing"
+GlowRing.Size = UDim2.new(1.3, 0, 1.3, 0)
+GlowRing.Position = UDim2.new(-0.15, 0, -0.15, 0)
+GlowRing.BackgroundTransparency = 1
+GlowRing.Image = "rbxassetid://0"
+GlowRing.Parent = ToggleButton
+GlowRing.ZIndex = 99
+
+-- إطار النيون المتحرك
+local NeonRing = Instance.new("Frame")
+NeonRing.Name = "NeonRing"
+NeonRing.Size = UDim2.new(1.4, 0, 1.4, 0)
+NeonRing.Position = UDim2.new(-0.2, 0, -0.2, 0)
+NeonRing.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
+NeonRing.BackgroundTransparency = 0.3
+NeonRing.BorderSizePixel = 3
+NeonRing.BorderColor3 = Color3.fromRGB(180, 0, 255)
+NeonRing.Parent = ToggleButton
+NeonRing.ZIndex = 98
+
+local NeonCorner = Instance.new("UICorner")
+NeonCorner.CornerRadius = UDim.new(1, 0)
+NeonCorner.Parent = NeonRing
+
+-- حلقة متحركة ثانية (تأثير النبض)
+local PulseRing = Instance.new("Frame")
+PulseRing.Name = "PulseRing"
+PulseRing.Size = UDim2.new(1.5, 0, 1.5, 0)
+PulseRing.Position = UDim2.new(-0.25, 0, -0.25, 0)
+PulseRing.BackgroundColor3 = Color3.fromRGB(150, 0, 255)
+PulseRing.BackgroundTransparency = 0.5
+PulseRing.BorderSizePixel = 0
+PulseRing.Parent = ToggleButton
+PulseRing.ZIndex = 97
+
+local PulseCorner = Instance.new("UICorner")
+PulseCorner.CornerRadius = UDim.new(1, 0)
+PulseCorner.Parent = PulseRing
+
+-- النص داخل الزر
+local ButtonText = Instance.new("TextLabel")
+ButtonText.Name = "ButtonText"
+ButtonText.Size = UDim2.new(1, 0, 1, 0)
+ButtonText.Position = UDim2.new(0, 0, 0, 0)
+ButtonText.BackgroundTransparency = 1
+ButtonText.Text = "7MO"
+ButtonText.TextColor3 = Color3.fromRGB(255, 255, 255)
+ButtonText.TextSize = 22
+ButtonText.Font = Enum.Font.GothamBold
+ButtonText.TextScaled = true
+ButtonText.Parent = ToggleButton
+ButtonText.ZIndex = 101
+
+-- جعل الزر قابل للسحب
+local dragging = false
+local dragInput, dragStart, startPos
+
+ToggleButton.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = ToggleButton.Position
+        
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+ToggleButton.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        if dragging then
+            local delta = input.Position - dragStart
+            ToggleButton.Position = UDim2.new(
+                startPos.X.Scale,
+                startPos.X.Offset + delta.X,
+                startPos.Y.Scale,
+                startPos.Y.Offset + delta.Y
+            )
+        end
+    end
+end)
+
+-- تأثيرات الحركة على الحلقات
+local ringColors = {
+    Color3.fromRGB(120, 0, 255),
+    Color3.fromRGB(180, 0, 255),
+    Color3.fromRGB(220, 0, 255),
+    Color3.fromRGB(180, 0, 255),
+    Color3.fromRGB(120, 0, 255)
+}
+
+local colorIndex = 1
+
+-- حلقة التحديث المستمر للنيون
+task.spawn(function()
+    while ScreenGui and ToggleButton.Parent do
+        -- تحديث ألوان الحلقات
+        colorIndex = colorIndex + 0.02
+        local index = math.floor(colorIndex) % #ringColors + 1
+        local nextIndex = index % #ringColors + 1
+        local alpha = colorIndex % 1
+        
+        local currentColor = ringColors[index]
+        local nextColor = ringColors[nextIndex]
+        
+        local r = currentColor.R + (nextColor.R - currentColor.R) * alpha
+        local g = currentColor.G + (nextColor.G - currentColor.G) * alpha
+        local b = currentColor.B + (nextColor.B - currentColor.B) * alpha
+        
+        local finalColor = Color3.new(r, g, b)
+        
+        -- تحديث لون النيون
+        NeonRing.BackgroundColor3 = finalColor
+        NeonRing.BorderColor3 = finalColor
+        
+        -- نبض الشفافية
+        local breathe = 0.2 + math.sin(tick() * 2.5) * 0.2
+        NeonRing.BackgroundTransparency = breathe
+        PulseRing.BackgroundTransparency = breathe + 0.2
+        
+        -- تغيير حجم الحلقة النابضة
+        local pulseSize = 1.5 + math.sin(tick() * 2) * 0.1
+        PulseRing.Size = UDim2.new(pulseSize, 0, pulseSize, 0)
+        PulseRing.Position = UDim2.new(-(pulseSize-1)/2, 0, -(pulseSize-1)/2, 0)
+        
+        task.wait(0.03)
+    end
+end)
+
+-- ============================================
+-- النافذة الرئيسية (تظهر عند الضغط على الزر)
+-- ============================================
+
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
 MainFrame.Size = UDim2.new(0, 520, 0, 480)
@@ -29,6 +189,7 @@ MainFrame.Active = true
 MainFrame.Draggable = true
 MainFrame.Parent = ScreenGui
 MainFrame.ZIndex = 2
+MainFrame.Visible = false
 
 local MainCorner = Instance.new("UICorner")
 MainCorner.CornerRadius = UDim.new(0, 12)
@@ -64,7 +225,7 @@ GlowCorner2.CornerRadius = UDim.new(0, 20)
 GlowCorner2.Parent = GlowFrame2
 
 -- تحريك الإطار البنفسجي
-local glowColors = {
+local glowColors2 = {
     Color3.fromRGB(120, 0, 255),
     Color3.fromRGB(180, 0, 255),
     Color3.fromRGB(220, 0, 255),
@@ -72,15 +233,16 @@ local glowColors = {
     Color3.fromRGB(120, 0, 255)
 }
 
-local colorIndex = 1
+local colorIndex2 = 1
 RunService.Heartbeat:Connect(function()
-    colorIndex = colorIndex + 0.02
-    local index = math.floor(colorIndex) % #glowColors + 1
-    local nextIndex = index % #glowColors + 1
-    local alpha = colorIndex % 1
+    if not MainFrame.Visible then return end
+    colorIndex2 = colorIndex2 + 0.02
+    local index = math.floor(colorIndex2) % #glowColors2 + 1
+    local nextIndex = index % #glowColors2 + 1
+    local alpha = colorIndex2 % 1
     
-    local currentColor = glowColors[index]
-    local nextColor = glowColors[nextIndex]
+    local currentColor = glowColors2[index]
+    local nextColor = glowColors2[nextIndex]
     
     local r = currentColor.R + (nextColor.R - currentColor.R) * alpha
     local g = currentColor.G + (nextColor.G - currentColor.G) * alpha
@@ -94,7 +256,7 @@ RunService.Heartbeat:Connect(function()
     GlowFrame2.BackgroundTransparency = breathe - 0.1
 end)
 
--- زر الإغلاق X
+-- زر الإغلاق X (داخل النافذة)
 local CloseX = Instance.new("TextButton")
 CloseX.Name = "CloseX"
 CloseX.Size = UDim2.new(0, 35, 0, 35)
@@ -121,10 +283,50 @@ CloseX.MouseLeave:Connect(function()
 end)
 
 CloseX.MouseButton1Click:Connect(function()
-    ScreenGui:Destroy()
+    toggleUI()
 end)
 
+-- ============================================
+-- وظيفة إظهار/إخفاء الواجهة
+-- ============================================
+
+function toggleUI()
+    isOpen = not isOpen
+    MainFrame.Visible = isOpen
+    
+    if isOpen then
+        -- تغيير لون الزر إلى بنفسجي
+        ToggleButton.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
+        ButtonText.TextColor3 = Color3.fromRGB(255, 255, 255)
+        -- تغيير الحجم قليلاً
+        local tween = TweenService:Create(ToggleButton, TweenInfo.new(0.2), {Size = UDim2.new(0, buttonSize * 1.1, 0, buttonSize * 1.1)})
+        tween:Play()
+        task.wait(0.2)
+        local tween2 = TweenService:Create(ToggleButton, TweenInfo.new(0.1), {Size = UDim2.new(0, buttonSize, 0, buttonSize)})
+        tween2:Play()
+    else
+        -- إعادة اللون إلى الأسود
+        ToggleButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        ButtonText.TextColor3 = Color3.fromRGB(255, 255, 255)
+        local tween = TweenService:Create(ToggleButton, TweenInfo.new(0.2), {Size = UDim2.new(0, buttonSize * 0.9, 0, buttonSize * 0.9)})
+        tween:Play()
+        task.wait(0.2)
+        local tween2 = TweenService:Create(ToggleButton, TweenInfo.new(0.1), {Size = UDim2.new(0, buttonSize, 0, buttonSize)})
+        tween2:Play()
+    end
+end
+
+-- ربط زر الدخول/الخروج
+ToggleButton.MouseButton1Click:Connect(function()
+    if not dragging then
+        toggleUI()
+    end
+end)
+
+-- ============================================
 -- القائمة الجانبية
+-- ============================================
+
 local Sidebar = Instance.new("Frame")
 Sidebar.Name = "Sidebar"
 Sidebar.Size = UDim2.new(0, 140, 1, 0)
@@ -145,11 +347,11 @@ SidebarFix.BorderSizePixel = 0
 SidebarFix.Parent = Sidebar
 SidebarFix.ZIndex = 15
 
--- شعار ABC HUB v15
+-- شعار 7MO HUB v15
 local LogoText = Instance.new("TextLabel")
 LogoText.Size = UDim2.new(1, 0, 0, 50)
 LogoText.BackgroundTransparency = 1
-LogoText.Text = "ABC HUB v15"
+LogoText.Text = "7MO HUB v15"
 LogoText.TextColor3 = Color3.fromRGB(180, 0, 255)
 LogoText.TextSize = 15
 LogoText.Font = Enum.Font.GothamBold
@@ -530,7 +732,7 @@ local FooterText = Instance.new("TextLabel")
 FooterText.Size = UDim2.new(1, -20, 0, 16)
 FooterText.Position = UDim2.new(0, 10, 1, -18)
 FooterText.BackgroundTransparency = 1
-FooterText.Text = "✦ ABC HUB v15 ✦"
+FooterText.Text = "✦ 7MO HUB v15 ✦"
 FooterText.TextColor3 = Color3.fromRGB(180, 0, 255)
 FooterText.TextSize = 10
 FooterText.Font = Enum.Font.GothamMedium
@@ -584,7 +786,7 @@ local WelcomeTitle = Instance.new("TextLabel")
 WelcomeTitle.Size = UDim2.new(1, -40, 0, 40)
 WelcomeTitle.Position = UDim2.new(0, 20, 0, 130)
 WelcomeTitle.BackgroundTransparency = 1
-WelcomeTitle.Text = "🌟 نورت سكربت ABC HUB v15 🌟"
+WelcomeTitle.Text = "🌟 نورت سكربت 7MO HUB v15 🌟"
 WelcomeTitle.TextColor3 = Color3.fromRGB(180, 0, 255)
 WelcomeTitle.TextSize = 22
 WelcomeTitle.Font = Enum.Font.GothamBold
@@ -796,20 +998,20 @@ MoneyTitle.ZIndex = 6
 -- ============================================
 
 -- زر التشغيل/الإيقاف
-local ToggleButton = Instance.new("TextButton")
-ToggleButton.Size = UDim2.new(0.8, 0, 0, 50)
-ToggleButton.Position = UDim2.new(0.1, 0, 0.2, 0)
-ToggleButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleButton.TextSize = 24
-ToggleButton.Font = Enum.Font.SourceSansBold
-ToggleButton.Text = "OFF ❌"
-ToggleButton.Parent = MoneyFrame
-ToggleButton.ZIndex = 7
+local ToggleButtonMoney = Instance.new("TextButton")
+ToggleButtonMoney.Size = UDim2.new(0.8, 0, 0, 50)
+ToggleButtonMoney.Position = UDim2.new(0.1, 0, 0.2, 0)
+ToggleButtonMoney.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+ToggleButtonMoney.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleButtonMoney.TextSize = 24
+ToggleButtonMoney.Font = Enum.Font.SourceSansBold
+ToggleButtonMoney.Text = "OFF ❌"
+ToggleButtonMoney.Parent = MoneyFrame
+ToggleButtonMoney.ZIndex = 7
 
-local ToggleCorner = Instance.new("UICorner")
-ToggleCorner.CornerRadius = UDim.new(0, 10)
-ToggleCorner.Parent = ToggleButton
+local ToggleCornerMoney = Instance.new("UICorner")
+ToggleCornerMoney.CornerRadius = UDim.new(0, 10)
+ToggleCornerMoney.Parent = ToggleButtonMoney
 
 -- إحصائيات الفلوس المجمعة
 local StatsFrame = Instance.new("Frame")
@@ -942,11 +1144,11 @@ local function startStealing()
 end
 
 -- زر التشغيل/الإيقاف
-ToggleButton.MouseButton1Click:Connect(function()
+ToggleButtonMoney.MouseButton1Click:Connect(function()
     _G.CashStealer = not _G.CashStealer
     if _G.CashStealer then
-        ToggleButton.Text = "ON ✅"
-        ToggleButton.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
+        ToggleButtonMoney.Text = "ON ✅"
+        ToggleButtonMoney.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
         StatusLabel.Text = "🟢 يعمل..."
         StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 100)
         collectedCount = 0
@@ -954,12 +1156,12 @@ ToggleButton.MouseButton1Click:Connect(function()
         startStealing()
         showNotification("✅ تم تشغيل تجميع الفلوس الفوري!", MoneyFrame)
     else
-        ToggleButton.Text = "OFF ❌"
-        ToggleButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+        ToggleButtonMoney.Text = "OFF ❌"
+        ToggleButtonMoney.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
         StatusLabel.Text = "⏸️ متوقف"
         StatusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
         if eventConnection then
-            eventConnection:Disconnect() -- إنهاء الاتصال لإراحة جهازك تماماً عند الإطفاء
+            eventConnection:Disconnect()
             eventConnection = nil
         end
         showNotification("⛔ تم إيقاف تجميع الفلوس", MoneyFrame)
@@ -1113,7 +1315,6 @@ local fishingConnection = nil
 -- دالة تشغيل الصيد
 local function startFishing()
     if fishingActive then
-        -- إيقاف الصيد
         fishingActive = false
         FishingToggleButton.Text = "🎣 تشغيل الصيد"
         FishingToggleButton.BackgroundColor3 = Color3.fromRGB(0, 150, 200)
@@ -1126,7 +1327,6 @@ local function startFishing()
         end
         showNotification("⛔ تم إيقاف الصيد التلقائي", FishingFrame)
     else
-        -- تشغيل الصيد
         fishingActive = true
         FishingToggleButton.Text = "⏹️ إيقاف الصيد"
         FishingToggleButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
@@ -1134,7 +1334,6 @@ local function startFishing()
         FishingStatus.TextColor3 = Color3.fromRGB(0, 255, 100)
         InfoText.Text = "🐟 جاري الصيد التلقائي... انتظر النتائج 🎣"
         
-        -- تحميل سكربت الصيد من الرابط
         local success, result = pcall(function()
             loadstring(game:HttpGet("https://raw.githubusercontent.com/salihmahdu12-ui/SA-ALONE-THE-REAL/refs/heads/main/.ALARAB"))()
         end)
@@ -1152,7 +1351,6 @@ local function startFishing()
     end
 end
 
--- ربط زر الصيد
 FishingToggleButton.MouseButton1Click:Connect(startFishing)
 
 -- ============================================
@@ -1773,7 +1971,6 @@ end
 
 local yOffset = 5
 
--- الإعدادات الأساسية
 createSettingSlider(yOffset, "🏃 سرعة اللاعب", 10, 100, 16, "speed")
 yOffset = yOffset + 70
 
@@ -1783,7 +1980,6 @@ yOffset = yOffset + 70
 createSettingSlider(yOffset, "🌍 الجاذبية", 0, 500, 196.2, "gravity")
 yOffset = yOffset + 70
 
--- الميزات الإضافية
 createToggleButton(yOffset, "اختفاء", "👻", "invisible")
 yOffset = yOffset + 50
 
@@ -1805,7 +2001,6 @@ SettingsScroll.CanvasSize = UDim2.new(0, 0, 0, yOffset + 20)
 -- مراقبة دائمة للميزات
 -- ============================================
 
--- مراقبة اختراق الجدران والاختفاء
 RunService.Heartbeat:Connect(function()
     local character = LocalPlayer.Character
     if not character then return end
@@ -1831,7 +2026,6 @@ RunService.Heartbeat:Connect(function()
     end
 end)
 
--- تحديث عند تغيير الشخصية
 LocalPlayer.CharacterAdded:Connect(function()
     task.wait(0.5)
     local character = LocalPlayer.Character
@@ -1858,7 +2052,6 @@ LocalPlayer.CharacterAdded:Connect(function()
     end
 end)
 
--- مراقبة الحفاظ على الإعدادات
 task.spawn(function()
     while ScreenGui do
         task.wait(2)
@@ -2054,8 +2247,9 @@ for _, child in pairs(Sidebar:GetChildren()) do
     end
 end
 
-print("✅ ABC HUB v15 تم تحميله بنجاح!")
+print("✅ 7MO HUB v15 تم تحميله بنجاح!")
 print("📱 تم دعم الهاتف والكمبيوتر معاً!")
+print("🟣 زر دائري متحرك بأطراف بنفسجية!")
 print("💰 تم دمج سكربت تجميع الفلوس الفوري V7!")
 print("🎣 تم إضافة صفحة الصيد التلقائي!")
 print("🔧 الميزات: سرعة، قفز، جاذبية، اختفاء، اختراق جدران، طيران، دوران، FOV 120")
