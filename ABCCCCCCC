@@ -366,7 +366,7 @@ task.spawn(function()
     end
 end)
 
--- أزرار القائمة الجانبية (مع إضافة زر المعلومات)
+-- أزرار القائمة الجانبية
 local function createSidebarButton(text, posIndex, isActive)
     local Btn = Instance.new("TextButton")
     Btn.Size = UDim2.new(1, -20, 0, 40)
@@ -413,7 +413,6 @@ local function createSidebarButton(text, posIndex, isActive)
     end
 end
 
--- إنشاء الأزرار (مع زر المعلومات الجديد)
 createSidebarButton("🏠 الرئيسية", 1, true)
 createSidebarButton("🎉 ترحيب", 2, false)
 createSidebarButton("⚡ انتقال الفوري", 3, false)
@@ -421,7 +420,7 @@ createSidebarButton("💰 فلوس", 4, false)
 createSidebarButton("🎣 الصيد", 5, false)
 createSidebarButton("👥 لاعبين", 6, false)
 createSidebarButton("📰 الأخبار", 7, false)
-createSidebarButton("📋 المعلومات", 8, false)
+createSidebarButton("📋 المعلومات", 8, false) -- زر المعلومات الجديد
 createSidebarButton("⚙️ لاعب", 9, false)
 
 -- حاويات المحتوى
@@ -893,7 +892,7 @@ local function ShowNews()
 end
 
 -- ============================================
--- محتوى صفحة المعلومات (مع المطورين وصورة الديسكورد)
+-- محتوى صفحة المعلومات (جديد)
 -- ============================================
 
 local InfoFrame = Instance.new("Frame")
@@ -1013,7 +1012,7 @@ local function createInfoCard2(icon, title, value, color)
     return card
 end
 
--- دالة إنشاء بطاقة مطور مع صورة الديسكورد
+-- دالة إنشاء بطاقة مطور
 local function createDeveloperCard(icon, title, discordName, role, color, isOwner)
     local card = Instance.new("Frame")
     card.Size = UDim2.new(0.92, 0, 0, 70)
@@ -1251,7 +1250,7 @@ card4.Position = UDim2.new(0.04, 0, 0, infoY)
 infoY = infoY + 62
 
 -- عدد أماكن الانتقال
-local card5 = createInfoCard2("📍", "أماكن الانتقال الفوري", tostring(#places) .. " مكان", Color3.fromRGB(0, 255, 150))
+local card5 = createInfoCard2("📍", "أماكن الانتقال الفوري", "22 مكان", Color3.fromRGB(0, 255, 150))
 card5.Position = UDim2.new(0.04, 0, 0, infoY)
 infoY = infoY + 62
 
@@ -1287,6 +1286,31 @@ function ShowInfoNotification(text)
     
     task.wait(2)
     notif:Destroy()
+end
+
+-- دالة عرض صفحة المعلومات
+local function ShowInfo()
+    HomeContainer.Visible = false
+    WelcomeContainer.Visible = false
+    TeleportContainer.Visible = false
+    MoneyContainer.Visible = false
+    FishingContainer.Visible = false
+    PlayerContainer.Visible = false
+    SettingsContainer.Visible = false
+    NewsContainer.Visible = false
+    InfoContainer.Visible = true
+    
+    for _, child in pairs(Sidebar:GetChildren()) do
+        if child:IsA("TextButton") then
+            if child.Text == "📋 المعلومات" then
+                child.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
+                child.TextColor3 = Color3.fromRGB(0, 0, 0)
+            else
+                child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
+                child.TextColor3 = Color3.fromRGB(255, 255, 255)
+            end
+        end
+    end
 end
 
 -- ============================================
@@ -2904,34 +2928,6 @@ task.spawn(function()
 end)
 
 -- ============================================
--- دالة عرض صفحة المعلومات
--- ============================================
-
-local function ShowInfo()
-    HomeContainer.Visible = false
-    WelcomeContainer.Visible = false
-    TeleportContainer.Visible = false
-    MoneyContainer.Visible = false
-    FishingContainer.Visible = false
-    PlayerContainer.Visible = false
-    SettingsContainer.Visible = false
-    NewsContainer.Visible = false
-    InfoContainer.Visible = true
-    
-    for _, child in pairs(Sidebar:GetChildren()) do
-        if child:IsA("TextButton") then
-            if child.Text == "📋 المعلومات" then
-                child.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
-                child.TextColor3 = Color3.fromRGB(0, 0, 0)
-            else
-                child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
-                child.TextColor3 = Color3.fromRGB(255, 255, 255)
-            end
-        end
-    end
-end
-
--- ============================================
 -- وظائف الأزرار (تبديل الصفحات)
 -- ============================================
 
@@ -3136,7 +3132,7 @@ print("🟣 زر دائري متحرك بأطراف بنفسجية!")
 print("💰 تم دمج سكربت تجميع الفلوس الفوري V8!")
 print("🎣 تم إضافة صفحة الصيد التلقائي!")
 print("📰 تم إضافة صفحة الأخبار والتحديثات!")
-print("📋 تم إضافة صفحة المعلومات مع المطورين!")
+print("📋 تم إضافة صفحة المعلومات!")
 print("👨‍💻 المطور: hamza.abc0")
 print("👑 أونر الديسكورد: qóyt.")
 print("🔧 الميزات: سرعة، قفز، جاذبية، اختفاء، اختراق، طيران، دوران، FOV 120")
