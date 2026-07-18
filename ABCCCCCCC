@@ -1370,12 +1370,45 @@ yOffset = yOffset + 50
 SettingsScroll.CanvasSize = UDim2.new(0, 0, 0, yOffset + 20)
 
 -- ============================================
--- 🚀 إصلاح القفز اللانهائي للهاتف والكمبيوتر (100%)
+-- 🔥 إصلاح القفز اللانهائي (نسخة واحدة فقط للهاتف والكمبيوتر)
 -- ============================================
 
--- الطريقة الأولى: استخدام ContextActionService للهاتف
-local function JumpAction(actionName, inputState, inputObject)
-    if actionName == "JumpAction" and features.infiniteJump then
+-- إلغاء أي ربط سابق
+ContextActionService:UnbindAction("JumpAction")
+
+-- دالة القفز الموحدة
+local function handleJump(input, gameProcessed)
+    if gameProcessed then return end  -- منع التداخل مع الكتابة
+    if not features.infiniteJump then return end
+    
+    local character = LocalPlayer.Character
+    if not character then return end
+    
+    local humanoid = character:FindFirstChild("Humanoid")
+    if not humanoid or humanoid.Health <= 0 then return end
+    
+    -- دعم الكمبيوتر (Space) والهاتف (لمس + أزرار)
+    if input.KeyCode == Enum.KeyCode.Space or 
+       input.UserInputType == Enum.UserInputType.Touch or
+       input.KeyCode == Enum.KeyCode.ButtonR1 or
+       input.KeyCode == Enum.KeyCode.ButtonA then
+        local state = humanoid:GetState()
+        if state == Enum.HumanoidStateType.Landed or 
+           state == Enum.HumanoidStateType.Running or
+           state == Enum.HumanoidStateType.Walking or
+           state == Enum.HumanoidStateType.Freefall or
+           state == Enum.HumanoidStateType.GettingUp then
+            humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+        end
+    end
+end
+
+-- ربط الطريقة الرئيسية (لللمس والكيبورد)
+UserInputService.InputBegan:Connect(handleJump)
+
+-- دعم إضافي لأزرار الهاتف عبر ContextActionService
+ContextActionService:BindAction("JumpAction", function(actionName, inputState, inputObject)
+    if inputState == Enum.UserInputState.Begin and features.infiniteJump then
         local character = LocalPlayer.Character
         if character then
             local humanoid = character:FindFirstChild("Humanoid")
@@ -1391,56 +1424,7 @@ local function JumpAction(actionName, inputState, inputObject)
             end
         end
     end
-end
-
--- تسجيل زر القفز للهاتف
-ContextActionService:BindAction("JumpAction", JumpAction, false, Enum.KeyCode.Space, Enum.KeyCode.ButtonR1)
-
--- الطريقة الثانية: مراقبة مستمرة للقفز (للكمبيوتر والهاتف)
-task.spawn(function()
-    while ScreenGui do
-        task.wait(0.05) -- سرعة عالية للاستجابة السريعة
-        if features.infiniteJump and LocalPlayer.Character then
-            local humanoid = LocalPlayer.Character:FindFirstChild("Humanoid")
-            if humanoid and humanoid.Health > 0 then
-                -- للكمبيوتر: كشف زر Space
-                if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
-                    local state = humanoid:GetState()
-                    if state == Enum.HumanoidStateType.Landed or 
-                       state == Enum.HumanoidStateType.Running or
-                       state == Enum.HumanoidStateType.Walking or
-                       state == Enum.HumanoidStateType.Freefall or
-                       state == Enum.HumanoidStateType.GettingUp then
-                        humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-                    end
-                end
-            end
-        end
-    end
-end)
-
--- الطريقة الثالثة: استخدام InputBegan (احتياطي)
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if gameProcessed then return end
-    if features.infiniteJump then
-        if input.KeyCode == Enum.KeyCode.Space or input.KeyCode == Enum.KeyCode.ButtonR1 then
-            local character = LocalPlayer.Character
-            if character then
-                local humanoid = character:FindFirstChild("Humanoid")
-                if humanoid and humanoid.Health > 0 then
-                    local state = humanoid:GetState()
-                    if state == Enum.HumanoidStateType.Landed or 
-                       state == Enum.HumanoidStateType.Running or
-                       state == Enum.HumanoidStateType.Walking or
-                       state == Enum.HumanoidStateType.Freefall or
-                       state == Enum.HumanoidStateType.GettingUp then
-                        humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-                    end
-                end
-            end
-        end
-    end
-end)
+end, false, Enum.KeyCode.Space, Enum.KeyCode.ButtonR1, Enum.KeyCode.ButtonA)
 
 -- ============================================
 -- مراقبة دائمة للميزات
