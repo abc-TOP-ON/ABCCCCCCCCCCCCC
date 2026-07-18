@@ -1,4 +1,4 @@
--- ABC HUB v15 - النسخة النهائية (مع جميع الميزات: سرعة، قفز، جاذبية، قفز لا نهائي، اختراق جدران، طيران، دوران)
+-- ABC HUB v15 - النسخة النهائية (مع إصلاح القفز اللانهائي)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -264,7 +264,7 @@ SettingsContainer.ZIndex = 1
 SettingsContainer.Visible = false
 
 -- ============================================
--- المحتوى حق الصفحة الرئيسية (Home)
+-- المحتوى حق الصفحة الرئيسية (Home) - مختصر
 -- ============================================
 
 local avatarFrame = Instance.new("Frame")
@@ -520,7 +520,7 @@ FooterText.Parent = HomeContainer
 FooterText.ZIndex = 2
 
 -- ============================================
--- محتوى صفحة الترحيب (Welcome)
+-- محتوى صفحة الترحيب (Welcome) - مختصر
 -- ============================================
 
 local WelcomeFrame = Instance.new("Frame")
@@ -998,7 +998,7 @@ function ApplySettings()
     end
 end
 
--- دالة القفز اللانهائي
+-- دالة القفز اللانهائي (تم الإصلاح)
 local function toggleInfiniteJump()
     features.infiniteJump = not features.infiniteJump
     return features.infiniteJump
@@ -1370,27 +1370,46 @@ yOffset = yOffset + 50
 SettingsScroll.CanvasSize = UDim2.new(0, 0, 0, yOffset + 20)
 
 -- ============================================
--- مراقبة دائمة للميزات
+-- إصلاح القفز اللانهائي - الطريقة الصحيحة
 -- ============================================
 
--- مراقبة القفز اللانهائي
-RunService.Heartbeat:Connect(function()
-    if features.infiniteJump and LocalPlayer.Character then
-        local humanoid = LocalPlayer.Character:FindFirstChild("Humanoid")
-        if humanoid and humanoid.Health > 0 then
-            if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+-- الطريقة الأولى: استخدام InputBegan (الأفضل)
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.KeyCode == Enum.KeyCode.Space and features.infiniteJump then
+        local character = LocalPlayer.Character
+        if character then
+            local humanoid = character:FindFirstChild("Humanoid")
+            if humanoid and humanoid.Health > 0 then
+                -- نمنع القفز الطبيعي ونستخدم قفزتنا
+                humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+            end
+        end
+    end
+end)
+
+-- الطريقة الثانية: مراقبة مستمرة للتأكد
+task.spawn(function()
+    while ScreenGui do
+        task.wait(0.1)
+        if features.infiniteJump and LocalPlayer.Character then
+            local humanoid = LocalPlayer.Character:FindFirstChild("Humanoid")
+            if humanoid and humanoid.Health > 0 then
+                -- إذا كان اللاعب على الأرض أو يمشي، نمكنه من القفز
                 local state = humanoid:GetState()
                 if state == Enum.HumanoidStateType.Landed or 
                    state == Enum.HumanoidStateType.Running or
-                   state == Enum.HumanoidStateType.Walking or
-                   state == Enum.HumanoidStateType.Freefall or
-                   state == Enum.HumanoidStateType.GettingUp then
-                    humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+                   state == Enum.HumanoidStateType.Walking then
+                    -- نسمح للقفز الطبيعي بالعمل
                 end
             end
         end
     end
 end)
+
+-- ============================================
+-- مراقبة دائمة للميزات
+-- ============================================
 
 -- مراقبة اختراق الجدران
 RunService.Heartbeat:Connect(function()
