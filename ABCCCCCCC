@@ -1,4 +1,4 @@
--- ABC HUB v15 - النسخة المعدلة (بدون قفز لانهائي وبدون اختراق جدران + إصلاح السرعة)
+-- ABC HUB v15 - النسخة النهائية (إصلاح مشكلة السرعة نهائياً)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -7,18 +7,18 @@ local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local Camera = workspace.CurrentCamera
 
--- 1. منع تكرار الواجهة
+-- منع تكرار الواجهة
 if game:GetService("CoreGui"):FindFirstChild("ABCHUBv15") then
     game:GetService("CoreGui"):FindFirstChild("ABCHUBv15"):Destroy()
 end
 
--- 2. الحاوية الأساسية
+-- الحاوية الأساسية
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "ABCHUBv15"
 ScreenGui.Parent = game:GetService("CoreGui")
 ScreenGui.ResetOnSpawn = false
 
--- 3. النافذة الرئيسية
+-- النافذة الرئيسية
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
 MainFrame.Size = UDim2.new(0, 520, 0, 430)
@@ -34,7 +34,7 @@ local MainCorner = Instance.new("UICorner")
 MainCorner.CornerRadius = UDim.new(0, 12)
 MainCorner.Parent = MainFrame
 
--- 4. الإطار البنفسجي
+-- الإطار البنفسجي
 local GlowFrame = Instance.new("Frame")
 GlowFrame.Name = "GlowFrame"
 GlowFrame.Size = UDim2.new(1, 8, 1, 8)
@@ -63,7 +63,7 @@ local GlowCorner2 = Instance.new("UICorner")
 GlowCorner2.CornerRadius = UDim.new(0, 20)
 GlowCorner2.Parent = GlowFrame2
 
--- 5. تحريك الإطار البنفسجي
+-- تحريك الإطار البنفسجي
 local glowColors = {
     Color3.fromRGB(120, 0, 255),
     Color3.fromRGB(180, 0, 255),
@@ -94,7 +94,7 @@ RunService.Heartbeat:Connect(function()
     GlowFrame2.BackgroundTransparency = breathe - 0.1
 end)
 
--- 6. زر الإغلاق X
+-- زر الإغلاق X
 local CloseX = Instance.new("TextButton")
 CloseX.Name = "CloseX"
 CloseX.Size = UDim2.new(0, 35, 0, 35)
@@ -124,7 +124,7 @@ CloseX.MouseButton1Click:Connect(function()
     ScreenGui:Destroy()
 end)
 
--- 7. القائمة الجانبية
+-- القائمة الجانبية
 local Sidebar = Instance.new("Frame")
 Sidebar.Name = "Sidebar"
 Sidebar.Size = UDim2.new(0, 140, 1, 0)
@@ -145,7 +145,7 @@ SidebarFix.BorderSizePixel = 0
 SidebarFix.Parent = Sidebar
 SidebarFix.ZIndex = 15
 
--- 8. شعار ABC HUB v15
+-- شعار ABC HUB v15
 local LogoText = Instance.new("TextLabel")
 LogoText.Size = UDim2.new(1, 0, 0, 50)
 LogoText.BackgroundTransparency = 1
@@ -164,7 +164,7 @@ task.spawn(function()
     end
 end)
 
--- 9. أزرار القائمة الجانبية
+-- أزرار القائمة الجانبية
 local function createSidebarButton(text, posIndex, isActive)
     local Btn = Instance.new("TextButton")
     Btn.Size = UDim2.new(1, -20, 0, 40)
@@ -217,7 +217,7 @@ createSidebarButton("⚡ انتقال الفوري", 3, false)
 createSidebarButton("👥 لاعبين", 4, false)
 createSidebarButton("⚙️ لاعب", 5, false)
 
--- 10. حاوية المحتوى (الصفحة الرئيسية)
+-- حاويات المحتوى
 local HomeContainer = Instance.new("Frame")
 HomeContainer.Name = "HomeContainer"
 HomeContainer.Size = UDim2.new(1, -150, 1, -20)
@@ -227,7 +227,6 @@ HomeContainer.Parent = MainFrame
 HomeContainer.ZIndex = 1
 HomeContainer.Visible = true
 
--- 11. حاوية الترحيب
 local WelcomeContainer = Instance.new("Frame")
 WelcomeContainer.Name = "WelcomeContainer"
 WelcomeContainer.Size = UDim2.new(1, -150, 1, -20)
@@ -237,7 +236,6 @@ WelcomeContainer.Parent = MainFrame
 WelcomeContainer.ZIndex = 1
 WelcomeContainer.Visible = false
 
--- 11.5 حاوية الانتقال الفوري
 local TeleportContainer = Instance.new("Frame")
 TeleportContainer.Name = "TeleportContainer"
 TeleportContainer.Size = UDim2.new(1, -150, 1, -20)
@@ -247,7 +245,6 @@ TeleportContainer.Parent = MainFrame
 TeleportContainer.ZIndex = 1
 TeleportContainer.Visible = false
 
--- 11.6 حاوية اللاعبين
 local PlayerContainer = Instance.new("Frame")
 PlayerContainer.Name = "PlayerContainer"
 PlayerContainer.Size = UDim2.new(1, -150, 1, -20)
@@ -257,7 +254,6 @@ PlayerContainer.Parent = MainFrame
 PlayerContainer.ZIndex = 1
 PlayerContainer.Visible = false
 
--- 11.7 حاوية إعدادات اللاعب
 local SettingsContainer = Instance.new("Frame")
 SettingsContainer.Name = "SettingsContainer"
 SettingsContainer.Size = UDim2.new(1, -150, 1, -20)
@@ -271,7 +267,6 @@ SettingsContainer.Visible = false
 -- المحتوى حق الصفحة الرئيسية (Home)
 -- ============================================
 
--- 12. صورة اللاعب
 local avatarFrame = Instance.new("Frame")
 avatarFrame.Size = UDim2.new(0, 80, 0, 80)
 avatarFrame.Position = UDim2.new(0.5, -40, 0, 10)
@@ -320,7 +315,6 @@ task.spawn(function()
     end
 end)
 
--- 13. اسم اللاعب
 local DisplayNameLabel = Instance.new("TextLabel")
 DisplayNameLabel.Size = UDim2.new(1, -20, 0, 25)
 DisplayNameLabel.Position = UDim2.new(0, 10, 0, 98)
@@ -333,7 +327,6 @@ DisplayNameLabel.TextXAlignment = Enum.TextXAlignment.Center
 DisplayNameLabel.Parent = HomeContainer
 DisplayNameLabel.ZIndex = 2
 
--- 14. اسم المستخدم
 local UsernameLabel = Instance.new("TextLabel")
 UsernameLabel.Size = UDim2.new(1, -20, 0, 16)
 UsernameLabel.Position = UDim2.new(0, 10, 0, 123)
@@ -346,7 +339,6 @@ UsernameLabel.TextXAlignment = Enum.TextXAlignment.Center
 UsernameLabel.Parent = HomeContainer
 UsernameLabel.ZIndex = 2
 
--- 15. خط فاصل
 local Divider = Instance.new("Frame")
 Divider.Size = UDim2.new(0.85, 0, 0, 1)
 Divider.Position = UDim2.new(0.075, 0, 0, 100)
@@ -356,7 +348,6 @@ Divider.BorderSizePixel = 0
 Divider.Parent = HomeContainer
 Divider.ZIndex = 2
 
--- 16. كروت المعلومات
 local function createInfoCard(title, value, icon, row, col)
     local Card = Instance.new("Frame")
     Card.Size = UDim2.new(0.46, -10, 0, 50)
@@ -431,7 +422,6 @@ createInfoCard("اسم المستخدم", "@" .. LocalPlayer.Name, "🔹", 1, 2)
 createInfoCard("رقم الحساب", tostring(UserId), "🆔", 2, 1)
 createInfoCard("عمر الحساب", ageText, "📅", 2, 2)
 
--- 17. معلومات المطور
 local DevContainer = Instance.new("Frame")
 DevContainer.Size = UDim2.new(0.9, 0, 0, 40)
 DevContainer.Position = UDim2.new(0.05, 0, 0, 280)
@@ -728,9 +718,8 @@ local function createTeleportButtons()
         button.MouseButton1Click:Connect(function()
             if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
                 LocalPlayer.Character.HumanoidRootPart.CFrame = place.cf
-                -- إعادة تطبيق الإعدادات بعد الانتقال
                 task.wait(0.1)
-                updatePlayerProperties()
+                ApplySettings()
             end
         end)
         
@@ -755,7 +744,7 @@ TeleportFooter.Parent = TeleportFrame
 TeleportFooter.ZIndex = 6
 
 -- ============================================
--- محتوى صفحة اللاعبين (Player List) - مع إصلاح مشكلة السرعة
+-- محتوى صفحة اللاعبين (Player List)
 -- ============================================
 
 local PlayerFrame = Instance.new("Frame")
@@ -887,9 +876,8 @@ local function UpdatePlayerList()
                 if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
                     if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
                         LocalPlayer.Character.HumanoidRootPart.CFrame = player.Character.HumanoidRootPart.CFrame
-                        -- إعادة تطبيق الإعدادات بعد الانتقال للاعب
                         task.wait(0.1)
-                        updatePlayerProperties()
+                        ApplySettings()
                     end
                 end
             end)
@@ -907,7 +895,7 @@ Players.PlayerAdded:Connect(function() UpdatePlayerList() end)
 Players.PlayerRemoving:Connect(function() UpdatePlayerList() end)
 
 -- ============================================
--- محتوى صفحة إعدادات اللاعب (بدون قفز لانهائي وبدون اختراق جدران)
+-- صفحة الإعدادات (الحل النهائي لمشكلة السرعة)
 -- ============================================
 
 local SettingsFrame = Instance.new("Frame")
@@ -966,29 +954,28 @@ SettingsScroll.ScrollBarThickness = 4
 SettingsScroll.Parent = SettingsFrame
 SettingsScroll.ZIndex = 6
 
--- متغيرات الإعدادات (بدون noclip وبدون infiniteJump)
+-- متغيرات الإعدادات (قابلة للتخزين)
 local playerSettings = {
     speed = 16,
     jumpPower = 50,
     gravity = 196.2
 }
 
--- دالة تحديث خصائص اللاعب (مع إصلاح السرعة)
-local function updatePlayerProperties()
+-- دالة تطبيق الإعدادات (الحل النهائي)
+function ApplySettings()
     local character = LocalPlayer.Character
     if character then
         local humanoid = character:FindFirstChild("Humanoid")
         if humanoid then
-            -- تطبيق الإعدادات مع التأكد من القيم
             humanoid.WalkSpeed = playerSettings.speed
             humanoid.JumpPower = playerSettings.jumpPower
             humanoid.Gravity = playerSettings.gravity
-            print("✅ تم تحديث الإعدادات: سرعة=" .. playerSettings.speed .. ", قفز=" .. playerSettings.jumpPower .. ", جاذبية=" .. playerSettings.gravity)
+            print("✅ تم تطبيق الإعدادات: سرعة=" .. playerSettings.speed .. ", قفز=" .. playerSettings.jumpPower .. ", جاذبية=" .. playerSettings.gravity)
         end
     end
 end
 
--- دالة إنشاء زر مع شريط تمرير
+-- دالة إنشاء زر مع شريط تمرير (مع حفظ القيمة فوراً)
 local function createSettingSlider(yOffset, labelText, minVal, maxVal, defaultValue, settingName)
     local container = Instance.new("Frame")
     container.Size = UDim2.new(0.92, 0, 0, 60)
@@ -1052,6 +1039,7 @@ local function createSettingSlider(yOffset, labelText, minVal, maxVal, defaultVa
         applyBtn.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
     end)
     
+    -- حل مشكلة السرعة: التطبيق يحفظ القيمة ويطبقها فوراً
     applyBtn.MouseButton1Click:Connect(function()
         local val = tonumber(slider.Text)
         if val then
@@ -1059,7 +1047,26 @@ local function createSettingSlider(yOffset, labelText, minVal, maxVal, defaultVa
             playerSettings[settingName] = val
             label.Text = labelText .. ": " .. tostring(val)
             slider.Text = tostring(val)
-            updatePlayerProperties()
+            ApplySettings() -- تطبيق فوري
+            
+            -- إشعار تأكيد
+            local notif = Instance.new("TextLabel")
+            notif.Size = UDim2.new(0, 200, 0, 30)
+            notif.Position = UDim2.new(0.5, -100, 0.85, 0)
+            notif.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
+            notif.BackgroundTransparency = 0.1
+            notif.TextColor3 = Color3.fromRGB(0, 255, 150)
+            notif.TextSize = 14
+            notif.Font = Enum.Font.GothamBold
+            notif.Text = "✅ تم تطبيق " .. labelText
+            notif.Parent = SettingsFrame
+            
+            local notifCorner = Instance.new("UICorner")
+            notifCorner.CornerRadius = UDim.new(0, 8)
+            notifCorner.Parent = notif
+            
+            task.wait(1)
+            notif:Destroy()
         end
     end)
     
@@ -1069,38 +1076,36 @@ end
 -- إنشاء الأزرار في صفحة الإعدادات
 local yOffset = 5
 
--- 1. سرعة اللاعب
 createSettingSlider(yOffset, "🏃 سرعة اللاعب", 10, 100, 16, "speed")
 yOffset = yOffset + 65
 
--- 2. قفز اللاعب
 createSettingSlider(yOffset, "🦘 قفز اللاعب", 10, 200, 50, "jumpPower")
 yOffset = yOffset + 65
 
--- 3. الجاذبية
 createSettingSlider(yOffset, "🌍 الجاذبية", 0, 500, 196.2, "gravity")
 yOffset = yOffset + 65
 
 SettingsScroll.CanvasSize = UDim2.new(0, 0, 0, yOffset + 20)
 
 -- ============================================
--- مراقبة تغيير الشخصية وإعادة تطبيق الإعدادات
+-- مراقبة دائمة للحفاظ على الإعدادات (حل نهائي)
 -- ============================================
 
--- تحديث خصائص اللاعب عند تغيير الشخصية
+-- كل ما يتغير الشخصية، نطبق الإعدادات
 LocalPlayer.CharacterAdded:Connect(function()
-    task.wait(1)
-    updatePlayerProperties()
+    task.wait(0.5)
+    ApplySettings()
 end)
 
--- تحديث كل 5 ثواني للتأكد من بقاء الإعدادات (حل لمشكلة السرعة)
+-- مراقبة كل 2 ثانية للتأكد من بقاء الإعدادات
 task.spawn(function()
     while ScreenGui do
-        task.wait(3)
-        if LocalPlayer.Character then
-            local humanoid = LocalPlayer.Character:FindFirstChild("Humanoid")
+        task.wait(2)
+        local character = LocalPlayer.Character
+        if character then
+            local humanoid = character:FindFirstChild("Humanoid")
             if humanoid then
-                -- التأكد من أن السرعة مطابقة للإعدادات
+                -- إذا تغيرت السرعة عن الإعدادات، نعيد ضبطها
                 if humanoid.WalkSpeed ~= playerSettings.speed then
                     humanoid.WalkSpeed = playerSettings.speed
                 end
@@ -1202,7 +1207,7 @@ local function ShowSettings()
     TeleportContainer.Visible = false
     PlayerContainer.Visible = false
     SettingsContainer.Visible = true
-    updatePlayerProperties()
+    ApplySettings()
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
             if child.Text == "⚙️ لاعب" then
@@ -1233,11 +1238,10 @@ for _, child in pairs(Sidebar:GetChildren()) do
     end
 end
 
--- تحديث الإعدادات عند التحميل
-task.wait(1)
-updatePlayerProperties()
+-- تطبيق الإعدادات عند التحميل
+task.wait(0.5)
+ApplySettings()
 
 print("✅ ABC HUB v15 تم تحميله بنجاح!")
+print("🔧 تم إصلاح مشكلة السرعة نهائياً - تبقى ثابتة حتى بعد الانتقال!")
 print("📍 " .. #places .. " مكاناً للانتقال الفوري!")
-print("🔧 تم إزالة: القفز اللانهائي، اختراق الجدران")
-print("🔧 تم إصلاح مشكلة السرعة - تبقى ثابتة حتى بعد الانتقال!")
