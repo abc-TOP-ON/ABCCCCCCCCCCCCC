@@ -1,10 +1,11 @@
--- ABC HUB v15 - النسخة العربية الكاملة مع صفحة ترحيب وانتقال فوري وقائمة لاعبين وإعدادات اللاعب
+-- ABC HUB v15 - النسخة العربية الكاملة مع جميع الميزات
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
+local Camera = workspace.CurrentCamera
 
 -- 1. منع تكرار الواجهة
 if game:GetService("CoreGui"):FindFirstChild("ABCHUBv15") then
@@ -226,7 +227,7 @@ HomeContainer.Parent = MainFrame
 HomeContainer.ZIndex = 1
 HomeContainer.Visible = true
 
--- 11. حاوية الترحيب (مخفية في البداية)
+-- 11. حاوية الترحيب
 local WelcomeContainer = Instance.new("Frame")
 WelcomeContainer.Name = "WelcomeContainer"
 WelcomeContainer.Size = UDim2.new(1, -150, 1, -20)
@@ -236,7 +237,7 @@ WelcomeContainer.Parent = MainFrame
 WelcomeContainer.ZIndex = 1
 WelcomeContainer.Visible = false
 
--- 11.5 حاوية الانتقال الفوري (مخفية في البداية)
+-- 11.5 حاوية الانتقال الفوري
 local TeleportContainer = Instance.new("Frame")
 TeleportContainer.Name = "TeleportContainer"
 TeleportContainer.Size = UDim2.new(1, -150, 1, -20)
@@ -246,7 +247,7 @@ TeleportContainer.Parent = MainFrame
 TeleportContainer.ZIndex = 1
 TeleportContainer.Visible = false
 
--- 11.6 حاوية اللاعبين (مخفية في البداية)
+-- 11.6 حاوية اللاعبين
 local PlayerContainer = Instance.new("Frame")
 PlayerContainer.Name = "PlayerContainer"
 PlayerContainer.Size = UDim2.new(1, -150, 1, -20)
@@ -256,7 +257,7 @@ PlayerContainer.Parent = MainFrame
 PlayerContainer.ZIndex = 1
 PlayerContainer.Visible = false
 
--- 11.7 حاوية إعدادات اللاعب (مخفية في البداية)
+-- 11.7 حاوية إعدادات اللاعب
 local SettingsContainer = Instance.new("Frame")
 SettingsContainer.Name = "SettingsContainer"
 SettingsContainer.Size = UDim2.new(1, -150, 1, -20)
@@ -430,7 +431,7 @@ createInfoCard("اسم المستخدم", "@" .. LocalPlayer.Name, "🔹", 1, 2)
 createInfoCard("رقم الحساب", tostring(UserId), "🆔", 2, 1)
 createInfoCard("عمر الحساب", ageText, "📅", 2, 2)
 
--- 17. معلومات المطور (مختصر)
+-- 17. معلومات المطور
 local DevContainer = Instance.new("Frame")
 DevContainer.Size = UDim2.new(0.9, 0, 0, 40)
 DevContainer.Position = UDim2.new(0.05, 0, 0, 280)
@@ -606,7 +607,7 @@ WelcomePlayer.Parent = WelcomeFrame
 WelcomePlayer.ZIndex = 6
 
 -- ============================================
--- محتوى صفحة الانتقال الفوري (Teleport) - مختصر
+-- محتوى صفحة الانتقال الفوري (Teleport)
 -- ============================================
 
 local TeleportFrame = Instance.new("Frame")
@@ -900,7 +901,7 @@ Players.PlayerAdded:Connect(function() UpdatePlayerList() end)
 Players.PlayerRemoving:Connect(function() UpdatePlayerList() end)
 
 -- ============================================
--- محتوى صفحة إعدادات اللاعب (Player Settings)
+-- محتوى صفحة إعدادات اللاعب (Player Settings) - محدث بالكامل
 -- ============================================
 
 local SettingsFrame = Instance.new("Frame")
@@ -966,8 +967,16 @@ local playerSettings = {
     flySpeed = 100,
     gravity = 196.2,
     noclip = false,
-    infiniteJump = false
+    infiniteJump = false,
+    autoRotate = false,
+    ipadView = false
 }
+
+local flyEnabled = false
+local flyConnection = nil
+local rotateConnection = nil
+local currentRotation = 0
+local ipadSize = 1
 
 -- دالة تحديث خصائص اللاعب
 local function updatePlayerProperties()
@@ -982,8 +991,178 @@ local function updatePlayerProperties()
     end
 end
 
+-- دالة الطيران
+local function toggleFly()
+    local character = LocalPlayer.Character
+    if not character then return end
+    
+    local humanoid = character:FindFirstChild("Humanoid")
+    local rootPart = character:FindFirstChild("HumanoidRootPart")
+    if not humanoid or not rootPart then return end
+    
+    flyEnabled = not flyEnabled
+    
+    if flyEnabled then
+        humanoid.PlatformStand = true
+        
+        flyConnection = RunService.Heartbeat:Connect(function()
+            if not character or not character.Parent then
+                flyConnection:Disconnect()
+                flyEnabled = false
+                return
+            end
+            
+            local root = character.HumanoidRootPart
+            if not root then return end
+            
+            local moveDirection = Vector3.new(0, 0, 0)
+            local camera = workspace.CurrentCamera
+            if not camera then return end
+            
+            local forward = camera.CFrame.LookVector
+            local right = camera.CFrame.RightVector
+            
+            local forwardKey = UserInputService:IsKeyDown(Enum.KeyCode.W)
+            local backwardKey = UserInputService:IsKeyDown(Enum.KeyCode.S)
+            local leftKey = UserInputService:IsKeyDown(Enum.KeyCode.A)
+            local rightKey = UserInputService:IsKeyDown(Enum.KeyCode.D)
+            local upKey = UserInputService:IsKeyDown(Enum.KeyCode.E)
+            local downKey = UserInputService:IsKeyDown(Enum.KeyCode.Q)
+            
+            if forwardKey then moveDirection = moveDirection + forward end
+            if backwardKey then moveDirection = moveDirection - forward end
+            if leftKey then moveDirection = moveDirection - right end
+            if rightKey then moveDirection = moveDirection + right end
+            if upKey then moveDirection = moveDirection + Vector3.new(0, 1, 0) end
+            if downKey then moveDirection = moveDirection - Vector3.new(0, 1, 0) end
+            
+            if moveDirection.Magnitude > 0 then
+                moveDirection = moveDirection.Unit
+            end
+            
+            root.CFrame = root.CFrame + (moveDirection * playerSettings.flySpeed * 0.1)
+        end)
+        
+        local notif = Instance.new("TextLabel")
+        notif.Size = UDim2.new(0, 200, 0, 30)
+        notif.Position = UDim2.new(0.5, -100, 0.85, 0)
+        notif.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
+        notif.BackgroundTransparency = 0.1
+        notif.TextColor3 = Color3.fromRGB(0, 255, 150)
+        notif.TextSize = 14
+        notif.Font = Enum.Font.GothamBold
+        notif.Text = "✈️ تم تشغيل الطيران!"
+        notif.Parent = SettingsFrame
+        
+        local notifCorner = Instance.new("UICorner")
+        notifCorner.CornerRadius = UDim.new(0, 8)
+        notifCorner.Parent = notif
+        
+        task.wait(1.5)
+        notif:Destroy()
+        
+    else
+        if flyConnection then
+            flyConnection:Disconnect()
+            flyConnection = nil
+        end
+        humanoid.PlatformStand = false
+        
+        local notif = Instance.new("TextLabel")
+        notif.Size = UDim2.new(0, 200, 0, 30)
+        notif.Position = UDim2.new(0.5, -100, 0.85, 0)
+        notif.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
+        notif.BackgroundTransparency = 0.1
+        notif.TextColor3 = Color3.fromRGB(255, 100, 100)
+        notif.TextSize = 14
+        notif.Font = Enum.Font.GothamBold
+        notif.Text = "✈️ تم إيقاف الطيران!"
+        notif.Parent = SettingsFrame
+        
+        local notifCorner = Instance.new("UICorner")
+        notifCorner.CornerRadius = UDim.new(0, 8)
+        notifCorner.Parent = notif
+        
+        task.wait(1.5)
+        notif:Destroy()
+    end
+end
+
+-- دالة تشغيل الدوران التلقائي
+local function toggleAutoRotate()
+    playerSettings.autoRotate = not playerSettings.autoRotate
+    
+    if playerSettings.autoRotate then
+        rotateConnection = RunService.Heartbeat:Connect(function()
+            if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                local root = LocalPlayer.Character.HumanoidRootPart
+                currentRotation = currentRotation + 0.02
+                root.CFrame = CFrame.new(root.Position) * CFrame.Angles(0, currentRotation, 0)
+            end
+        end)
+    else
+        if rotateConnection then
+            rotateConnection:Disconnect()
+            rotateConnection = nil
+        end
+    end
+end
+
+-- دالة تغيير منظور الآيباد
+local function toggleIpadView()
+    playerSettings.ipadView = not playerSettings.ipadView
+    
+    if playerSettings.ipadView then
+        ipadSize = 0.75
+        Camera.FieldOfView = 70
+        MainFrame.Size = UDim2.new(0, math.floor(520 * 0.75), 0, math.floor(430 * 0.75))
+        MainFrame.Position = UDim2.new(0.5, -math.floor(520 * 0.75 / 2), 0.5, -math.floor(430 * 0.75 / 2))
+        
+        local notif = Instance.new("TextLabel")
+        notif.Size = UDim2.new(0, 200, 0, 30)
+        notif.Position = UDim2.new(0.5, -100, 0.85, 0)
+        notif.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
+        notif.BackgroundTransparency = 0.1
+        notif.TextColor3 = Color3.fromRGB(0, 255, 150)
+        notif.TextSize = 14
+        notif.Font = Enum.Font.GothamBold
+        notif.Text = "📱 تم تشغيل منظور الآيباد!"
+        notif.Parent = SettingsFrame
+        
+        local notifCorner = Instance.new("UICorner")
+        notifCorner.CornerRadius = UDim.new(0, 8)
+        notifCorner.Parent = notif
+        
+        task.wait(1.5)
+        notif:Destroy()
+    else
+        ipadSize = 1
+        Camera.FieldOfView = 70
+        MainFrame.Size = UDim2.new(0, 520, 0, 430)
+        MainFrame.Position = UDim2.new(0.5, -260, 0.5, -215)
+        
+        local notif = Instance.new("TextLabel")
+        notif.Size = UDim2.new(0, 200, 0, 30)
+        notif.Position = UDim2.new(0.5, -100, 0.85, 0)
+        notif.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
+        notif.BackgroundTransparency = 0.1
+        notif.TextColor3 = Color3.fromRGB(255, 100, 100)
+        notif.TextSize = 14
+        notif.Font = Enum.Font.GothamBold
+        notif.Text = "📱 تم إيقاف منظور الآيباد!"
+        notif.Parent = SettingsFrame
+        
+        local notifCorner = Instance.new("UICorner")
+        notifCorner.CornerRadius = UDim.new(0, 8)
+        notifCorner.Parent = notif
+        
+        task.wait(1.5)
+        notif:Destroy()
+    end
+end
+
 -- دالة إنشاء زر مع شريط تمرير
-local function createSettingSlider(yOffset, labelText, minVal, maxVal, defaultValue, settingName, isFloat)
+local function createSettingSlider(yOffset, labelText, minVal, maxVal, defaultValue, settingName)
     local container = Instance.new("Frame")
     container.Size = UDim2.new(0.92, 0, 0, 60)
     container.Position = UDim2.new(0.04, 0, 0, yOffset)
@@ -1050,7 +1229,11 @@ local function createSettingSlider(yOffset, labelText, minVal, maxVal, defaultVa
         local val = tonumber(slider.Text)
         if val then
             val = math.clamp(val, minVal, maxVal)
-            playerSettings[settingName] = val
+            if settingName == "flySpeed" then
+                playerSettings.flySpeed = val
+            else
+                playerSettings[settingName] = val
+            end
             label.Text = labelText .. ": " .. tostring(val)
             slider.Text = tostring(val)
             updatePlayerProperties()
@@ -1060,7 +1243,7 @@ local function createSettingSlider(yOffset, labelText, minVal, maxVal, defaultVa
     return container
 end
 
--- دالة إنشاء زر تبديل (Toggle)
+-- دالة إنشاء زر تبديل (Toggle) مع إصلاح القفز اللانهائي
 local function createToggleButton(yOffset, labelText, settingName, defaultValue)
     local container = Instance.new("Frame")
     container.Size = UDim2.new(0.92, 0, 0, 45)
@@ -1117,7 +1300,7 @@ local function createToggleButton(yOffset, labelText, settingName, defaultValue)
             label.TextColor3 = Color3.fromRGB(255, 255, 255)
         end
         
-        -- تطبيق الإعدادات الخاصة
+        -- تطبيق الإعدادات
         if settingName == "noclip" then
             local character = LocalPlayer.Character
             if character then
@@ -1127,6 +1310,12 @@ local function createToggleButton(yOffset, labelText, settingName, defaultValue)
                     end
                 end
             end
+        elseif settingName == "infiniteJump" then
+            -- القفز اللانهائي يتم التعامل معه في Heartbeat
+        elseif settingName == "autoRotate" then
+            toggleAutoRotate()
+        elseif settingName == "ipadView" then
+            toggleIpadView()
         end
     end)
     
@@ -1137,30 +1326,93 @@ end
 local yOffset = 5
 
 -- 1. سرعة اللاعب
-createSettingSlider(yOffset, "🏃 سرعة اللاعب", 10, 100, 16, "speed", false)
+createSettingSlider(yOffset, "🏃 سرعة اللاعب", 10, 100, 16, "speed")
 yOffset = yOffset + 65
 
 -- 2. قفز اللاعب
-createSettingSlider(yOffset, "🦘 قفز اللاعب", 10, 200, 50, "jumpPower", false)
+createSettingSlider(yOffset, "🦘 قفز اللاعب", 10, 200, 50, "jumpPower")
 yOffset = yOffset + 65
 
 -- 3. سرعة الطيران
-createSettingSlider(yOffset, "✈️ سرعة الطيران", 20, 500, 100, "flySpeed", false)
+createSettingSlider(yOffset, "✈️ سرعة الطيران", 20, 500, 100, "flySpeed")
 yOffset = yOffset + 65
 
 -- 4. الجاذبية
-createSettingSlider(yOffset, "🌍 الجاذبية", 0, 500, 196.2, "gravity", false)
+createSettingSlider(yOffset, "🌍 الجاذبية", 0, 500, 196.2, "gravity")
 yOffset = yOffset + 65
 
--- 5. قفز لا نهائي (Toggle)
+-- 5. قفز لا نهائي (تم الإصلاح)
 createToggleButton(yOffset, "🚀 قفز لا نهائي", "infiniteJump", false)
 yOffset = yOffset + 50
 
--- 6. اختراق الجدران (Toggle)
+-- 6. اختراق الجدران (تم الإصلاح)
 createToggleButton(yOffset, "🧱 اختراق الجدران", "noclip", false)
 yOffset = yOffset + 50
 
--- 7. دوران (Slider)
+-- 7. الطيران
+local flyContainer = Instance.new("Frame")
+flyContainer.Size = UDim2.new(0.92, 0, 0, 45)
+flyContainer.Position = UDim2.new(0.04, 0, 0, yOffset)
+flyContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+flyContainer.BorderSizePixel = 0
+flyContainer.Parent = SettingsScroll
+flyContainer.ZIndex = 7
+
+local flyCorner = Instance.new("UICorner")
+flyCorner.CornerRadius = UDim.new(0, 6)
+flyCorner.Parent = flyContainer
+
+local flyLabel = Instance.new("TextLabel")
+flyLabel.Size = UDim2.new(0.6, 0, 1, 0)
+flyLabel.Position = UDim2.new(0, 5, 0, 0)
+flyLabel.BackgroundTransparency = 1
+flyLabel.Text = "✈️ الطيران"
+flyLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+flyLabel.TextSize = 14
+flyLabel.Font = Enum.Font.GothamSemibold
+flyLabel.TextXAlignment = Enum.TextXAlignment.Left
+flyLabel.Parent = flyContainer
+flyLabel.ZIndex = 8
+
+local flyToggle = Instance.new("TextButton")
+flyToggle.Size = UDim2.new(0.2, 0, 0, 30)
+flyToggle.Position = UDim2.new(0.76, 0, 0.5, -15)
+flyToggle.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+flyToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+flyToggle.TextSize = 12
+flyToggle.Font = Enum.Font.GothamBold
+flyToggle.Text = "إيقاف"
+flyToggle.Parent = flyContainer
+flyToggle.ZIndex = 8
+
+local flyCorner2 = Instance.new("UICorner")
+flyCorner2.CornerRadius = UDim.new(0, 4)
+flyCorner2.Parent = flyToggle
+
+flyToggle.MouseButton1Click:Connect(function()
+    toggleFly()
+    if flyEnabled then
+        flyToggle.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
+        flyToggle.Text = "تفعيل"
+        flyLabel.TextColor3 = Color3.fromRGB(0, 255, 150)
+    else
+        flyToggle.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+        flyToggle.Text = "إيقاف"
+        flyLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    end
+end)
+
+yOffset = yOffset + 50
+
+-- 8. دوران تلقائي
+createToggleButton(yOffset, "🔄 دوران تلقائي", "autoRotate", false)
+yOffset = yOffset + 50
+
+-- 9. منظور آيباد (جديد)
+createToggleButton(yOffset, "📱 منظور آيباد", "ipadView", false)
+yOffset = yOffset + 50
+
+-- 10. دوران يدوي (Slider)
 local rotContainer = Instance.new("Frame")
 rotContainer.Size = UDim2.new(0.92, 0, 0, 60)
 rotContainer.Position = UDim2.new(0.04, 0, 0, yOffset)
@@ -1177,7 +1429,7 @@ local rotLabel = Instance.new("TextLabel")
 rotLabel.Size = UDim2.new(1, 0, 0, 20)
 rotLabel.Position = UDim2.new(0, 5, 0, 2)
 rotLabel.BackgroundTransparency = 1
-rotLabel.Text = "🌀 دوران: 0 درجة"
+rotLabel.Text = "🌀 دوران يدوي: 0 درجة"
 rotLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 rotLabel.TextSize = 13
 rotLabel.Font = Enum.Font.GothamSemibold
@@ -1227,7 +1479,7 @@ rotApply.MouseButton1Click:Connect(function()
     local val = tonumber(rotSlider.Text)
     if val then
         val = math.clamp(val, 0, 360)
-        rotLabel.Text = "🌀 دوران: " .. val .. " درجة"
+        rotLabel.Text = "🌀 دوران يدوي: " .. val .. " درجة"
         rotSlider.Text = tostring(val)
         if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
             local root = LocalPlayer.Character.HumanoidRootPart
@@ -1239,6 +1491,52 @@ end)
 yOffset = yOffset + 65
 
 SettingsScroll.CanvasSize = UDim2.new(0, 0, 0, yOffset + 20)
+
+-- إصلاح القفز اللانهائي
+RunService.Heartbeat:Connect(function()
+    -- القفز اللانهائي
+    if playerSettings.infiniteJump and LocalPlayer.Character then
+        local humanoid = LocalPlayer.Character:FindFirstChild("Humanoid")
+        if humanoid then
+            -- التحقق من الضغط على زر المسافة
+            if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+                if humanoid:GetState() == Enum.HumanoidStateType.Landed or 
+                   humanoid:GetState() == Enum.HumanoidStateType.Running or
+                   humanoid:GetState() == Enum.HumanoidStateType.Walking then
+                    humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+                end
+            end
+        end
+    end
+    
+    -- اختراق الجدران (تحديث مستمر)
+    if playerSettings.noclip and LocalPlayer.Character then
+        local character = LocalPlayer.Character
+        for _, part in pairs(character:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = false
+            end
+        end
+    end
+end)
+
+-- تحديث خصائص اللاعب عند تغيير الشخصية
+LocalPlayer.CharacterAdded:Connect(function()
+    task.wait(0.5)
+    local character = LocalPlayer.Character
+    if character then
+        -- تفعيل اختراق الجدران إذا كان مفعلاً
+        if playerSettings.noclip then
+            for _, part in pairs(character:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = false
+                end
+            end
+        end
+        -- تحديث الخصائص
+        updatePlayerProperties()
+    end
+end)
 
 -- ============================================
 -- 44. وظائف الأزرار (تبديل الصفحات)
@@ -1357,32 +1655,6 @@ for _, child in pairs(Sidebar:GetChildren()) do
         end
     end
 end
-
--- تشغيل قفز لا نهائي
-RunService.Heartbeat:Connect(function()
-    if playerSettings.infiniteJump and LocalPlayer.Character then
-        local humanoid = LocalPlayer.Character:FindFirstChild("Humanoid")
-        if humanoid and UserInputService:IsKeyDown(Enum.KeyCode.Space) then
-            humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-        end
-    end
-end)
-
--- تحديث nocliip عند تغيير الشخصية
-LocalPlayer.CharacterAdded:Connect(function()
-    task.wait(0.5)
-    if playerSettings.noclip then
-        local character = LocalPlayer.Character
-        if character then
-            for _, part in pairs(character:GetDescendants()) do
-                if part:IsA("BasePart") then
-                    part.CanCollide = false
-                end
-            end
-        end
-    end
-    updatePlayerProperties()
-end)
 
 print("✅ ABC HUB v15 تم تحميله بنجاح!")
 print("📍 " .. #places .. " مكاناً للانتقال الفوري!")
