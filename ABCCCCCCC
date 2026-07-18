@@ -1,4 +1,4 @@
--- ABC HUB v15 - النسخة العربية الكاملة مع جميع الميزات
+-- ABC HUB v15 - النسخة العربية الكاملة مع جميع الميزات (تم الإصلاح)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -901,7 +901,7 @@ Players.PlayerAdded:Connect(function() UpdatePlayerList() end)
 Players.PlayerRemoving:Connect(function() UpdatePlayerList() end)
 
 -- ============================================
--- محتوى صفحة إعدادات اللاعب (Player Settings) - محدث بالكامل
+-- محتوى صفحة إعدادات اللاعب (Player Settings) - محدث بالكامل مع إصلاحات
 -- ============================================
 
 local SettingsFrame = Instance.new("Frame")
@@ -991,7 +991,7 @@ local function updatePlayerProperties()
     end
 end
 
--- دالة الطيران
+-- دالة الطيران (تم الإصلاح)
 local function toggleFly()
     local character = LocalPlayer.Character
     if not character then return end
@@ -1005,14 +1005,23 @@ local function toggleFly()
     if flyEnabled then
         humanoid.PlatformStand = true
         
+        if flyConnection then
+            flyConnection:Disconnect()
+            flyConnection = nil
+        end
+        
         flyConnection = RunService.Heartbeat:Connect(function()
-            if not character or not character.Parent then
-                flyConnection:Disconnect()
+            local char = LocalPlayer.Character
+            if not char or not char.Parent then
+                if flyConnection then
+                    flyConnection:Disconnect()
+                    flyConnection = nil
+                end
                 flyEnabled = false
                 return
             end
             
-            local root = character.HumanoidRootPart
+            local root = char:FindFirstChild("HumanoidRootPart")
             if not root then return end
             
             local moveDirection = Vector3.new(0, 0, 0)
@@ -1022,19 +1031,25 @@ local function toggleFly()
             local forward = camera.CFrame.LookVector
             local right = camera.CFrame.RightVector
             
-            local forwardKey = UserInputService:IsKeyDown(Enum.KeyCode.W)
-            local backwardKey = UserInputService:IsKeyDown(Enum.KeyCode.S)
-            local leftKey = UserInputService:IsKeyDown(Enum.KeyCode.A)
-            local rightKey = UserInputService:IsKeyDown(Enum.KeyCode.D)
-            local upKey = UserInputService:IsKeyDown(Enum.KeyCode.E)
-            local downKey = UserInputService:IsKeyDown(Enum.KeyCode.Q)
-            
-            if forwardKey then moveDirection = moveDirection + forward end
-            if backwardKey then moveDirection = moveDirection - forward end
-            if leftKey then moveDirection = moveDirection - right end
-            if rightKey then moveDirection = moveDirection + right end
-            if upKey then moveDirection = moveDirection + Vector3.new(0, 1, 0) end
-            if downKey then moveDirection = moveDirection - Vector3.new(0, 1, 0) end
+            -- قراءة المدخلات
+            if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+                moveDirection = moveDirection + Vector3.new(forward.X, 0, forward.Z)
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.S) then
+                moveDirection = moveDirection - Vector3.new(forward.X, 0, forward.Z)
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.A) then
+                moveDirection = moveDirection - Vector3.new(right.X, 0, right.Z)
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+                moveDirection = moveDirection + Vector3.new(right.X, 0, right.Z)
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.E) then
+                moveDirection = moveDirection + Vector3.new(0, 1, 0)
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.Q) then
+                moveDirection = moveDirection - Vector3.new(0, 1, 0)
+            end
             
             if moveDirection.Magnitude > 0 then
                 moveDirection = moveDirection.Unit
@@ -1043,6 +1058,7 @@ local function toggleFly()
             root.CFrame = root.CFrame + (moveDirection * playerSettings.flySpeed * 0.1)
         end)
         
+        -- إشعار
         local notif = Instance.new("TextLabel")
         notif.Size = UDim2.new(0, 200, 0, 30)
         notif.Position = UDim2.new(0.5, -100, 0.85, 0)
@@ -1093,6 +1109,10 @@ local function toggleAutoRotate()
     playerSettings.autoRotate = not playerSettings.autoRotate
     
     if playerSettings.autoRotate then
+        if rotateConnection then
+            rotateConnection:Disconnect()
+            rotateConnection = nil
+        end
         rotateConnection = RunService.Heartbeat:Connect(function()
             if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
                 local root = LocalPlayer.Character.HumanoidRootPart
@@ -1108,13 +1128,12 @@ local function toggleAutoRotate()
     end
 end
 
--- دالة تغيير منظور الآيباد
+-- دالة تغيير منظور الآيباد (تم الإصلاح)
 local function toggleIpadView()
     playerSettings.ipadView = not playerSettings.ipadView
     
     if playerSettings.ipadView then
         ipadSize = 0.75
-        Camera.FieldOfView = 70
         MainFrame.Size = UDim2.new(0, math.floor(520 * 0.75), 0, math.floor(430 * 0.75))
         MainFrame.Position = UDim2.new(0.5, -math.floor(520 * 0.75 / 2), 0.5, -math.floor(430 * 0.75 / 2))
         
@@ -1137,7 +1156,6 @@ local function toggleIpadView()
         notif:Destroy()
     else
         ipadSize = 1
-        Camera.FieldOfView = 70
         MainFrame.Size = UDim2.new(0, 520, 0, 430)
         MainFrame.Position = UDim2.new(0.5, -260, 0.5, -215)
         
@@ -1243,7 +1261,7 @@ local function createSettingSlider(yOffset, labelText, minVal, maxVal, defaultVa
     return container
 end
 
--- دالة إنشاء زر تبديل (Toggle) مع إصلاح القفز اللانهائي
+-- دالة إنشاء زر تبديل (Toggle)
 local function createToggleButton(yOffset, labelText, settingName, defaultValue)
     local container = Instance.new("Frame")
     container.Size = UDim2.new(0.92, 0, 0, 45)
@@ -1300,7 +1318,7 @@ local function createToggleButton(yOffset, labelText, settingName, defaultValue)
             label.TextColor3 = Color3.fromRGB(255, 255, 255)
         end
         
-        -- تطبيق الإعدادات
+        -- تطبيق الإعدادات الخاصة
         if settingName == "noclip" then
             local character = LocalPlayer.Character
             if character then
@@ -1311,7 +1329,7 @@ local function createToggleButton(yOffset, labelText, settingName, defaultValue)
                 end
             end
         elseif settingName == "infiniteJump" then
-            -- القفز اللانهائي يتم التعامل معه في Heartbeat
+            -- يتم التعامل معها في Heartbeat
         elseif settingName == "autoRotate" then
             toggleAutoRotate()
         elseif settingName == "ipadView" then
@@ -1349,7 +1367,7 @@ yOffset = yOffset + 50
 createToggleButton(yOffset, "🧱 اختراق الجدران", "noclip", false)
 yOffset = yOffset + 50
 
--- 7. الطيران
+-- 7. الطيران (تم الإصلاح)
 local flyContainer = Instance.new("Frame")
 flyContainer.Size = UDim2.new(0.92, 0, 0, 45)
 flyContainer.Position = UDim2.new(0.04, 0, 0, yOffset)
@@ -1408,11 +1426,11 @@ yOffset = yOffset + 50
 createToggleButton(yOffset, "🔄 دوران تلقائي", "autoRotate", false)
 yOffset = yOffset + 50
 
--- 9. منظور آيباد (جديد)
+-- 9. منظور آيباد (تم الإصلاح)
 createToggleButton(yOffset, "📱 منظور آيباد", "ipadView", false)
 yOffset = yOffset + 50
 
--- 10. دوران يدوي (Slider)
+-- 10. دوران يدوي
 local rotContainer = Instance.new("Frame")
 rotContainer.Size = UDim2.new(0.92, 0, 0, 60)
 rotContainer.Position = UDim2.new(0.04, 0, 0, yOffset)
@@ -1492,24 +1510,28 @@ yOffset = yOffset + 65
 
 SettingsScroll.CanvasSize = UDim2.new(0, 0, 0, yOffset + 20)
 
--- إصلاح القفز اللانهائي
+-- ============================================
+-- تشغيل الإعدادات (Heartbeat)
+-- ============================================
+
+-- إصلاح القفز اللانهائي واختراق الجدران
 RunService.Heartbeat:Connect(function()
-    -- القفز اللانهائي
+    -- القفز اللانهائي (تم الإصلاح)
     if playerSettings.infiniteJump and LocalPlayer.Character then
         local humanoid = LocalPlayer.Character:FindFirstChild("Humanoid")
         if humanoid then
-            -- التحقق من الضغط على زر المسافة
             if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
                 if humanoid:GetState() == Enum.HumanoidStateType.Landed or 
                    humanoid:GetState() == Enum.HumanoidStateType.Running or
-                   humanoid:GetState() == Enum.HumanoidStateType.Walking then
+                   humanoid:GetState() == Enum.HumanoidStateType.Walking or
+                   humanoid:GetState() == Enum.HumanoidStateType.Freefall then
                     humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
                 end
             end
         end
     end
     
-    -- اختراق الجدران (تحديث مستمر)
+    -- اختراق الجدران (تم الإصلاح)
     if playerSettings.noclip and LocalPlayer.Character then
         local character = LocalPlayer.Character
         for _, part in pairs(character:GetDescendants()) do
@@ -1539,7 +1561,7 @@ LocalPlayer.CharacterAdded:Connect(function()
 end)
 
 -- ============================================
--- 44. وظائف الأزرار (تبديل الصفحات)
+-- وظائف الأزرار (تبديل الصفحات)
 -- ============================================
 
 local function ShowHome()
