@@ -2088,7 +2088,6 @@ local function ShowHome()
     FishingContainer.Visible = false
     PlayerContainer.Visible = false
     SettingsContainer.Visible = false
-    NewsContainer.Visible = false
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
             if child.Text == "🏠 الرئيسية" then
@@ -2110,7 +2109,6 @@ local function ShowWelcome()
     FishingContainer.Visible = false
     PlayerContainer.Visible = false
     SettingsContainer.Visible = false
-    NewsContainer.Visible = false
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
             if child.Text == "🎉 ترحيب" then
@@ -2132,7 +2130,6 @@ local function ShowTeleport()
     FishingContainer.Visible = false
     PlayerContainer.Visible = false
     SettingsContainer.Visible = false
-    NewsContainer.Visible = false
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
             if child.Text == "⚡ انتقال الفوري" then
@@ -2154,7 +2151,6 @@ local function ShowMoney()
     FishingContainer.Visible = false
     PlayerContainer.Visible = false
     SettingsContainer.Visible = false
-    NewsContainer.Visible = false
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
             if child.Text == "💰 فلوس" then
@@ -2176,7 +2172,6 @@ local function ShowFishing()
     FishingContainer.Visible = true
     PlayerContainer.Visible = false
     SettingsContainer.Visible = false
-    NewsContainer.Visible = false
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
             if child.Text == "🎣 الصيد" then
@@ -2198,7 +2193,6 @@ local function ShowPlayers()
     FishingContainer.Visible = false
     PlayerContainer.Visible = true
     SettingsContainer.Visible = false
-    NewsContainer.Visible = false
     UpdatePlayerList()
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
@@ -2221,7 +2215,6 @@ local function ShowSettings()
     FishingContainer.Visible = false
     PlayerContainer.Visible = false
     SettingsContainer.Visible = true
-    NewsContainer.Visible = false
     ApplySettings()
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
@@ -2266,7 +2259,7 @@ print("🔧 الميزات: سرعة، قفز، جاذبية، اختفاء، ا
 print("📍 " .. #places .. " مكاناً للانتقال الفوري!")
 
 -- ============================================
--- إضافة صفحة الأخبار (بدون تعديل على السكربت الأصلي)
+-- إضافة صفحة الأخبار (مع إصلاح مشكلة التبديل)
 -- ============================================
 
 -- إضافة زر الأخبار في القائمة الجانبية
@@ -2275,7 +2268,8 @@ local function addNewsButton()
         if child:IsA("TextButton") and child.Text == "📰 الأخبار" then
             child:Destroy()
         end
-    end    
+    end
+    
     local NewsBtn = Instance.new("TextButton")
     NewsBtn.Size = UDim2.new(1, -20, 0, 40)
     NewsBtn.Position = UDim2.new(0, 10, 0, 60 + (7 * 48))
@@ -2666,8 +2660,12 @@ newsY = newsY + 75
 
 NewsScroll.CanvasSize = UDim2.new(0, 0, 0, newsY + 30)
 
--- دالة عرض صفحة الأخبار
-local function ShowNews()
+-- ============================================
+-- إصلاح مشكلة تبديل الصفحات
+-- ============================================
+
+-- دالة لإخفاء جميع الحاويات
+local function HideAllContainers()
     HomeContainer.Visible = false
     WelcomeContainer.Visible = false
     TeleportContainer.Visible = false
@@ -2675,6 +2673,133 @@ local function ShowNews()
     FishingContainer.Visible = false
     PlayerContainer.Visible = false
     SettingsContainer.Visible = false
+    NewsContainer.Visible = false
+end
+
+-- إعادة تعريف دوال عرض الصفحات مع إخفاء الكل أولاً
+local function ShowHomeFixed()
+    HideAllContainers()
+    HomeContainer.Visible = true
+    
+    for _, child in pairs(Sidebar:GetChildren()) do
+        if child:IsA("TextButton") then
+            if child.Text == "🏠 الرئيسية" then
+                child.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
+                child.TextColor3 = Color3.fromRGB(255, 255, 255)
+            else
+                child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
+                child.TextColor3 = Color3.fromRGB(255, 255, 255)
+            end
+        end
+    end
+end
+
+local function ShowWelcomeFixed()
+    HideAllContainers()
+    WelcomeContainer.Visible = true
+    
+    for _, child in pairs(Sidebar:GetChildren()) do
+        if child:IsA("TextButton") then
+            if child.Text == "🎉 ترحيب" then
+                child.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
+                child.TextColor3 = Color3.fromRGB(255, 255, 255)
+            else
+                child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
+                child.TextColor3 = Color3.fromRGB(255, 255, 255)
+            end
+        end
+    end
+end
+
+local function ShowTeleportFixed()
+    HideAllContainers()
+    TeleportContainer.Visible = true
+    
+    for _, child in pairs(Sidebar:GetChildren()) do
+        if child:IsA("TextButton") then
+            if child.Text == "⚡ انتقال الفوري" then
+                child.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
+                child.TextColor3 = Color3.fromRGB(255, 255, 255)
+            else
+                child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
+                child.TextColor3 = Color3.fromRGB(255, 255, 255)
+            end
+        end
+    end
+end
+
+local function ShowMoneyFixed()
+    HideAllContainers()
+    MoneyContainer.Visible = true
+    
+    for _, child in pairs(Sidebar:GetChildren()) do
+        if child:IsA("TextButton") then
+            if child.Text == "💰 فلوس" then
+                child.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
+                child.TextColor3 = Color3.fromRGB(255, 255, 255)
+            else
+                child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
+                child.TextColor3 = Color3.fromRGB(255, 255, 255)
+            end
+        end
+    end
+end
+
+local function ShowFishingFixed()
+    HideAllContainers()
+    FishingContainer.Visible = true
+    
+    for _, child in pairs(Sidebar:GetChildren()) do
+        if child:IsA("TextButton") then
+            if child.Text == "🎣 الصيد" then
+                child.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
+                child.TextColor3 = Color3.fromRGB(0, 0, 0)
+            else
+                child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
+                child.TextColor3 = Color3.fromRGB(255, 255, 255)
+            end
+        end
+    end
+end
+
+local function ShowPlayersFixed()
+    HideAllContainers()
+    PlayerContainer.Visible = true
+    UpdatePlayerList()
+    
+    for _, child in pairs(Sidebar:GetChildren()) do
+        if child:IsA("TextButton") then
+            if child.Text == "👥 لاعبين" then
+                child.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
+                child.TextColor3 = Color3.fromRGB(255, 255, 255)
+            else
+                child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
+                child.TextColor3 = Color3.fromRGB(255, 255, 255)
+            end
+        end
+    end
+end
+
+local function ShowSettingsFixed()
+    HideAllContainers()
+    SettingsContainer.Visible = true
+    ApplySettings()
+    
+    for _, child in pairs(Sidebar:GetChildren()) do
+        if child:IsA("TextButton") then
+            if child.Text == "⚙️ لاعب" then
+                child.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
+                child.TextColor3 = Color3.fromRGB(255, 255, 255)
+            else
+                child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
+                child.TextColor3 = Color3.fromRGB(255, 255, 255)
+            end
+        end
+    end
+end
+
+local function ShowNewsFixed()
+    HideAllContainers()
     NewsContainer.Visible = true
     
     for _, child in pairs(Sidebar:GetChildren()) do
@@ -2690,7 +2815,34 @@ local function ShowNews()
     end
 end
 
--- ربط زر الأخبار
-newsButton.MouseButton1Click:Connect(ShowNews)
+-- إزالة الروابط القديمة
+for _, child in pairs(Sidebar:GetChildren()) do
+    if child:IsA("TextButton") then
+        child.MouseButton1Click:Disconnect()
+    end
+end
 
-print("📰 تم إضافة صفحة الأخبار بنجاح!")
+-- ربط الأزرار بالدوال الجديدة
+for _, child in pairs(Sidebar:GetChildren()) do
+    if child:IsA("TextButton") then
+        if child.Text == "🏠 الرئيسية" then
+            child.MouseButton1Click:Connect(ShowHomeFixed)
+        elseif child.Text == "🎉 ترحيب" then
+            child.MouseButton1Click:Connect(ShowWelcomeFixed)
+        elseif child.Text == "⚡ انتقال الفوري" then
+            child.MouseButton1Click:Connect(ShowTeleportFixed)
+        elseif child.Text == "💰 فلوس" then
+            child.MouseButton1Click:Connect(ShowMoneyFixed)
+        elseif child.Text == "🎣 الصيد" then
+            child.MouseButton1Click:Connect(ShowFishingFixed)
+        elseif child.Text == "👥 لاعبين" then
+            child.MouseButton1Click:Connect(ShowPlayersFixed)
+        elseif child.Text == "⚙️ لاعب" then
+            child.MouseButton1Click:Connect(ShowSettingsFixed)
+        elseif child.Text == "📰 الأخبار" then
+            child.MouseButton1Click:Connect(ShowNewsFixed)
+        end
+    end
+end
+
+print("📰 تم إضافة صفحة الأخبار وإصلاح مشكلة تبديل الصفحات!")
