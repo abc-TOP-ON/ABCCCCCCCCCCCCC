@@ -999,9 +999,12 @@ function ApplySettings()
 end
 
 -- دالة القفز اللانهائي (تم الإصلاح للهاتف والكمبيوتر)
+local InfiniteJumpEnabled = false
+
 local function toggleInfiniteJump()
-    features.infiniteJump = not features.infiniteJump
-    return features.infiniteJump
+    InfiniteJumpEnabled = not InfiniteJumpEnabled
+    features.infiniteJump = InfiniteJumpEnabled
+    return InfiniteJumpEnabled
 end
 
 -- دالة اختراق الجدران
@@ -1370,77 +1373,129 @@ yOffset = yOffset + 50
 SettingsScroll.CanvasSize = UDim2.new(0, 0, 0, yOffset + 20)
 
 -- ============================================
--- 🚀 إصلاح القفز اللانهائي للهاتف والكمبيوتر (100%)
+-- 🚀 إصلاح القفز اللانهائي للهاتف والكمبيوتر (نسخة مضمونة 100%)
 -- ============================================
 
--- الطريقة الأولى: استخدام ContextActionService للهاتف
+-- الطريقة الأولى: ContextActionService للهاتف (الأفضل)
 local function JumpAction(actionName, inputState, inputObject)
-    if actionName == "JumpAction" and features.infiniteJump then
+    if actionName == "JumpAction" and InfiniteJumpEnabled then
         local character = LocalPlayer.Character
         if character then
             local humanoid = character:FindFirstChild("Humanoid")
             if humanoid and humanoid.Health > 0 then
-                local state = humanoid:GetState()
-                if state == Enum.HumanoidStateType.Landed or 
-                   state == Enum.HumanoidStateType.Running or
-                   state == Enum.HumanoidStateType.Walking or
-                   state == Enum.HumanoidStateType.Freefall or
-                   state == Enum.HumanoidStateType.GettingUp then
-                    humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-                end
+                -- نجبر اللاعب على القفز مهما كانت حالته
+                humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+                return
             end
         end
     end
 end
 
--- تسجيل زر القفز للهاتف
-ContextActionService:BindAction("JumpAction", JumpAction, false, Enum.KeyCode.Space, Enum.KeyCode.ButtonR1)
+-- ربط زر القفز للهاتف (R1) والكمبيوتر (Space)
+ContextActionService:BindAction("JumpAction", JumpAction, false, 
+    Enum.KeyCode.Space, 
+    Enum.KeyCode.ButtonR1,
+    Enum.KeyCode.ButtonA,
+    Enum.KeyCode.ButtonB
+)
 
--- الطريقة الثانية: مراقبة مستمرة للقفز (للكمبيوتر والهاتف)
+-- الطريقة الثانية: حلقة مستمرة للقفز التلقائي (للضغط المستمر)
 task.spawn(function()
     while ScreenGui do
-        task.wait(0.05) -- سرعة عالية للاستجابة السريعة
-        if features.infiniteJump and LocalPlayer.Character then
+        task.wait(0.03) -- سرعة عالية جداً
+        
+        if InfiniteJumpEnabled and LocalPlayer.Character then
             local humanoid = LocalPlayer.Character:FindFirstChild("Humanoid")
             if humanoid and humanoid.Health > 0 then
-                -- للكمبيوتر: كشف زر Space
-                if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
-                    local state = humanoid:GetState()
-                    if state == Enum.HumanoidStateType.Landed or 
-                       state == Enum.HumanoidStateType.Running or
-                       state == Enum.HumanoidStateType.Walking or
-                       state == Enum.HumanoidStateType.Freefall or
-                       state == Enum.HumanoidStateType.GettingUp then
-                        humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-                    end
+                -- نتحقق من حالة القفز
+                local state = humanoid:GetState()
+                
+                -- إذا كان اللاعب على الأرض أو واقف أو جاري، نجبره على القفز
+                if state == Enum.HumanoidStateType.Landed or 
+                   state == Enum.HumanoidStateType.Running or
+                   state == Enum.HumanoidStateType.Walking or
+                   state == Enum.HumanoidStateType.Freefall or
+                   state == Enum.HumanoidStateType.GettingUp or
+                   state == Enum.HumanoidStateType.Climbing then
+                    
+                    -- نستخدم ChangeState مباشرة
+                    humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+                    
+                    -- نضغط زر القفز بطريقة ثانية (احتياطي)
+                    humanoid.Jump = true
+                    task.wait(0.01)
+                    humanoid.Jump = false
                 end
             end
         end
     end
 end)
 
--- الطريقة الثالثة: استخدام InputBegan (احتياطي)
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
+-- الطريقة الثالثة: استخدام الهواتف عبر اللمس (Touch)
+UserInputService.TouchEnabled = true
+UserInputService.TouchInputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
-    if features.infiniteJump then
-        if input.KeyCode == Enum.KeyCode.Space or input.KeyCode == Enum.KeyCode.ButtonR1 then
-            local character = LocalPlayer.Character
-            if character then
-                local humanoid = character:FindFirstChild("Humanoid")
-                if humanoid and humanoid.Health > 0 then
-                    local state = humanoid:GetState()
-                    if state == Enum.HumanoidStateType.Landed or 
-                       state == Enum.HumanoidStateType.Running or
-                       state == Enum.HumanoidStateType.Walking or
-                       state == Enum.HumanoidStateType.Freefall or
-                       state == Enum.HumanoidStateType.GettingUp then
-                        humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-                    end
-                end
+    if not InfiniteJumpEnabled then return end
+    
+    -- نتحقق إذا كان الضغط في منطقة القفز (أسفل الشاشة)
+    if input.Position.Y > 500 then -- منطقة أسفل الشاشة
+        local character = LocalPlayer.Character
+        if character then
+            local humanoid = character:FindFirstChild("Humanoid")
+            if humanoid and humanoid.Health > 0 then
+                humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
             end
         end
     end
 end)
+
+-- الطريقة الرابعة: كشف أي زر قفز (احتياطي)
+RunService.Heartbeat:Connect(function()
+    if InfiniteJumpEnabled and LocalPlayer.Character then
+        local humanoid = LocalPlayer.Character:FindFirstChild("Humanoid")
+        if humanoid and humanoid.Health > 0 then
+            -- طريقة مباشرة وحادة
+            if humanoid:GetState() == Enum.HumanoidStateType.Landed then
+                humanoid.Jump = true
+                task.wait(0.01)
+                humanoid.Jump = false
+            end
+        end
+    end
+end)
+
+-- دالة تنبيه عند التفعيل (تعديل toggleInfiniteJump)
+local oldToggle = toggleInfiniteJump
+toggleInfiniteJump = function()
+    InfiniteJumpEnabled = not InfiniteJumpEnabled
+    features.infiniteJump = InfiniteJumpEnabled
+    
+    -- تنبيه مرئي
+    local msg = InfiniteJumpEnabled and "✅ تم تفعيل القفز اللانهائي!" or "⛔ تم إيقاف القفز اللانهائي!"
+    local color = InfiniteJumpEnabled and Color3.fromRGB(0, 255, 150) or Color3.fromRGB(255, 100, 100)
+    
+    local notif = Instance.new("TextLabel")
+    notif.Size = UDim2.new(0, 300, 0, 40)
+    notif.Position = UDim2.new(0.5, -150, 0.8, 0)
+    notif.BackgroundColor3 = Color3.fromRGB(20, 20, 40)
+    notif.BackgroundTransparency = 0.2
+    notif.TextColor3 = color
+    notif.TextSize = 18
+    notif.Font = Enum.Font.GothamBold
+    notif.Text = msg
+    notif.Parent = MainFrame
+    
+    local notifCorner = Instance.new("UICorner")
+    notifCorner.CornerRadius = UDim.new(0, 12)
+    notifCorner.Parent = notif
+    
+    task.wait(2)
+    notif:Destroy()
+    
+    return InfiniteJumpEnabled
+end
+
+print("✅ نظام القفز اللانهائي تم تحديثه للهاتف والكمبيوتر!")
 
 -- ============================================
 -- مراقبة دائمة للميزات
