@@ -1,4 +1,4 @@
--- ABC HUB v15 - النسخة النهائية (إصلاح مشكلة السرعة نهائياً)
+-- ABC HUB v15 - النسخة النهائية (السرعة تبقى طبيعية حتى تغيرها بنفسك)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -895,7 +895,7 @@ Players.PlayerAdded:Connect(function() UpdatePlayerList() end)
 Players.PlayerRemoving:Connect(function() UpdatePlayerList() end)
 
 -- ============================================
--- صفحة الإعدادات (الحل النهائي لمشكلة السرعة)
+-- صفحة الإعدادات (السرعة تبقى طبيعية حتى تغيرها)
 -- ============================================
 
 local SettingsFrame = Instance.new("Frame")
@@ -954,28 +954,34 @@ SettingsScroll.ScrollBarThickness = 4
 SettingsScroll.Parent = SettingsFrame
 SettingsScroll.ZIndex = 6
 
--- متغيرات الإعدادات (قابلة للتخزين)
+-- متغيرات الإعدادات (القيم الافتراضية = nil يعني ما نغير شيء)
 local playerSettings = {
-    speed = 16,
-    jumpPower = 50,
-    gravity = 196.2
+    speed = nil,  -- nil = يخلي السرعة طبيعية
+    jumpPower = nil,
+    gravity = nil
 }
 
--- دالة تطبيق الإعدادات (الحل النهائي)
+-- دالة تطبيق الإعدادات (تطبق فقط القيم اللي غيرها اللاعب)
 function ApplySettings()
     local character = LocalPlayer.Character
     if character then
         local humanoid = character:FindFirstChild("Humanoid")
         if humanoid then
-            humanoid.WalkSpeed = playerSettings.speed
-            humanoid.JumpPower = playerSettings.jumpPower
-            humanoid.Gravity = playerSettings.gravity
-            print("✅ تم تطبيق الإعدادات: سرعة=" .. playerSettings.speed .. ", قفز=" .. playerSettings.jumpPower .. ", جاذبية=" .. playerSettings.gravity)
+            -- فقط إذا اللاعب غير القيمة (يعني مو nil)
+            if playerSettings.speed ~= nil then
+                humanoid.WalkSpeed = playerSettings.speed
+            end
+            if playerSettings.jumpPower ~= nil then
+                humanoid.JumpPower = playerSettings.jumpPower
+            end
+            if playerSettings.gravity ~= nil then
+                humanoid.Gravity = playerSettings.gravity
+            end
         end
     end
 end
 
--- دالة إنشاء زر مع شريط تمرير (مع حفظ القيمة فوراً)
+-- دالة إنشاء زر مع شريط تمرير (التطبيق يغير القيمة ويخزنها)
 local function createSettingSlider(yOffset, labelText, minVal, maxVal, defaultValue, settingName)
     local container = Instance.new("Frame")
     container.Size = UDim2.new(0.92, 0, 0, 60)
@@ -989,11 +995,24 @@ local function createSettingSlider(yOffset, labelText, minVal, maxVal, defaultVa
     containerCorner.CornerRadius = UDim.new(0, 6)
     containerCorner.Parent = container
     
+    -- تعليمات للمستخدم
+    local infoLabel = Instance.new("TextLabel")
+    infoLabel.Size = UDim2.new(1, 0, 0, 16)
+    infoLabel.Position = UDim2.new(0, 5, 0, 0)
+    infoLabel.BackgroundTransparency = 1
+    infoLabel.Text = "✏️ أدخل القيمة واضغط تطبيق"
+    infoLabel.TextColor3 = Color3.fromRGB(150, 150, 180)
+    infoLabel.TextSize = 10
+    infoLabel.Font = Enum.Font.GothamMedium
+    infoLabel.TextXAlignment = Enum.TextXAlignment.Left
+    infoLabel.Parent = container
+    infoLabel.ZIndex = 8
+    
     local label = Instance.new("TextLabel")
     label.Size = UDim2.new(1, 0, 0, 20)
-    label.Position = UDim2.new(0, 5, 0, 2)
+    label.Position = UDim2.new(0, 5, 0, 18)
     label.BackgroundTransparency = 1
-    label.Text = labelText .. ": " .. tostring(defaultValue)
+    label.Text = labelText .. ": طبيعي"
     label.TextColor3 = Color3.fromRGB(255, 255, 255)
     label.TextSize = 13
     label.Font = Enum.Font.GothamSemibold
@@ -1003,13 +1022,13 @@ local function createSettingSlider(yOffset, labelText, minVal, maxVal, defaultVa
     
     local slider = Instance.new("TextBox")
     slider.Size = UDim2.new(0.6, 0, 0, 25)
-    slider.Position = UDim2.new(0.05, 0, 0, 28)
+    slider.Position = UDim2.new(0.05, 0, 0, 32)
     slider.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
     slider.TextColor3 = Color3.fromRGB(255, 255, 255)
     slider.TextSize = 14
     slider.Font = Enum.Font.GothamBold
-    slider.Text = tostring(defaultValue)
-    slider.PlaceholderText = "أدخل القيمة"
+    slider.Text = ""
+    slider.PlaceholderText = "أدخل القيمة (" .. minVal .. "-" .. maxVal .. ")"
     slider.Parent = container
     slider.ZIndex = 8
     
@@ -1019,7 +1038,7 @@ local function createSettingSlider(yOffset, labelText, minVal, maxVal, defaultVa
     
     local applyBtn = Instance.new("TextButton")
     applyBtn.Size = UDim2.new(0.25, 0, 0, 25)
-    applyBtn.Position = UDim2.new(0.7, 0, 0, 28)
+    applyBtn.Position = UDim2.new(0.7, 0, 0, 32)
     applyBtn.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
     applyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     applyBtn.TextSize = 12
@@ -1032,6 +1051,22 @@ local function createSettingSlider(yOffset, labelText, minVal, maxVal, defaultVa
     applyCorner.CornerRadius = UDim.new(0, 4)
     applyCorner.Parent = applyBtn
     
+    -- زر إعادة تعيين
+    local resetBtn = Instance.new("TextButton")
+    resetBtn.Size = UDim2.new(0.2, 0, 0, 25)
+    resetBtn.Position = UDim2.new(0.46, 0, 0, 32)
+    resetBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+    resetBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    resetBtn.TextSize = 11
+    resetBtn.Font = Enum.Font.GothamBold
+    resetBtn.Text = "إعادة"
+    resetBtn.Parent = container
+    resetBtn.ZIndex = 8
+    
+    local resetCorner = Instance.new("UICorner")
+    resetCorner.CornerRadius = UDim.new(0, 4)
+    resetCorner.Parent = resetBtn
+    
     applyBtn.MouseEnter:Connect(function()
         applyBtn.BackgroundColor3 = Color3.fromRGB(220, 0, 255)
     end)
@@ -1039,17 +1074,23 @@ local function createSettingSlider(yOffset, labelText, minVal, maxVal, defaultVa
         applyBtn.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
     end)
     
-    -- حل مشكلة السرعة: التطبيق يحفظ القيمة ويطبقها فوراً
+    resetBtn.MouseEnter:Connect(function()
+        resetBtn.BackgroundColor3 = Color3.fromRGB(255, 70, 70)
+    end)
+    resetBtn.MouseLeave:Connect(function()
+        resetBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+    end)
+    
+    -- تطبيق القيمة
     applyBtn.MouseButton1Click:Connect(function()
         local val = tonumber(slider.Text)
         if val then
             val = math.clamp(val, minVal, maxVal)
             playerSettings[settingName] = val
             label.Text = labelText .. ": " .. tostring(val)
-            slider.Text = tostring(val)
-            ApplySettings() -- تطبيق فوري
+            slider.Text = ""
+            ApplySettings()
             
-            -- إشعار تأكيد
             local notif = Instance.new("TextLabel")
             notif.Size = UDim2.new(0, 200, 0, 30)
             notif.Position = UDim2.new(0.5, -100, 0.85, 0)
@@ -1058,16 +1099,42 @@ local function createSettingSlider(yOffset, labelText, minVal, maxVal, defaultVa
             notif.TextColor3 = Color3.fromRGB(0, 255, 150)
             notif.TextSize = 14
             notif.Font = Enum.Font.GothamBold
-            notif.Text = "✅ تم تطبيق " .. labelText
+            notif.Text = "✅ تم تطبيق " .. labelText .. " = " .. val
             notif.Parent = SettingsFrame
             
             local notifCorner = Instance.new("UICorner")
             notifCorner.CornerRadius = UDim.new(0, 8)
             notifCorner.Parent = notif
             
-            task.wait(1)
+            task.wait(1.5)
             notif:Destroy()
         end
+    end)
+    
+    -- إعادة تعيين للطبيعي
+    resetBtn.MouseButton1Click:Connect(function()
+        playerSettings[settingName] = nil
+        label.Text = labelText .. ": طبيعي"
+        slider.Text = ""
+        ApplySettings()
+        
+        local notif = Instance.new("TextLabel")
+        notif.Size = UDim2.new(0, 200, 0, 30)
+        notif.Position = UDim2.new(0.5, -100, 0.85, 0)
+        notif.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
+        notif.BackgroundTransparency = 0.1
+        notif.TextColor3 = Color3.fromRGB(255, 200, 0)
+        notif.TextSize = 14
+        notif.Font = Enum.Font.GothamBold
+        notif.Text = "🔄 تم إعادة " .. labelText .. " للطبيعي"
+        notif.Parent = SettingsFrame
+        
+        local notifCorner = Instance.new("UICorner")
+        notifCorner.CornerRadius = UDim.new(0, 8)
+        notifCorner.Parent = notif
+        
+        task.wait(1.5)
+        notif:Destroy()
     end)
     
     return container
@@ -1077,27 +1144,26 @@ end
 local yOffset = 5
 
 createSettingSlider(yOffset, "🏃 سرعة اللاعب", 10, 100, 16, "speed")
-yOffset = yOffset + 65
+yOffset = yOffset + 75
 
 createSettingSlider(yOffset, "🦘 قفز اللاعب", 10, 200, 50, "jumpPower")
-yOffset = yOffset + 65
+yOffset = yOffset + 75
 
 createSettingSlider(yOffset, "🌍 الجاذبية", 0, 500, 196.2, "gravity")
-yOffset = yOffset + 65
+yOffset = yOffset + 75
 
 SettingsScroll.CanvasSize = UDim2.new(0, 0, 0, yOffset + 20)
 
 -- ============================================
--- مراقبة دائمة للحفاظ على الإعدادات (حل نهائي)
+-- مراقبة دائمة للحفاظ على الإعدادات (فقط القيم المختارة)
 -- ============================================
 
--- كل ما يتغير الشخصية، نطبق الإعدادات
 LocalPlayer.CharacterAdded:Connect(function()
     task.wait(0.5)
     ApplySettings()
 end)
 
--- مراقبة كل 2 ثانية للتأكد من بقاء الإعدادات
+-- مراقبة كل 2 ثانية
 task.spawn(function()
     while ScreenGui do
         task.wait(2)
@@ -1105,14 +1171,13 @@ task.spawn(function()
         if character then
             local humanoid = character:FindFirstChild("Humanoid")
             if humanoid then
-                -- إذا تغيرت السرعة عن الإعدادات، نعيد ضبطها
-                if humanoid.WalkSpeed ~= playerSettings.speed then
+                if playerSettings.speed ~= nil and humanoid.WalkSpeed ~= playerSettings.speed then
                     humanoid.WalkSpeed = playerSettings.speed
                 end
-                if humanoid.JumpPower ~= playerSettings.jumpPower then
+                if playerSettings.jumpPower ~= nil and humanoid.JumpPower ~= playerSettings.jumpPower then
                     humanoid.JumpPower = playerSettings.jumpPower
                 end
-                if humanoid.Gravity ~= playerSettings.gravity then
+                if playerSettings.gravity ~= nil and humanoid.Gravity ~= playerSettings.gravity then
                     humanoid.Gravity = playerSettings.gravity
                 end
             end
@@ -1238,10 +1303,6 @@ for _, child in pairs(Sidebar:GetChildren()) do
     end
 end
 
--- تطبيق الإعدادات عند التحميل
-task.wait(0.5)
-ApplySettings()
-
 print("✅ ABC HUB v15 تم تحميله بنجاح!")
-print("🔧 تم إصلاح مشكلة السرعة نهائياً - تبقى ثابتة حتى بعد الانتقال!")
+print("🔧 السرعة تبقى طبيعية حتى تغيرها بنفسك!")
 print("📍 " .. #places .. " مكاناً للانتقال الفوري!")
