@@ -2844,36 +2844,31 @@ local function toggleCarUI()
     end
 end
 
--- إنشاء واجهة زر السيارة
-local CarScreenGui = Instance.new("ScreenGui")
-CarScreenGui.Name = "CarScreenGui"
-CarScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-CarScreenGui.ResetOnSpawn = false
-
--- زر السيارة
+-- زر السيارة (في CoreGui عشان ما يتعارض مع أي شيء)
 local CarButton = Instance.new("ImageButton")
 CarButton.Name = "CarFlyButton"
-CarButton.Parent = CarScreenGui
+CarButton.Parent = ScreenGui  -- نفس الـ ScreenGui حق السكربت الأساسي
 CarButton.BackgroundColor3 = Color3.fromRGB(35, 30, 25)
 CarButton.BackgroundTransparency = 0.3
 CarButton.Size = UDim2.new(0, 50, 0, 50)
 CarButton.Position = UDim2.new(1, -75, 0.7, -110)
 CarButton.Image = "rbxassetid://6031243533"
 CarButton.ImageColor3 = Color3.fromRGB(255, 255, 255)
+CarButton.ZIndex = 200
 
 local CarButtonCorner = Instance.new("UICorner")
 CarButtonCorner.CornerRadius = UDim.new(1, 0)
 CarButtonCorner.Parent = CarButton
 
--- نظام التحذير
+-- نظام التحذير حق زر السيارة
 local function showCarWarning(text)
-    if CarScreenGui:FindFirstChild("WarningLabel") then
-        CarScreenGui.WarningLabel:Destroy()
+    if ScreenGui:FindFirstChild("CarWarningLabel") then
+        ScreenGui.CarWarningLabel:Destroy()
     end
     
     local WarningLabel = Instance.new("TextLabel")
-    WarningLabel.Name = "WarningLabel"
-    WarningLabel.Parent = CarScreenGui
+    WarningLabel.Name = "CarWarningLabel"
+    WarningLabel.Parent = ScreenGui
     WarningLabel.Size = UDim2.new(0, 280, 0, 45)
     WarningLabel.Position = UDim2.new(0.5, -140, 0.10, 0)
     WarningLabel.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
@@ -2882,6 +2877,7 @@ local function showCarWarning(text)
     WarningLabel.Text = text
     WarningLabel.Font = Enum.Font.SourceSansBold
     WarningLabel.TextSize = 22
+    WarningLabel.ZIndex = 201
     
     local LabelCorner = Instance.new("UICorner")
     LabelCorner.CornerRadius = UDim.new(0, 10)
