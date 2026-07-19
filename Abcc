@@ -1,133 +1,134 @@
--- قم بنسخ هذا الكود بالكامل ولصقه في منفذ دلتا (Delta Executor)
-local Player = game.Players.LocalPlayer
+-- ============================================================
+-- Pure Lua Script: Car Speed Changer GUI
+-- Compatible with Delta and Mobile Executors
+-- ============================================================
+
+local CoreGui = game:GetService("CoreGui")
+local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
 
-local Flying = false
-local MovingForward = false
-local Speed = 2.5 -- سرعة اندفاع السيارة (يمكنك زيادتها)
+-- Target speed variable
+local targetSpeed = 100
+local speedHackEnabled = false
 
--- دالة جلب السيارة
-local function GetVehicle()
-    if Player.Character and Player.Character:FindFirstChild("Humanoid") then
-        local Seat = Player.Character.Humanoid.SeatPart
-        if Seat and Seat:IsA("VehicleSeat") then
-            return Seat.Parent
-        end
-    end
-    return nil
-end
-
--- حلقة التثبيت والتحرك في الخلفية
-RunService.Heartbeat:Connect(function()
-    if Flying then
-        local car = GetVehicle()
-        if car then
-            local PrimaryPart = car.PrimaryPart or car:FindFirstChildWhichIsA("BasePart")
-            if PrimaryPart then
-                local cam = workspace.CurrentCamera
-                local lookVector = cam.CFrame.LookVector
-                
-                -- تحديد الحركة بناءً على حالة الزر (مفعل أو معطل)
-                local moveDirection = Vector3.new(0, 0, 0)
-                if MovingForward then
-                    moveDirection = lookVector * Speed
-                end
-                
-                local currentPos = PrimaryPart.Position
-                local nextPos = currentPos + moveDirection
-                
-                -- تثبيت الزوايا ومنع الانقلاب
-                PrimaryPart.CFrame = CFrame.new(nextPos, nextPos + Vector3.new(lookVector.X, 0, lookVector.Z))
-                PrimaryPart.Velocity = Vector3.new(0, 0, 0) -- إلغاء الجاذبية
-                PrimaryPart.RotVelocity = Vector3.new(0, 0, 0) -- منع الدوران العشوائي
-            end
-        else
-            Flying = false
-            MovingForward = false
-        end
-    end
-end)
-
--- بناء واجهة مستخدم (GUI) متوافقة مع القوائم
+------------------------------------------------------------
+-- 1. Create the Draggable GUI Layout
+-- ============================================================
 local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "CarSpeedHackUI"
+ScreenGui.Parent = CoreGui
+
+-- Main window panel
 local MainFrame = Instance.new("Frame")
-local ToggleButton = Instance.new("TextButton")
-local MoveButton = Instance.new("TextButton")
-local UICorner1 = Instance.new("UICorner")
-local UICorner2 = Instance.new("UICorner")
-local UICorner3 = Instance.new("UICorner")
-
-ScreenGui.Name = "SmartCarFly"
-ScreenGui.Parent = game.CoreGui
-ScreenGui.ResetOnSpawn = false
-
--- إطار الواجهة (يمكنك سحبه وتغيير مكانه)
-MainFrame.Name = "MainFrame"
-MainFrame.Parent = ScreenGui
-MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-MainFrame.Position = UDim2.new(0.05, 0, 0.3, 0)
-MainFrame.Size = UDim2.new(0, 180, 0, 120)
+MainFrame.Name = "MainPanel"
+MainFrame.Size = UDim2.new(0, 260, 0, 180)
+MainFrame.Position = UDim2.new(0.4, 0, 0.4, 0)
+MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
-MainFrame.Draggable = true
-UICorner1.Parent = MainFrame
+MainFrame.Draggable = true -- Allows mobile users to drag the interface
+MainFrame.Parent = ScreenGui
 
--- الزر الأول: تفعيل الجاذبية المعلقة (تشغيل/إطفاء وضع الطيران العام)
-ToggleButton.Name = "ToggleButton"
-ToggleButton.Parent = MainFrame
-ToggleButton.BackgroundColor3 = Color3.fromRGB(220, 60, 60)
-ToggleButton.Position = UDim2.new(0.05, 0, 0.1, 0)
-ToggleButton.Size = UDim2.new(0, 160, 0, 45)
-ToggleButton.Font = Enum.Font.SourceSansBold
-ToggleButton.Text = "وضع الطيران: مطفأ ❌"
+-- Corner styling
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 8)
+UICorner.Parent = MainFrame
+
+-- UI Title Bar
+local TitleLabel = Instance.new("TextLabel")
+TitleLabel.Size = UDim2.new(1, 0, 0, 35)
+TitleLabel.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+TitleLabel.Text = "🏎️ Car Speed Controller"
+TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TitleLabel.TextSize = 16
+TitleLabel.Font = Enum.Font.GothamBold
+TitleLabel.Parent = MainFrame
+
+local TitleCorner = Instance.new("UICorner")
+TitleCorner.CornerRadius = UDim.new(0, 8)
+TitleCorner.Parent = TitleLabel
+
+-- Input field box for custom speed
+local SpeedInput = Instance.new("TextBox")
+SpeedInput.Size = UDim2.new(0, 200, 0, 40)
+SpeedInput.Position = UDim2.new(0.5, -100, 0, 55)
+SpeedInput.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+SpeedInput.Text = "100"
+SpeedInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpeedInput.TextSize = 18
+SpeedInput.Font = Enum.Font.Gotham
+SpeedInput.PlaceholderText = "Enter speed value"
+SpeedInput.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
+SpeedInput.ClearTextOnFocus = false
+SpeedInput.Parent = MainFrame
+
+local InputCorner = Instance.new("UICorner")
+InputCorner.CornerRadius = UDim.new(0, 6)
+InputCorner.Parent = SpeedInput
+
+-- Action Activation Button
+local ToggleButton = Instance.new("TextButton")
+ToggleButton.Size = UDim2.new(0, 200, 0, 45)
+ToggleButton.Position = UDim2.new(0.5, -100, 0, 115)
+ToggleButton.BackgroundColor3 = Color3.fromRGB(230, 50, 50) -- Default red (disabled)
+ToggleButton.Text = "Status: OFF"
 ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 ToggleButton.TextSize = 16
-UICorner2.Parent = ToggleButton
+ToggleButton.Font = Enum.Font.GothamBold
+ToggleButton.Parent = MainFrame
 
+local ButtonCorner = Instance.new("UICorner")
+ButtonCorner.CornerRadius = UDim.new(0, 6)
+ButtonCorner.Parent = ToggleButton
+
+------------------------------------------------------------
+-- 2. GUI Core Event Logic
+-- ============================================================
+
+-- Capture user custom text input
+SpeedInput.FocusLost:Connect(function()
+    local inputNum = tonumber(SpeedInput.Text)
+    if inputNum then
+        targetSpeed = inputNum
+    else
+        SpeedInput.Text = tostring(targetSpeed) -- Reset if text input is invalid
+    end
+end)
+
+-- Toggle button activate status click action
 ToggleButton.MouseButton1Click:Connect(function()
-    local car = GetVehicle()
-    if not car then
-        game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "تنبيه",
-            Text = "يجب أن تجلس في مقعد السائق أولاً!",
-            Duration = 3
-        })
-        return
-    end
+    speedHackEnabled = not speedHackEnabled
     
-    Flying = not Flying
-    if Flying then
-        ToggleButton.Text = "الوضع: معلقة بالهواء ✈️"
-        ToggleButton.BackgroundColor3 = Color3.fromRGB(40, 180, 70)
+    if speedHackEnabled then
+        ToggleButton.Text = "Status: ON"
+        ToggleButton.BackgroundColor3 = Color3.fromRGB(50, 200, 50) -- Switch green
     else
-        ToggleButton.Text = "وضع الطيران: مطفأ ❌"
-        ToggleButton.BackgroundColor3 = Color3.fromRGB(220, 60, 60)
-        MovingForward = false
-        MoveButton.Text = "حركة السيارة: متوقفة 🛑"
-        MoveButton.BackgroundColor3 = Color3.fromRGB(220, 60, 60)
+        ToggleButton.Text = "Status: OFF"
+        ToggleButton.BackgroundColor3 = Color3.fromRGB(230, 50, 50) -- Switch red
     end
 end)
 
--- الزر الثاني: زر التبديل الذكي للحركة (اضغط مرة للتحرك ومرة للوقوف)
-MoveButton.Name = "MoveButton"
-MoveButton.Parent = MainFrame
-MoveButton.BackgroundColor3 = Color3.fromRGB(220, 60, 60)
-MoveButton.Position = UDim2.new(0.05, 0, 0.55, 0)
-MoveButton.Size = UDim2.new(0, 160, 0, 45)
-MoveButton.Font = Enum.Font.SourceSansBold
-MoveButton.Text = "حركة السيارة: متوقفة 🛑"
-MoveButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-MoveButton.TextSize = 15
-UICorner3.Parent = MoveButton
-
-MoveButton.MouseButton1Click:Connect(function()
-    if not Flying then return end -- لا يعمل إلا إذا كان وضع الطيران العام مشغلاً
+------------------------------------------------------------
+-- 3. Vehicle Custom Velocity Logic Loop
+-- ============================================================
+RunService.Heartbeat:Connect(function()
+    if not speedHackEnabled then return end
     
-    MovingForward = not MovingForward
-    if MovingForward then
-        MoveButton.Text = "حركة السيارة: تندفع ➔"
-        MoveButton.BackgroundColor3 = Color3.fromRGB(0, 120, 255) -- أزرق أثناء الاندفاع
-    else
-        MoveButton.Text = "حركة السيارة: متوقفة 🛑"
-        MoveButton.BackgroundColor3 = Color3.fromRGB(220, 60, 60) -- أحمر عند التوقف الثابت
+    local character = LocalPlayer.Character
+    if not character then return end
+    
+    -- Detect if player is sitting in a vehicle
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    if humanoid and humanoid.SeatPart and humanoid.SeatPart:IsA("VehicleSeat") then
+        local vehicleSeat = humanoid.SeatPart
+        
+        -- Check driving stick direction input
+        if vehicleSeat.Throttle ~= 0 then
+            -- Multiply modern body velocity forward vector direction 
+            vehicleSeat.AssemblyLinearVelocity = vehicleSeat.CFrame.LookVector * (vehicleSeat.Throttle * targetSpeed)
+        end
     end
 end)
+
+print("[Delta System]: Car Speed Controller loaded successfully!")
