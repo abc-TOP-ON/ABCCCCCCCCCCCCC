@@ -1,4 +1,4 @@
--- 7MO HUB v15 - نسخة الهاتف (مع سكربت تجميع الفلوس الفوري + الصيد التلقائي + الأخبار + السيارات)
+-- 7MO HUB v15 - النسخة الكاملة (الفلوس + الصيد + الأخبار + السيارات + الطيران الذكي)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -142,7 +142,6 @@ local colorIndex = 1
 -- حلقة التحديث المستمر للنيون
 task.spawn(function()
     while ScreenGui and ToggleButton.Parent do
-        -- تحديث ألوان الحلقات
         colorIndex = colorIndex + 0.02
         local index = math.floor(colorIndex) % #ringColors + 1
         local nextIndex = index % #ringColors + 1
@@ -157,16 +156,13 @@ task.spawn(function()
         
         local finalColor = Color3.new(r, g, b)
         
-        -- تحديث لون النيون
         NeonRing.BackgroundColor3 = finalColor
         NeonRing.BorderColor3 = finalColor
         
-        -- نبض الشفافية
         local breathe = 0.2 + math.sin(tick() * 2.5) * 0.2
         NeonRing.BackgroundTransparency = breathe
         PulseRing.BackgroundTransparency = breathe + 0.2
         
-        -- تغيير حجم الحلقة النابضة
         local pulseSize = 1.5 + math.sin(tick() * 2) * 0.1
         PulseRing.Size = UDim2.new(pulseSize, 0, pulseSize, 0)
         PulseRing.Position = UDim2.new(-(pulseSize-1)/2, 0, -(pulseSize-1)/2, 0)
@@ -176,7 +172,7 @@ task.spawn(function()
 end)
 
 -- ============================================
--- النافذة الرئيسية (تظهر عند الضغط على الزر)
+-- النافذة الرئيسية
 -- ============================================
 
 local MainFrame = Instance.new("Frame")
@@ -256,7 +252,7 @@ RunService.Heartbeat:Connect(function()
     GlowFrame2.BackgroundTransparency = breathe - 0.1
 end)
 
--- زر الإغلاق X (داخل النافذة)
+-- زر الإغلاق X
 local CloseX = Instance.new("TextButton")
 CloseX.Name = "CloseX"
 CloseX.Size = UDim2.new(0, 35, 0, 35)
@@ -295,17 +291,14 @@ function toggleUI()
     MainFrame.Visible = isOpen
     
     if isOpen then
-        -- تغيير لون الزر إلى بنفسجي
         ToggleButton.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
         ButtonText.TextColor3 = Color3.fromRGB(255, 255, 255)
-        -- تغيير الحجم قليلاً
         local tween = TweenService:Create(ToggleButton, TweenInfo.new(0.2), {Size = UDim2.new(0, buttonSize * 1.1, 0, buttonSize * 1.1)})
         tween:Play()
         task.wait(0.2)
         local tween2 = TweenService:Create(ToggleButton, TweenInfo.new(0.1), {Size = UDim2.new(0, buttonSize, 0, buttonSize)})
         tween2:Play()
     else
-        -- إعادة اللون إلى الأسود
         ToggleButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
         ButtonText.TextColor3 = Color3.fromRGB(255, 255, 255)
         local tween = TweenService:Create(ToggleButton, TweenInfo.new(0.2), {Size = UDim2.new(0, buttonSize * 0.9, 0, buttonSize * 0.9)})
@@ -316,7 +309,6 @@ function toggleUI()
     end
 end
 
--- ربط زر الدخول/الخروج
 ToggleButton.MouseButton1Click:Connect(function()
     if not dragging then
         toggleUI()
@@ -514,7 +506,7 @@ NewsContainer.ZIndex = 1
 NewsContainer.Visible = false
 
 -- ============================================
--- محتوى صفحة السيارات
+-- محتوى صفحة السيارات مع الطيران الذكي
 -- ============================================
 
 local CarFrame = Instance.new("Frame")
@@ -546,9 +538,9 @@ local CarTitle = Instance.new("TextLabel")
 CarTitle.Size = UDim2.new(1, -40, 0, 35)
 CarTitle.Position = UDim2.new(0, 20, 0, 8)
 CarTitle.BackgroundTransparency = 1
-CarTitle.Text = "🚗 السيارات 🚗"
+CarTitle.Text = "🚗 السيارات والطيران 🚗"
 CarTitle.TextColor3 = Color3.fromRGB(255, 150, 0)
-CarTitle.TextSize = 20
+CarTitle.TextSize = 18
 CarTitle.Font = Enum.Font.GothamBold
 CarTitle.TextXAlignment = Enum.TextXAlignment.Center
 CarTitle.Parent = CarFrame
@@ -563,9 +555,224 @@ CarDivider.BorderSizePixel = 0
 CarDivider.Parent = CarFrame
 CarDivider.ZIndex = 6
 
+-- ============================================
+-- نظام الطيران والسيارة الذكية
+-- ============================================
+
+-- متغيرات الطيران
+local Flying = false
+local MovingForward = false
+local FlySpeed = 2.5
+local flyConnection = nil
+
+-- دالة جلب السيارة
+local function GetVehicle()
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+        local Seat = LocalPlayer.Character.Humanoid.SeatPart
+        if Seat and Seat:IsA("VehicleSeat") then
+            return Seat.Parent
+        end
+    end
+    return nil
+end
+
+-- دالة الإشعارات
+function showNotification(text, parent)
+    local notif = Instance.new("TextLabel")
+    notif.Size = UDim2.new(0, 220, 0, 30)
+    notif.Position = UDim2.new(0.5, -110, 0.85, 0)
+    notif.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
+    notif.BackgroundTransparency = 0.1
+    notif.TextColor3 = Color3.fromRGB(0, 255, 150)
+    notif.TextSize = 13
+    notif.Font = Enum.Font.GothamBold
+    notif.Text = text
+    notif.Parent = parent
+    
+    local notifCorner = Instance.new("UICorner")
+    notifCorner.CornerRadius = UDim.new(0, 8)
+    notifCorner.Parent = notif
+    
+    task.wait(1.5)
+    notif:Destroy()
+end
+
+-- حلقة الطيران
+local function StartFlyLoop()
+    if flyConnection then
+        flyConnection:Disconnect()
+        flyConnection = nil
+    end
+    
+    flyConnection = RunService.Heartbeat:Connect(function()
+        if Flying then
+            local car = GetVehicle()
+            if car then
+                local PrimaryPart = car.PrimaryPart or car:FindFirstChildWhichIsA("BasePart")
+                if PrimaryPart then
+                    local cam = workspace.CurrentCamera
+                    local lookVector = cam.CFrame.LookVector
+                    
+                    local moveDirection = Vector3.new(0, 0, 0)
+                    if MovingForward then
+                        moveDirection = lookVector * FlySpeed
+                    end
+                    
+                    local currentPos = PrimaryPart.Position
+                    local nextPos = currentPos + moveDirection
+                    
+                    PrimaryPart.CFrame = CFrame.new(nextPos, nextPos + Vector3.new(lookVector.X, 0, lookVector.Z))
+                    PrimaryPart.Velocity = Vector3.new(0, 0, 0)
+                    PrimaryPart.RotVelocity = Vector3.new(0, 0, 0)
+                end
+            else
+                Flying = false
+                MovingForward = false
+                FlyToggleButton.Text = "✈️ الطيران: مطفأ"
+                FlyToggleButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+                MoveCarButton.Text = "⏹️ الحركة: متوقفة"
+                MoveCarButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+                showNotification("⚠️ فقدت السيارة!", CarFrame)
+            end
+        end
+    end)
+end
+
+-- زر تفعيل الطيران
+local FlyToggleButton = Instance.new("TextButton")
+FlyToggleButton.Size = UDim2.new(0.42, 0, 0, 35)
+FlyToggleButton.Position = UDim2.new(0.05, 0, 0.07, 0)
+FlyToggleButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+FlyToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+FlyToggleButton.TextSize = 13
+FlyToggleButton.Font = Enum.Font.SourceSansBold
+FlyToggleButton.Text = "✈️ الطيران: مطفأ"
+FlyToggleButton.Parent = CarFrame
+FlyToggleButton.ZIndex = 7
+
+local FlyToggleCorner = Instance.new("UICorner")
+FlyToggleCorner.CornerRadius = UDim.new(0, 8)
+FlyToggleCorner.Parent = FlyToggleButton
+
+FlyToggleButton.MouseButton1Click:Connect(function()
+    local car = GetVehicle()
+    if not car then
+        showNotification("⚠️ لازم تركب سيارة أولاً!", CarFrame)
+        return
+    end
+    
+    Flying = not Flying
+    if Flying then
+        FlyToggleButton.Text = "✈️ الطيران: مفعل ✅"
+        FlyToggleButton.BackgroundColor3 = Color3.fromRGB(40, 180, 70)
+        StartFlyLoop()
+        showNotification("✅ تم تفعيل الطيران!", CarFrame)
+    else
+        FlyToggleButton.Text = "✈️ الطيران: مطفأ"
+        FlyToggleButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+        MovingForward = false
+        MoveCarButton.Text = "⏹️ الحركة: متوقفة"
+        MoveCarButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+        if flyConnection then
+            flyConnection:Disconnect()
+            flyConnection = nil
+        end
+        showNotification("⛔ تم إيقاف الطيران", CarFrame)
+    end
+end)
+
+-- زر تحريك السيارة
+local MoveCarButton = Instance.new("TextButton")
+MoveCarButton.Size = UDim2.new(0.42, 0, 0, 35)
+MoveCarButton.Position = UDim2.new(0.53, 0, 0.07, 0)
+MoveCarButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+MoveCarButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+MoveCarButton.TextSize = 13
+MoveCarButton.Font = Enum.Font.SourceSansBold
+MoveCarButton.Text = "⏹️ الحركة: متوقفة"
+MoveCarButton.Parent = CarFrame
+MoveCarButton.ZIndex = 7
+
+local MoveCarCorner = Instance.new("UICorner")
+MoveCarCorner.CornerRadius = UDim.new(0, 8)
+MoveCarCorner.Parent = MoveCarButton
+
+MoveCarButton.MouseButton1Click:Connect(function()
+    if not Flying then
+        showNotification("⚠️ فعّل الطيران أولاً!", CarFrame)
+        return
+    end
+    
+    MovingForward = not MovingForward
+    if MovingForward then
+        MoveCarButton.Text = "▶️ الحركة: تندفع 🚀"
+        MoveCarButton.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+        showNotification("🚀 السيارة تندفع!", CarFrame)
+    else
+        MoveCarButton.Text = "⏹️ الحركة: متوقفة"
+        MoveCarButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+        showNotification("⏹️ تم إيقاف السيارة", CarFrame)
+    end
+end)
+
+-- شريط تعديل السرعة
+local SpeedSliderContainer = Instance.new("Frame")
+SpeedSliderContainer.Size = UDim2.new(0.9, 0, 0, 30)
+SpeedSliderContainer.Position = UDim2.new(0.05, 0, 0.17, 0)
+SpeedSliderContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+SpeedSliderContainer.BorderSizePixel = 0
+SpeedSliderContainer.Parent = CarFrame
+SpeedSliderContainer.ZIndex = 7
+
+local SpeedSliderCorner = Instance.new("UICorner")
+SpeedSliderCorner.CornerRadius = UDim.new(0, 6)
+SpeedSliderCorner.Parent = SpeedSliderContainer
+
+local SpeedLabel = Instance.new("TextLabel")
+SpeedLabel.Size = UDim2.new(0.4, 0, 1, 0)
+SpeedLabel.Position = UDim2.new(0, 5, 0, 0)
+SpeedLabel.BackgroundTransparency = 1
+SpeedLabel.Text = "🚀 السرعة: 2.5"
+SpeedLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
+SpeedLabel.TextSize = 12
+SpeedLabel.Font = Enum.Font.GothamBold
+SpeedLabel.TextXAlignment = Enum.TextXAlignment.Left
+SpeedLabel.Parent = SpeedSliderContainer
+SpeedLabel.ZIndex = 8
+
+local SpeedSlider = Instance.new("TextBox")
+SpeedSlider.Size = UDim2.new(0.5, 0, 1, -4)
+SpeedSlider.Position = UDim2.new(0.45, 0, 0, 2)
+SpeedSlider.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+SpeedSlider.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpeedSlider.TextSize = 12
+SpeedSlider.Font = Enum.Font.GothamBold
+SpeedSlider.Text = ""
+SpeedSlider.PlaceholderText = "أدخل السرعة (1-10)"
+SpeedSlider.Parent = SpeedSliderContainer
+SpeedSlider.ZIndex = 8
+
+local SpeedSliderCorner2 = Instance.new("UICorner")
+SpeedSliderCorner2.CornerRadius = UDim.new(0, 4)
+SpeedSliderCorner2.Parent = SpeedSlider
+
+SpeedSlider.FocusLost:Connect(function()
+    local val = tonumber(SpeedSlider.Text)
+    if val then
+        FlySpeed = math.clamp(val, 1, 10)
+        SpeedLabel.Text = "🚀 السرعة: " .. string.format("%.1f", FlySpeed)
+        SpeedSlider.Text = ""
+        showNotification("✅ السرعة = " .. string.format("%.1f", FlySpeed), CarFrame)
+    end
+end)
+
+-- ============================================
+-- قائمة السيارات
+-- ============================================
+
 local CarScroll = Instance.new("ScrollingFrame")
-CarScroll.Size = UDim2.new(1, -10, 0.85, 0)
-CarScroll.Position = UDim2.new(0, 5, 0.1, 0)
+CarScroll.Size = UDim2.new(1, -10, 0.55, 0)
+CarScroll.Position = UDim2.new(0, 5, 0.35, 0)
 CarScroll.BackgroundTransparency = 1
 CarScroll.BorderSizePixel = 0
 CarScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
@@ -606,8 +813,8 @@ local function UpdateCarList()
     end
     
     local yOffset = 5
-    local buttonHeight = 40
-    local spacing = 6
+    local buttonHeight = 32
+    local spacing = 4
     
     for i, car in ipairs(cars) do
         local button = Instance.new("TextButton")
@@ -615,14 +822,14 @@ local function UpdateCarList()
         button.Position = UDim2.new(0.04, 0, 0, yOffset)
         button.BackgroundColor3 = Color3.fromRGB(45, 35, 25)
         button.TextColor3 = Color3.fromRGB(255, 255, 255)
-        button.TextSize = 14
+        button.TextSize = 12
         button.Font = Enum.Font.GothamSemibold
         button.Text = "🚗 " .. car.name
         button.Parent = CarScroll
         button.ZIndex = 7
         
         local corner = Instance.new("UICorner")
-        corner.CornerRadius = UDim.new(0, 8)
+        corner.CornerRadius = UDim.new(0, 6)
         corner.Parent = button
         
         button.MouseEnter:Connect(function()
@@ -660,7 +867,6 @@ workspace.DescendantRemoving:Connect(function(obj)
     end
 end)
 
--- تحديث القائمة أول مرة
 UpdateCarList()
 
 -- ============================================
@@ -795,88 +1001,28 @@ end
 
 -- إضافة الأخبار
 createNewsCard("✅", "تم إضافة نظام سرقة الفلوس التلقائي V7!",
-    "الآن يمكنك تجميع الفلوس من الأرض تلقائياً وبسرعة فائقة! يدعم جميع أنواع الفلوس ويتجاهل الطاولات والمقاعد.",
+    "الآن يمكنك تجميع الفلوس من الأرض تلقائياً وبسرعة فائقة!",
     Color3.fromRGB(0, 255, 100), true)
 
 createNewsCard("🎣", "تم إضافة نظام الصيد التلقائي!",
-    "اضغط على زر 'تشغيل الصيد' وابدأ بصيد الأسماك تلقائياً دون عناء! يعمل مع جميع أنواع الصنارات.",
+    "اضغط على زر 'تشغيل الصيد' وابدأ بصيد الأسماك تلقائياً!",
     Color3.fromRGB(0, 200, 255), false)
 
-createNewsCard("🔄", "تحسين أداء السكربت بنسبة 40%!",
-    "قمنا بتحسين الكود وتقليل استهلاك المعالج ليعمل بسلاسة حتى على الأجهزة الضعيفة.",
-    Color3.fromRGB(100, 200, 255), false)
-
-createNewsCard("📱", "دعم كامل للهاتف والكمبيوتر!",
-    "السكربت الآن يدعم جميع الأجهزة مع واجهة متجاوبة وسهلة الاستخدام.",
-    Color3.fromRGB(100, 255, 200), false)
-
-createNewsCard("🚗", "تم إضافة نظام السيارات!",
-    "الآن يمكنك رؤية جميع السيارات في السيرفر والانتقال إليها بضغطة زر!",
+createNewsCard("🚗", "تم إضافة نظام الطيران الذكي للسيارات!",
+    "اركب سيارة وافعل وضع الطيران لتطير بها وتحكم باتجاه الكاميرا!",
     Color3.fromRGB(255, 150, 0), false)
 
+createNewsCard("📱", "دعم كامل للهاتف والكمبيوتر!",
+    "السكربت الآن يدعم جميع الأجهزة مع واجهة متجاوبة.",
+    Color3.fromRGB(100, 255, 200), false)
+
 createNewsCard("⏳", "🔜 قريباً: نظام الكلبشة التلقائي!",
-    "جاري العمل على نظام كلبشة تلقائي للاعبين سيتم إضافته في التحديث القادم.",
+    "جاري العمل على نظام كلبشة تلقائي للاعبين.",
     Color3.fromRGB(255, 200, 0), false)
 
 createNewsCard("⏳", "🔜 قريباً: نظام الحماية من الحظر!",
-    "سنضيف نظام حماية متقدم يمنع اكتشاف السكربت في السيرفرات.",
+    "سنضيف نظام حماية متقدم يمنع اكتشاف السكربت.",
     Color3.fromRGB(255, 200, 0), false)
-
-createNewsCard("⏳", "🔜 قريباً: نظام التجميع التلقائي للموارد!",
-    "سيتم إضافة نظام يجمع جميع الموارد حولك تلقائياً.",
-    Color3.fromRGB(255, 200, 0), false)
-
--- قسم الإبلاغ عن الأخطاء
-local ReportSection = Instance.new("Frame")
-ReportSection.Size = UDim2.new(0.94, 0, 0, 90)
-ReportSection.Position = UDim2.new(0.03, 0, 0, newsY + 5)
-ReportSection.BackgroundColor3 = Color3.fromRGB(30, 20, 30)
-ReportSection.BorderSizePixel = 0
-ReportSection.Parent = NewsScroll
-ReportSection.ZIndex = 7
-
-local ReportCorner = Instance.new("UICorner")
-ReportCorner.CornerRadius = UDim.new(0, 8)
-ReportCorner.Parent = ReportSection
-
-local ReportIcon = Instance.new("TextLabel")
-ReportIcon.Size = UDim2.new(0, 40, 1, 0)
-ReportIcon.Position = UDim2.new(0, 6, 0, 0)
-ReportIcon.BackgroundTransparency = 1
-ReportIcon.Text = "🐛"
-ReportIcon.TextColor3 = Color3.fromRGB(255, 200, 100)
-ReportIcon.TextSize = 28
-ReportIcon.Font = Enum.Font.GothamBold
-ReportIcon.TextXAlignment = Enum.TextXAlignment.Center
-ReportIcon.Parent = ReportSection
-ReportIcon.ZIndex = 8
-
-local ReportTitle = Instance.new("TextLabel")
-ReportTitle.Size = UDim2.new(1, -55, 0, 22)
-ReportTitle.Position = UDim2.new(0, 50, 0, 4)
-ReportTitle.BackgroundTransparency = 1
-ReportTitle.Text = "🐛 الإبلاغ عن أخطاء"
-ReportTitle.TextColor3 = Color3.fromRGB(255, 200, 100)
-ReportTitle.TextSize = 15
-ReportTitle.Font = Enum.Font.GothamBold
-ReportTitle.TextXAlignment = Enum.TextXAlignment.Left
-ReportTitle.Parent = ReportSection
-ReportTitle.ZIndex = 8
-
-local ReportDesc = Instance.new("TextLabel")
-ReportDesc.Size = UDim2.new(1, -55, 0, 28)
-ReportDesc.Position = UDim2.new(0, 50, 0, 26)
-ReportDesc.BackgroundTransparency = 1
-ReportDesc.Text = "إذا وجدت أي خطأ في السكربت، أرسل تفاصيله في سيرفر الديسكورد."
-ReportDesc.TextColor3 = Color3.fromRGB(180, 180, 200)
-ReportDesc.TextSize = 11
-ReportDesc.Font = Enum.Font.GothamMedium
-ReportDesc.TextXAlignment = Enum.TextXAlignment.Left
-ReportDesc.TextWrapped = true
-ReportDesc.Parent = ReportSection
-ReportDesc.ZIndex = 8
-
-newsY = newsY + 100
 
 -- قسم الديسكورد
 local DiscordSection = Instance.new("Frame")
@@ -950,66 +1096,7 @@ DiscordLink.MouseButton1Click:Connect(function()
     showNotification("✅ تم نسخ رابط الديسكورد!", NewsFrame)
 end)
 
-DiscordLink.MouseEnter:Connect(function()
-    DiscordLink.BackgroundColor3 = Color3.fromRGB(110, 120, 260)
-end)
-DiscordLink.MouseLeave:Connect(function()
-    DiscordLink.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
-end)
-
 newsY = newsY + 85
-
--- قسم الأخطاء الشائعة
-local ErrorSection = Instance.new("Frame")
-ErrorSection.Size = UDim2.new(0.94, 0, 0, 65)
-ErrorSection.Position = UDim2.new(0.03, 0, 0, newsY + 5)
-ErrorSection.BackgroundColor3 = Color3.fromRGB(40, 20, 20)
-ErrorSection.BorderSizePixel = 0
-ErrorSection.Parent = NewsScroll
-ErrorSection.ZIndex = 7
-
-local ErrorCorner = Instance.new("UICorner")
-ErrorCorner.CornerRadius = UDim.new(0, 8)
-ErrorCorner.Parent = ErrorSection
-
-local ErrorIcon2 = Instance.new("TextLabel")
-ErrorIcon2.Size = UDim2.new(0, 40, 1, 0)
-ErrorIcon2.Position = UDim2.new(0, 6, 0, 0)
-ErrorIcon2.BackgroundTransparency = 1
-ErrorIcon2.Text = "⚠️"
-ErrorIcon2.TextColor3 = Color3.fromRGB(255, 200, 50)
-ErrorIcon2.TextSize = 26
-ErrorIcon2.Font = Enum.Font.GothamBold
-ErrorIcon2.TextXAlignment = Enum.TextXAlignment.Center
-ErrorIcon2.Parent = ErrorSection
-ErrorIcon2.ZIndex = 8
-
-local ErrorTitle2 = Instance.new("TextLabel")
-ErrorTitle2.Size = UDim2.new(1, -55, 0, 22)
-ErrorTitle2.Position = UDim2.new(0, 50, 0, 4)
-ErrorTitle2.BackgroundTransparency = 1
-ErrorTitle2.Text = "⚠️ أخطاء معروفة وحلولها"
-ErrorTitle2.TextColor3 = Color3.fromRGB(255, 200, 50)
-ErrorTitle2.TextSize = 14
-ErrorTitle2.Font = Enum.Font.GothamBold
-ErrorTitle2.TextXAlignment = Enum.TextXAlignment.Left
-ErrorTitle2.Parent = ErrorSection
-ErrorTitle2.ZIndex = 8
-
-local ErrorDesc2 = Instance.new("TextLabel")
-ErrorDesc2.Size = UDim2.new(1, -55, 0, 32)
-ErrorDesc2.Position = UDim2.new(0, 50, 0, 26)
-ErrorDesc2.BackgroundTransparency = 1
-ErrorDesc2.Text = "• مشكلة اختفاء الزر: أعد تشغيل السكربت • مشكلة جمع الفلوس: تأكد من وجود فلوس حولك"
-ErrorDesc2.TextColor3 = Color3.fromRGB(200, 180, 180)
-ErrorDesc2.TextSize = 11
-ErrorDesc2.Font = Enum.Font.GothamMedium
-ErrorDesc2.TextXAlignment = Enum.TextXAlignment.Left
-ErrorDesc2.TextWrapped = true
-ErrorDesc2.Parent = ErrorSection
-ErrorDesc2.ZIndex = 8
-
-newsY = newsY + 75
 NewsScroll.CanvasSize = UDim2.new(0, 0, 0, newsY + 30)
 
 -- دالة عرض الأخبار
@@ -1547,7 +1634,7 @@ TeleportFooter.Parent = TeleportFrame
 TeleportFooter.ZIndex = 6
 
 -- ============================================
--- محتوى صفحة الفلوس (Money) - مع سكربت التجميع الفوري
+-- محتوى صفحة الفلوس (Money)
 -- ============================================
 
 local MoneyFrame = Instance.new("Frame")
@@ -1562,7 +1649,6 @@ local MoneyFrameCorner = Instance.new("UICorner")
 MoneyFrameCorner.CornerRadius = UDim.new(0, 12)
 MoneyFrameCorner.Parent = MoneyFrame
 
--- عنوان الصفحة
 local MoneyTitle = Instance.new("TextLabel")
 MoneyTitle.Size = UDim2.new(1, 0, 0, 35)
 MoneyTitle.Position = UDim2.new(0, 0, 0, 5)
@@ -1573,10 +1659,6 @@ MoneyTitle.TextSize = 18
 MoneyTitle.Font = Enum.Font.GothamBold
 MoneyTitle.Parent = MoneyFrame
 MoneyTitle.ZIndex = 6
-
--- ============================================
--- واجهة سكربت تجميع الفلوس الفوري V7
--- ============================================
 
 -- زر التشغيل/الإيقاف
 local ToggleButtonMoney = Instance.new("TextButton")
@@ -1607,7 +1689,6 @@ local StatsCorner = Instance.new("UICorner")
 StatsCorner.CornerRadius = UDim.new(0, 8)
 StatsCorner.Parent = StatsFrame
 
--- عدد الرزم المجمعة
 local CountLabel = Instance.new("TextLabel")
 CountLabel.Size = UDim2.new(0.5, 0, 1, 0)
 CountLabel.Position = UDim2.new(0, 0, 0, 0)
@@ -1620,7 +1701,6 @@ CountLabel.TextXAlignment = Enum.TextXAlignment.Center
 CountLabel.Parent = StatsFrame
 CountLabel.ZIndex = 8
 
--- حالة التشغيل
 local StatusLabel = Instance.new("TextLabel")
 StatusLabel.Size = UDim2.new(0.5, 0, 1, 0)
 StatusLabel.Position = UDim2.new(0.5, 0, 0, 0)
@@ -1638,15 +1718,12 @@ _G.CashStealer = false
 local eventConnection = nil
 local collectedCount = 0
 
--- دالة التحقق السريع والالتقاط الخاطف مع فلترة الموانع والطاولات
 local function processItem(item)
     if not _G.CashStealer then return end
     
-    -- رصد مجسم الفلوس الحقيقي
     if item.Name == "CashDrop" and (item:IsA("Part") or item:IsA("MeshPart")) then
         local fullName = item:GetFullName():lower()
         
-        -- الفلاتر الصارمة لمنع الانتقال العشوائي للطاولات والمقاعد والحواجز
         if not fullName:find("table") and 
            not fullName:find("board") and 
            not fullName:find("game") and 
@@ -1659,23 +1736,17 @@ local function processItem(item)
            not fullName:find("lockedframe") and  
            not fullName:find("barrier") then
             
-            -- فحص للتأكد من وجود اللوحة الرقمية للفلوس ($)
-            task.wait(0.02) -- وقت انتظار ضئيل جداً لضمان تحميل الخصائص بدون لاق
+            task.wait(0.02)
             if item:FindFirstChildOfClass("BillboardGui") then
-                local player = game.Players.LocalPlayer
-                local character = player.Character or player.CharacterAdded:Wait()
+                local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
                 local rootPart = character:FindFirstChild("HumanoidRootPart")
                 
                 if rootPart then
-                    -- 1. حفظ موقعك الأصلي بدقة
                     local originalPosition = rootPart.CFrame
-                    
-                    -- 2. الانتقال الفوري الخاطف فوق الفلوس
                     rootPart.CFrame = item.CFrame
                     
                     local remote = game:GetService("ReplicatedStorage"):FindFirstChild("CashDrop", true)
                     
-                    -- 3. حلقة الضغط السريع حتى تختفي الرزمة تماماً وتُسجل في رصيدك
                     while item and item.Parent and _G.CashStealer do
                         if remote and remote:IsA("RemoteEvent") then
                             remote:FireServer(item)
@@ -1687,16 +1758,14 @@ local function processItem(item)
                         local clicker = item:FindFirstChildOfClass("ClickDetector")
                         if clicker then fireclickdetector(clicker) end
                         
-                        task.wait(0.01) -- سرعة تفعيل قصوى
+                        task.wait(0.01)
                     end
                     
-                    -- زيادة العداد عند النجاح
                     if _G.CashStealer then
                         collectedCount = collectedCount + 1
                         CountLabel.Text = "📦 " .. collectedCount
                     end
                     
-                    -- 4. العودة التلقائية الفورية لمكانك الأصلي الآمن
                     if _G.CashStealer then
                         rootPart.CFrame = originalPosition
                     end
@@ -1706,25 +1775,20 @@ local function processItem(item)
     end
 end
 
--- تشغيل نظام الرصد العميق والخفيف جداً على المعالج
 local function startStealing()
-    -- تجميع الفلوس المتواجدة بالفعل على الأرض لحظة التشغيل
     for _, item in pairs(workspace:GetDescendants()) do
         if item.Name == "CashDrop" then
             spawn(function() pcall(processItem, item) end)
         end
     end
     
-    -- مراقبة شجرة الملفات العميقة (DescendantAdded): أي رزمة تنزل في أي مجلد يتم صيدها فوراً وبدون أي لاق
     eventConnection = workspace.DescendantAdded:Connect(function(item)
-        -- ميزة تصفية الأداء: السكربت يتجاهل أي ملف ليس له علاقة بالفلوس فوراً لتوفير المعالج %100
         if item.Name == "CashDrop" then
             pcall(processItem, item)
         end
     end)
 end
 
--- زر التشغيل/الإيقاف
 ToggleButtonMoney.MouseButton1Click:Connect(function()
     _G.CashStealer = not _G.CashStealer
     if _G.CashStealer then
@@ -1735,7 +1799,7 @@ ToggleButtonMoney.MouseButton1Click:Connect(function()
         collectedCount = 0
         CountLabel.Text = "📦 0"
         startStealing()
-        showNotification("✅ تم تشغيل تجميع الفلوس الفوري!", MoneyFrame)
+        showNotification("✅ تم تشغيل تجميع الفلوس!", MoneyFrame)
     else
         ToggleButtonMoney.Text = "OFF ❌"
         ToggleButtonMoney.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
@@ -1749,7 +1813,6 @@ ToggleButtonMoney.MouseButton1Click:Connect(function()
     end
 end)
 
--- زر إعادة تعيين الإحصائيات
 local ResetBtn = Instance.new("TextButton")
 ResetBtn.Size = UDim2.new(0.3, 0, 0, 30)
 ResetBtn.Position = UDim2.new(0.35, 0, 0.72, 0)
@@ -1771,27 +1834,6 @@ ResetBtn.MouseButton1Click:Connect(function()
     showNotification("🔄 تم إعادة تعيين العداد", MoneyFrame)
 end)
 
--- دالة الإشعارات
-function showNotification(text, parent)
-    local notif = Instance.new("TextLabel")
-    notif.Size = UDim2.new(0, 220, 0, 30)
-    notif.Position = UDim2.new(0.5, -110, 0.85, 0)
-    notif.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
-    notif.BackgroundTransparency = 0.1
-    notif.TextColor3 = Color3.fromRGB(0, 255, 150)
-    notif.TextSize = 13
-    notif.Font = Enum.Font.GothamBold
-    notif.Text = text
-    notif.Parent = parent
-    
-    local notifCorner = Instance.new("UICorner")
-    notifCorner.CornerRadius = UDim.new(0, 8)
-    notifCorner.Parent = notif
-    
-    task.wait(1.5)
-    notif:Destroy()
-end
-
 -- ============================================
 -- محتوى صفحة الصيد (Fishing)
 -- ============================================
@@ -1808,7 +1850,6 @@ local FishingFrameCorner = Instance.new("UICorner")
 FishingFrameCorner.CornerRadius = UDim.new(0, 12)
 FishingFrameCorner.Parent = FishingFrame
 
--- إطار متوهج للصيد
 local FishingGlow = Instance.new("Frame")
 FishingGlow.Size = UDim2.new(1, 6, 1, 6)
 FishingGlow.Position = UDim2.new(0, -3, 0, -3)
@@ -1822,7 +1863,6 @@ local FishingGlowCorner = Instance.new("UICorner")
 FishingGlowCorner.CornerRadius = UDim.new(0, 15)
 FishingGlowCorner.Parent = FishingGlow
 
--- عنوان الصفحة
 local FishingTitle = Instance.new("TextLabel")
 FishingTitle.Size = UDim2.new(1, 0, 0, 40)
 FishingTitle.Position = UDim2.new(0, 0, 0, 5)
@@ -1834,7 +1874,6 @@ FishingTitle.Font = Enum.Font.GothamBold
 FishingTitle.Parent = FishingFrame
 FishingTitle.ZIndex = 6
 
--- زر تشغيل الصيد
 local FishingToggleButton = Instance.new("TextButton")
 FishingToggleButton.Size = UDim2.new(0.7, 0, 0, 55)
 FishingToggleButton.Position = UDim2.new(0.15, 0, 0.2, 0)
@@ -1850,7 +1889,6 @@ local FishingToggleCorner = Instance.new("UICorner")
 FishingToggleCorner.CornerRadius = UDim.new(0, 10)
 FishingToggleCorner.Parent = FishingToggleButton
 
--- حالة الصيد
 local FishingStatus = Instance.new("TextLabel")
 FishingStatus.Size = UDim2.new(1, -20, 0, 30)
 FishingStatus.Position = UDim2.new(0, 10, 0.45, 0)
@@ -1863,7 +1901,6 @@ FishingStatus.TextXAlignment = Enum.TextXAlignment.Center
 FishingStatus.Parent = FishingFrame
 FishingStatus.ZIndex = 7
 
--- مربع معلومات
 local InfoBox = Instance.new("Frame")
 InfoBox.Size = UDim2.new(0.85, 0, 0, 80)
 InfoBox.Position = UDim2.new(0.075, 0, 0.55, 0)
@@ -1880,7 +1917,7 @@ local InfoText = Instance.new("TextLabel")
 InfoText.Size = UDim2.new(1, -10, 1, -10)
 InfoText.Position = UDim2.new(0, 5, 0, 5)
 InfoText.BackgroundTransparency = 1
-InfoText.Text = "🐟 سكربت الصيد التلقائي\n📌 اضغط على الزر لتفعيل الصيد التلقائي"
+InfoText.Text = "🐟 سكربت الصيد التلقائي\n📌 اضغط على الزر لتفعيل الصيد"
 InfoText.TextColor3 = Color3.fromRGB(150, 200, 255)
 InfoText.TextSize = 14
 InfoText.Font = Enum.Font.GothamMedium
@@ -1889,11 +1926,9 @@ InfoText.TextYAlignment = Enum.TextYAlignment.Center
 InfoText.Parent = InfoBox
 InfoText.ZIndex = 8
 
--- متغيرات الصيد
 local fishingActive = false
 local fishingConnection = nil
 
--- دالة تشغيل الصيد
 local function startFishing()
     if fishingActive then
         fishingActive = false
@@ -1906,21 +1941,21 @@ local function startFishing()
             fishingConnection:Disconnect()
             fishingConnection = nil
         end
-        showNotification("⛔ تم إيقاف الصيد التلقائي", FishingFrame)
+        showNotification("⛔ تم إيقاف الصيد", FishingFrame)
     else
         fishingActive = true
         FishingToggleButton.Text = "⏹️ إيقاف الصيد"
         FishingToggleButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
         FishingStatus.Text = "🟢 جاري الصيد..."
         FishingStatus.TextColor3 = Color3.fromRGB(0, 255, 100)
-        InfoText.Text = "🐟 جاري الصيد التلقائي... انتظر النتائج 🎣"
+        InfoText.Text = "🐟 جاري الصيد التلقائي... 🎣"
         
-        local success, result = pcall(function()
+        local success = pcall(function()
             loadstring(game:HttpGet("https://raw.githubusercontent.com/salihmahdu12-ui/SA-ALONE-THE-REAL/refs/heads/main/.ALARAB"))()
         end)
         
         if success then
-            showNotification("✅ تم تشغيل الصيد التلقائي!", FishingFrame)
+            showNotification("✅ تم تشغيل الصيد!", FishingFrame)
         else
             showNotification("❌ فشل تحميل سكربت الصيد!", FishingFrame)
             fishingActive = false
@@ -2086,7 +2121,7 @@ Players.PlayerAdded:Connect(function() UpdatePlayerList() end)
 Players.PlayerRemoving:Connect(function() UpdatePlayerList() end)
 
 -- ============================================
--- صفحة الإعدادات (مع جميع الميزات)
+-- صفحة الإعدادات
 -- ============================================
 
 local SettingsFrame = Instance.new("Frame")
@@ -2163,16 +2198,11 @@ local features = {
     fov120 = false
 }
 
-local flyConnection = nil
+local flyConnection2 = nil
 local rotateConnection = nil
 local currentRotation = 0
 local originalFOV = Camera.FieldOfView
 
--- ============================================
--- دوال الميزات
--- ============================================
-
--- تطبيق الإعدادات الأساسية
 function ApplySettings()
     local character = LocalPlayer.Character
     if character then
@@ -2191,7 +2221,6 @@ function ApplySettings()
     end
 end
 
--- دالة الاختفاء (Invisible)
 local function toggleInvisible()
     features.invisible = not features.invisible
     local character = LocalPlayer.Character
@@ -2219,7 +2248,6 @@ local function toggleInvisible()
     return features.invisible
 end
 
--- دالة اختراق الجدران
 local function toggleNoclip()
     features.noclip = not features.noclip
     local character = LocalPlayer.Character
@@ -2233,7 +2261,6 @@ local function toggleNoclip()
     return features.noclip
 end
 
--- دالة الطيران
 local function toggleFly()
     local character = LocalPlayer.Character
     if not character then return end
@@ -2248,17 +2275,17 @@ local function toggleFly()
         humanoid.PlatformStand = true
         humanoid.AutoRotate = false
         
-        if flyConnection then
-            flyConnection:Disconnect()
-            flyConnection = nil
+        if flyConnection2 then
+            flyConnection2:Disconnect()
+            flyConnection2 = nil
         end
         
-        flyConnection = RunService.Heartbeat:Connect(function()
+        flyConnection2 = RunService.Heartbeat:Connect(function()
             local char = LocalPlayer.Character
             if not char or not char.Parent then
-                if flyConnection then
-                    flyConnection:Disconnect()
-                    flyConnection = nil
+                if flyConnection2 then
+                    flyConnection2:Disconnect()
+                    flyConnection2 = nil
                 end
                 features.fly = false
                 return
@@ -2307,9 +2334,9 @@ local function toggleFly()
             hum.AutoRotate = false
         end)
     else
-        if flyConnection then
-            flyConnection:Disconnect()
-            flyConnection = nil
+        if flyConnection2 then
+            flyConnection2:Disconnect()
+            flyConnection2 = nil
         end
         humanoid.PlatformStand = false
         humanoid.AutoRotate = true
@@ -2317,7 +2344,6 @@ local function toggleFly()
     return features.fly
 end
 
--- دالة الدوران التلقائي
 local function toggleAutoRotate()
     features.autoRotate = not features.autoRotate
     
@@ -2347,7 +2373,6 @@ local function toggleAutoRotate()
     return features.autoRotate
 end
 
--- دالة FOV 120
 local function toggleFOV120()
     features.fov120 = not features.fov120
     
@@ -2365,7 +2390,6 @@ end
 -- دوال إنشاء الأزرار
 -- ============================================
 
--- دالة إنشاء زر مع شريط تمرير
 local function createSettingSlider(yOffset, labelText, minVal, maxVal, defaultValue, settingName)
     local container = Instance.new("Frame")
     container.Size = UDim2.new(0.92, 0, 0, 65)
@@ -2474,7 +2498,6 @@ local function createSettingSlider(yOffset, labelText, minVal, maxVal, defaultVa
     return container
 end
 
--- دالة إنشاء زر تبديل (Toggle)
 local function createToggleButton(yOffset, labelText, icon, settingName, color)
     local container = Instance.new("Frame")
     container.Size = UDim2.new(0.92, 0, 0, 45)
@@ -2853,12 +2876,10 @@ for _, child in pairs(Sidebar:GetChildren()) do
     end
 end
 
-print("✅ 7MO HUB v15 تم تحميله بنجاح!")
-print("📱 تم دعم الهاتف والكمبيوتر معاً!")
-print("🟣 زر دائري متحرك بأطراف بنفسجية!")
-print("💰 تم دمج سكربت تجميع الفلوس الفوري V7!")
-print("🎣 تم إضافة صفحة الصيد التلقائي!")
-print("📰 تم إضافة صفحة الأخبار والتحديثات!")
-print("🚗 تم إضافة صفحة السيارات!")
-print("🔧 الميزات: سرعة، قفز، جاذبية، اختفاء، اختراق جدران، طيران، دوران، FOV 120")
-print("📍 " .. #places .. " مكاناً للانتقال الفوري!")
+print("✅ 7MO HUB v15 - النسخة الكاملة تم تحميلها!")
+print("📱 دعم كامل للهاتف والكمبيوتر")
+print("💰 نظام تجميع الفلوس الفوري V7")
+print("🎣 نظام الصيد التلقائي")
+print("🚗 نظام السيارات والطيران الذكي")
+print("🔧 ميزات: سرعة، قفز، جاذبية، اختفاء، اختراق، طيران، دوران، FOV 120")
+print("📍 " .. #places .. " مكان للانتقال الفوري")
