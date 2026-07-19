@@ -1,97 +1,134 @@
--- إنشاء واجهة المستخدم (ScreenGui)
+-- ============================================================
+-- Pure Lua Script: Car Speed Changer GUI
+-- Compatible with Delta and Mobile Executors
+-- ============================================================
+
+local CoreGui = game:GetService("CoreGui")
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+
+-- Target speed variable
+local targetSpeed = 100
+local speedHackEnabled = false
+
+------------------------------------------------------------
+-- 1. Create the Draggable GUI Layout
+-- ============================================================
 local ScreenGui = Instance.new("ScreenGui")
-local CarButton = Instance.new("ImageButton")
+ScreenGui.Name = "CarSpeedHackUI"
+ScreenGui.Parent = CoreGui
+
+-- Main window panel
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainPanel"
+MainFrame.Size = UDim2.new(0, 260, 0, 180)
+MainFrame.Position = UDim2.new(0.4, 0, 0.4, 0)
+MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+MainFrame.BorderSizePixel = 0
+MainFrame.Active = true
+MainFrame.Draggable = true -- Allows mobile users to drag the interface
+MainFrame.Parent = ScreenGui
+
+-- Corner styling
 local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 8)
+UICorner.Parent = MainFrame
 
--- إعدادات الواجهة الرئيسية
-ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-ScreenGui.ResetOnSpawn = false
+-- UI Title Bar
+local TitleLabel = Instance.new("TextLabel")
+TitleLabel.Size = UDim2.new(1, 0, 0, 35)
+TitleLabel.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+TitleLabel.Text = "🏎️ Car Speed Controller"
+TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TitleLabel.TextSize = 16
+TitleLabel.Font = Enum.Font.GothamBold
+TitleLabel.Parent = MainFrame
 
--- إعدادات الزر وتثبيته على الجهة اليمنى من الشاشة
-CarButton.Name = "CarFlyButton"
-CarButton.Parent = ScreenGui
-CarButton.BackgroundColor3 = Color3.fromRGB(35, 30, 25)
-CarButton.BackgroundTransparency = 0.3
-CarButton.Size = UDim2.new(0, 50, 0, 50) 
-CarButton.Position = UDim2.new(1, -75, 0.7, -110) 
+local TitleCorner = Instance.new("UICorner")
+TitleCorner.CornerRadius = UDim.new(0, 8)
+TitleCorner.Parent = TitleLabel
 
-CarButton.Image = "rbxassetid://6031243533" -- أيقونة السيارة
-CarButton.ImageColor3 = Color3.fromRGB(255, 255, 255)
+-- Input field box for custom speed
+local SpeedInput = Instance.new("TextBox")
+SpeedInput.Size = UDim2.new(0, 200, 0, 40)
+SpeedInput.Position = UDim2.new(0.5, -100, 0, 55)
+SpeedInput.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+SpeedInput.Text = "100"
+SpeedInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpeedInput.TextSize = 18
+SpeedInput.Font = Enum.Font.Gotham
+SpeedInput.PlaceholderText = "Enter speed value"
+SpeedInput.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
+SpeedInput.ClearTextOnFocus = false
+SpeedInput.Parent = MainFrame
 
--- جعل الزر دائرياً متناسقاً
-UICorner.CornerRadius = UDim.new(1, 0)
-UICorner.Parent = CarButton
+local InputCorner = Instance.new("UICorner")
+InputCorner.CornerRadius = UDim.new(0, 6)
+InputCorner.Parent = SpeedInput
 
--- نظام التحذير في أعلى الشاشة تماماً (يمكث 3 ثوانٍ)
-local function showWarning(text)
-    -- إزالة أي رسالة سابقة لعدم تداخل النصوص
-    if ScreenGui:FindFirstChild("WarningLabel") then
-        ScreenGui.WarningLabel:Destroy()
-    end
-    
-    local WarningLabel = Instance.new("TextLabel")
-    WarningLabel.Name = "WarningLabel"
-    WarningLabel.Parent = ScreenGui
-    WarningLabel.Size = UDim2.new(0, 280, 0, 45)
-    
-    -- [التعديل الجديد]: تم رفع الرسالة لأقصى حد في أعلى منتصف الشاشة كإشعار علوي
-    WarningLabel.Position = UDim2.new(0.5, -140, 0.10, 0) 
-    
-    WarningLabel.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-    WarningLabel.BackgroundTransparency = 0.15
-    WarningLabel.TextColor3 = Color3.fromRGB(255, 60, 60) -- لون أحمر ناري واضح
-    WarningLabel.Text = text
-    WarningLabel.Font = Enum.Font.SourceSansBold
-    WarningLabel.TextSize = 22
-    
-    -- زوايا دائرية ناعمة لخلفية الرسالة
-    local LabelCorner = Instance.new("UICorner")
-    LabelCorner.CornerRadius = UDim.new(0, 10)
-    LabelCorner.Parent = WarningLabel
-    
-    -- جعل الرسالة تختفي تلقائياً بعد 3 ثوانٍ تماماً
-    game:GetService("Debris"):AddItem(WarningLabel, 3)
-end
+-- Action Activation Button
+local ToggleButton = Instance.new("TextButton")
+ToggleButton.Size = UDim2.new(0, 200, 0, 45)
+ToggleButton.Position = UDim2.new(0.5, -100, 0, 115)
+ToggleButton.BackgroundColor3 = Color3.fromRGB(230, 50, 50) -- Default red (disabled)
+ToggleButton.Text = "Status: OFF"
+ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleButton.TextSize = 16
+ToggleButton.Font = Enum.Font.GothamBold
+ToggleButton.Parent = MainFrame
 
--- تغيير لون الزر للأحمر عند بدء اللمس
-CarButton.MouseButton1Down:Connect(function()
-    CarButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-    CarButton.BackgroundTransparency = 0.1
-end)
+local ButtonCorner = Instance.new("UICorner")
+ButtonCorner.CornerRadius = UDim.new(0, 6)
+ButtonCorner.Parent = ToggleButton
 
--- وظيفة طيران المركبة أو إطلاق التحذير عند الإفلات
-CarButton.MouseButton1Click:Connect(function()
-    -- إرجاع لون الزر الأصلي
-    CarButton.BackgroundColor3 = Color3.fromRGB(35, 30, 25)
-    CarButton.BackgroundTransparency = 0.3
+------------------------------------------------------------
+-- 2. GUI Core Event Logic
+-- ============================================================
 
-    local player = game.Players.LocalPlayer
-    local character = player.Character
-    
-    if character and character:FindFirstChild("Humanoid") then
-        local seat = character.Humanoid.SeatPart
-        local vehicle = seat and seat.Parent
-        
-        if vehicle and vehicle:IsA("Model") then
-            local mainPart = vehicle:FindFirstChild("DriveSeat") or vehicle.PrimaryPart or vehicle:FindFirstChildWhichIsA("BasePart")
-            if mainPart then
-                local bodyVelocity = Instance.new("BodyVelocity")
-                bodyVelocity.Velocity = Vector3.new(0, 150, 0)
-                bodyVelocity.MaxForce = Vector3.new(0, 500000, 0) 
-                bodyVelocity.Parent = mainPart
-                
-                game:GetService("Debris"):AddItem(bodyVelocity, 1)
-            end
-        else
-            showWarning("اركب سيارة أولاً!")
-        end
+-- Capture user custom text input
+SpeedInput.FocusLost:Connect(function()
+    local inputNum = tonumber(SpeedInput.Text)
+    if inputNum then
+        targetSpeed = inputNum
     else
-        showWarning("اركب سيارة أولاً!")
+        SpeedInput.Text = tostring(targetSpeed) -- Reset if text input is invalid
     end
 end)
 
--- إرجاع اللون للوضع الطبيعي إذا تم سحب الإصبع خارج النطاق
-CarButton.MouseLeave:Connect(function()
-    CarButton.BackgroundColor3 = Color3.fromRGB(35, 30, 25)
-    CarButton.BackgroundTransparency = 0.3
+-- Toggle button activate status click action
+ToggleButton.MouseButton1Click:Connect(function()
+    speedHackEnabled = not speedHackEnabled
+    
+    if speedHackEnabled then
+        ToggleButton.Text = "Status: ON"
+        ToggleButton.BackgroundColor3 = Color3.fromRGB(50, 200, 50) -- Switch green
+    else
+        ToggleButton.Text = "Status: OFF"
+        ToggleButton.BackgroundColor3 = Color3.fromRGB(230, 50, 50) -- Switch red
+    end
 end)
+
+------------------------------------------------------------
+-- 3. Vehicle Custom Velocity Logic Loop
+-- ============================================================
+RunService.Heartbeat:Connect(function()
+    if not speedHackEnabled then return end
+    
+    local character = LocalPlayer.Character
+    if not character then return end
+    
+    -- Detect if player is sitting in a vehicle
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    if humanoid and humanoid.SeatPart and humanoid.SeatPart:IsA("VehicleSeat") then
+        local vehicleSeat = humanoid.SeatPart
+        
+        -- Check driving stick direction input
+        if vehicleSeat.Throttle ~= 0 then
+            -- Multiply modern body velocity forward vector direction 
+            vehicleSeat.AssemblyLinearVelocity = vehicleSeat.CFrame.LookVector * (vehicleSeat.Throttle * targetSpeed)
+        end
+    end
+end)
+
+print("[Delta System]: Car Speed Controller loaded successfully!")
