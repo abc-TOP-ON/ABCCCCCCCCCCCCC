@@ -1,4 +1,4 @@
--- 7MO HUB v15 - النسخة الكاملة (الفلوس + الصيد + الأخبار + الطيران الذكي فقط)
+-- 7MO HUB v15 - النسخة الكاملة (الفلوس + الصيد + الأخبار + الطيران الذكي + سرعة السيارة)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -85,7 +85,7 @@ PulseCorner.Parent = PulseRing
 -- النص داخل الزر
 local ButtonText = Instance.new("TextLabel")
 ButtonText.Name = "ButtonText"
-ButtonText.Size = UDim2.new(1, 0, 1, 0)
+ButtonText.Size = UDim2.new(1, 0, 0, 1)
 ButtonText.Position = UDim2.new(0, 0, 0, 0)
 ButtonText.BackgroundTransparency = 1
 ButtonText.Text = "7MO"
@@ -774,12 +774,172 @@ SpeedSlider.FocusLost:Connect(function()
 end)
 
 -- ============================================
+-- 🚗 نظام سرعة السيارة (الميزة الجديدة)
+-- ============================================
+
+-- متغيرات سرعة السيارة
+local carSpeedEnabled = false
+local carTargetSpeed = 100
+local carSpeedLoop = nil
+
+-- زر تفعيل سرعة السيارة
+local CarSpeedToggle = Instance.new("TextButton")
+CarSpeedToggle.Size = UDim2.new(0.8, 0, 0, 40)
+CarSpeedToggle.Position = UDim2.new(0.1, 0, 0.45, 0)
+CarSpeedToggle.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+CarSpeedToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+CarSpeedToggle.TextSize = 14
+CarSpeedToggle.Font = Enum.Font.SourceSansBold
+CarSpeedToggle.Text = "🚗 سرعة السيارة: مطفأ"
+CarSpeedToggle.Parent = CarFrame
+CarSpeedToggle.ZIndex = 7
+
+local CarSpeedCorner = Instance.new("UICorner")
+CarSpeedCorner.CornerRadius = UDim.new(0, 8)
+CarSpeedCorner.Parent = CarSpeedToggle
+
+-- حقل إدخال سرعة السيارة
+local CarSpeedInput = Instance.new("TextBox")
+CarSpeedInput.Size = UDim2.new(0.5, 0, 0, 30)
+CarSpeedInput.Position = UDim2.new(0.1, 0, 0.55, 0)
+CarSpeedInput.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+CarSpeedInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+CarSpeedInput.TextSize = 14
+CarSpeedInput.Font = Enum.Font.GothamBold
+CarSpeedInput.Text = "100"
+CarSpeedInput.PlaceholderText = "السرعة (1-500)"
+CarSpeedInput.Parent = CarFrame
+CarSpeedInput.ZIndex = 7
+
+local CarSpeedInputCorner = Instance.new("UICorner")
+CarSpeedInputCorner.CornerRadius = UDim.new(0, 6)
+CarSpeedInputCorner.Parent = CarSpeedInput
+
+-- زر حفظ السرعة
+local CarSpeedSave = Instance.new("TextButton")
+CarSpeedSave.Size = UDim2.new(0.25, 0, 0, 30)
+CarSpeedSave.Position = UDim2.new(0.65, 0, 0.55, 0)
+CarSpeedSave.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
+CarSpeedSave.TextColor3 = Color3.fromRGB(255, 255, 255)
+CarSpeedSave.TextSize = 12
+CarSpeedSave.Font = Enum.Font.GothamBold
+CarSpeedSave.Text = "💾 حفظ"
+CarSpeedSave.Parent = CarFrame
+CarSpeedSave.ZIndex = 7
+
+local CarSpeedSaveCorner = Instance.new("UICorner")
+CarSpeedSaveCorner.CornerRadius = UDim.new(0, 6)
+CarSpeedSaveCorner.Parent = CarSpeedSave
+
+-- دالة جلب مقعد السيارة للسرعة
+local function GetVehicleSeat()
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+        local Seat = LocalPlayer.Character.Humanoid.SeatPart
+        if Seat and Seat:IsA("VehicleSeat") then
+            return Seat
+        end
+    end
+    return nil
+end
+
+-- حلقة سرعة السيارة
+local function StartCarSpeedLoop()
+    if carSpeedLoop then
+        carSpeedLoop:Disconnect()
+        carSpeedLoop = nil
+    end
+    
+    carSpeedLoop = RunService.Heartbeat:Connect(function()
+        if not carSpeedEnabled then return end
+        
+        pcall(function()
+            local seat = GetVehicleSeat()
+            if seat and seat:IsA("VehicleSeat") then
+                if seat.Throttle and seat.Throttle ~= 0 then
+                    local speed = seat.Throttle * carTargetSpeed
+                    seat.AssemblyLinearVelocity = seat.CFrame.LookVector * speed
+                end
+            end
+        end)
+    end)
+end
+
+-- زر تفعيل سرعة السيارة
+CarSpeedToggle.MouseButton1Click:Connect(function()
+    local seat = GetVehicleSeat()
+    if not seat then
+        showNotification("⚠️ لازم تركب سيارة أولاً!", CarFrame)
+        return
+    end
+    
+    carSpeedEnabled = not carSpeedEnabled
+    
+    if carSpeedEnabled then
+        CarSpeedToggle.Text = "🚗 سرعة السيارة: مفعل ✅"
+        CarSpeedToggle.BackgroundColor3 = Color3.fromRGB(40, 180, 70)
+        StartCarSpeedLoop()
+        showNotification("✅ تم تفعيل سرعة السيارة (" .. carTargetSpeed .. ")", CarFrame)
+    else
+        CarSpeedToggle.Text = "🚗 سرعة السيارة: مطفأ"
+        CarSpeedToggle.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+        if carSpeedLoop then
+            carSpeedLoop:Disconnect()
+            carSpeedLoop = nil
+        end
+        showNotification("⛔ تم إيقاف سرعة السيارة", CarFrame)
+    end
+end)
+
+-- حفظ السرعة
+CarSpeedSave.MouseButton1Click:Connect(function()
+    local val = tonumber(CarSpeedInput.Text)
+    if val and val > 0 then
+        carTargetSpeed = math.clamp(val, 1, 500)
+        CarSpeedInput.Text = tostring(carTargetSpeed)
+        showNotification("✅ تم حفظ السرعة = " .. carTargetSpeed, CarFrame)
+        
+        if carSpeedEnabled then
+            StartCarSpeedLoop()
+        end
+    else
+        showNotification("⚠️ أدخل رقم صحيح (1-500)", CarFrame)
+        CarSpeedInput.Text = tostring(carTargetSpeed)
+    end
+end)
+
+-- تحديث السرعة عند فقدان التركيز
+CarSpeedInput.FocusLost:Connect(function()
+    local val = tonumber(CarSpeedInput.Text)
+    if val and val > 0 then
+        carTargetSpeed = math.clamp(val, 1, 500)
+        CarSpeedInput.Text = tostring(carTargetSpeed)
+    else
+        CarSpeedInput.Text = tostring(carTargetSpeed)
+    end
+end)
+
+-- مراقبة حالة سرعة السيارة
+coroutine.wrap(function()
+    while ScreenGui do
+        if carSpeedEnabled then
+            StartCarSpeedLoop()
+        else
+            if carSpeedLoop then
+                carSpeedLoop:Disconnect()
+                carSpeedLoop = nil
+            end
+        end
+        task.wait(1)
+    end
+end)()
+
+-- ============================================
 -- إرشادات الاستخدام (الرابع)
 -- ============================================
 
 local InfoBox = Instance.new("Frame")
-InfoBox.Size = UDim2.new(0.8, 0, 0, 110)
-InfoBox.Position = UDim2.new(0.1, 0, 0.38, 0)
+InfoBox.Size = UDim2.new(0.8, 0, 0, 130)
+InfoBox.Position = UDim2.new(0.1, 0, 0.62, 0)
 InfoBox.BackgroundColor3 = Color3.fromRGB(25, 25, 40)
 InfoBox.BorderSizePixel = 0
 InfoBox.Parent = CarFrame
@@ -793,9 +953,9 @@ local InfoText = Instance.new("TextLabel")
 InfoText.Size = UDim2.new(1, -10, 1, -10)
 InfoText.Position = UDim2.new(0, 5, 0, 5)
 InfoText.BackgroundTransparency = 1
-InfoText.Text = "🚗 كيفية استخدام الطيران الذكي:\n\n1️⃣ اركب سيارة (اجلس في مقعد السائق)\n2️⃣ اضغط على زر 'تفعيل الطيران'\n3️⃣ اضغط على زر 'تشغيل الحركة' للانطلاق\n4️⃣ عدل السرعة من 1 إلى 10"
+InfoText.Text = "🚗 كيفية استخدام الطيران الذكي وسرعة السيارة:\n\n1️⃣ اركب سيارة (اجلس في مقعد السائق)\n2️⃣ اضغط على 'تفعيل الطيران' ثم 'تشغيل الحركة'\n3️⃣ أو استخدم 'سرعة السيارة' لتحديد سرعة ثابتة\n4️⃣ عدل السرعة من 1 إلى 500"
 InfoText.TextColor3 = Color3.fromRGB(200, 200, 220)
-InfoText.TextSize = 13
+InfoText.TextSize = 12
 InfoText.Font = Enum.Font.GothamMedium
 InfoText.TextXAlignment = Enum.TextXAlignment.Center
 InfoText.TextYAlignment = Enum.TextYAlignment.Top
@@ -933,9 +1093,9 @@ local function createNewsCard(icon, title, desc, color, isImportant)
 end
 
 -- إضافة الأخبار
-createNewsCard("✅", "تم إضافة نظام سرقة الفلوس التلقائي V7!",
-    "الآن يمكنك تجميع الفلوس من الأرض تلقائياً وبسرعة فائقة!",
-    Color3.fromRGB(0, 255, 100), true)
+createNewsCard("✅", "تم إضافة نظام سرعة السيارة V7!",
+    "الآن يمكنك التحكم بسرعة السيارة بسهولة من 1 إلى 500!",
+    Color3.fromRGB(255, 150, 0), true)
 
 createNewsCard("🎣", "تم إضافة نظام الصيد التلقائي!",
     "اضغط على زر 'تشغيل الصيد' وابدأ بصيد الأسماك تلقائياً!",
@@ -1829,30 +1989,30 @@ FishingStatus.TextXAlignment = Enum.TextXAlignment.Center
 FishingStatus.Parent = FishingFrame
 FishingStatus.ZIndex = 7
 
-local InfoBox = Instance.new("Frame")
-InfoBox.Size = UDim2.new(0.85, 0, 0, 80)
-InfoBox.Position = UDim2.new(0.075, 0, 0.55, 0)
-InfoBox.BackgroundColor3 = Color3.fromRGB(0, 30, 50)
-InfoBox.BorderSizePixel = 0
-InfoBox.Parent = FishingFrame
-InfoBox.ZIndex = 7
+local InfoBoxFishing = Instance.new("Frame")
+InfoBoxFishing.Size = UDim2.new(0.85, 0, 0, 80)
+InfoBoxFishing.Position = UDim2.new(0.075, 0, 0.55, 0)
+InfoBoxFishing.BackgroundColor3 = Color3.fromRGB(0, 30, 50)
+InfoBoxFishing.BorderSizePixel = 0
+InfoBoxFishing.Parent = FishingFrame
+InfoBoxFishing.ZIndex = 7
 
-local InfoBoxCorner = Instance.new("UICorner")
-InfoBoxCorner.CornerRadius = UDim.new(0, 8)
-InfoBoxCorner.Parent = InfoBox
+local InfoBoxCornerFishing = Instance.new("UICorner")
+InfoBoxCornerFishing.CornerRadius = UDim.new(0, 8)
+InfoBoxCornerFishing.Parent = InfoBoxFishing
 
-local InfoText = Instance.new("TextLabel")
-InfoText.Size = UDim2.new(1, -10, 1, -10)
-InfoText.Position = UDim2.new(0, 5, 0, 5)
-InfoText.BackgroundTransparency = 1
-InfoText.Text = "🐟 سكربت الصيد التلقائي\n📌 اضغط على الزر لتفعيل الصيد"
-InfoText.TextColor3 = Color3.fromRGB(150, 200, 255)
-InfoText.TextSize = 14
-InfoText.Font = Enum.Font.GothamMedium
-InfoText.TextXAlignment = Enum.TextXAlignment.Center
-InfoText.TextYAlignment = Enum.TextYAlignment.Center
-InfoText.Parent = InfoBox
-InfoText.ZIndex = 8
+local InfoTextFishing = Instance.new("TextLabel")
+InfoTextFishing.Size = UDim2.new(1, -10, 1, -10)
+InfoTextFishing.Position = UDim2.new(0, 5, 0, 5)
+InfoTextFishing.BackgroundTransparency = 1
+InfoTextFishing.Text = "🐟 سكربت الصيد التلقائي\n📌 اضغط على الزر لتفعيل الصيد"
+InfoTextFishing.TextColor3 = Color3.fromRGB(150, 200, 255)
+InfoTextFishing.TextSize = 14
+InfoTextFishing.Font = Enum.Font.GothamMedium
+InfoTextFishing.TextXAlignment = Enum.TextXAlignment.Center
+InfoTextFishing.TextYAlignment = Enum.TextYAlignment.Center
+InfoTextFishing.Parent = InfoBoxFishing
+InfoTextFishing.ZIndex = 8
 
 local fishingActive = false
 local fishingConnection = nil
@@ -1864,7 +2024,7 @@ local function startFishing()
         FishingToggleButton.BackgroundColor3 = Color3.fromRGB(0, 150, 200)
         FishingStatus.Text = "⏸️ الصيد متوقف"
         FishingStatus.TextColor3 = Color3.fromRGB(255, 100, 100)
-        InfoText.Text = "🐟 تم إيقاف الصيد التلقائي"
+        InfoTextFishing.Text = "🐟 تم إيقاف الصيد التلقائي"
         if fishingConnection then
             fishingConnection:Disconnect()
             fishingConnection = nil
@@ -1876,7 +2036,7 @@ local function startFishing()
         FishingToggleButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
         FishingStatus.Text = "🟢 جاري الصيد..."
         FishingStatus.TextColor3 = Color3.fromRGB(0, 255, 100)
-        InfoText.Text = "🐟 جاري الصيد التلقائي... 🎣"
+        InfoTextFishing.Text = "🐟 جاري الصيد التلقائي... 🎣"
         
         local success = pcall(function()
             loadstring(game:HttpGet("https://raw.githubusercontent.com/salihmahdu12-ui/SA-ALONE-THE-REAL/refs/heads/main/.ALARAB"))()
@@ -2182,7 +2342,8 @@ local function toggleNoclip()
     if character then
         for _, part in pairs(character:GetDescendants()) do
             if part:IsA("BasePart") then
-                part.CanCollide = not features.noclip            end
+                part.CanCollide = not features.noclip
+            end
         end
     end
     return features.noclip
@@ -2803,10 +2964,10 @@ for _, child in pairs(Sidebar:GetChildren()) do
     end
 end
 
-print("✅ 7MO HUB v15 - النسخة الكاملة (أزرار مرتبة عمودياً)")
+print("✅ 7MO HUB v15 - النسخة الكاملة (مع سرعة السيارة)")
 print("📱 دعم كامل للهاتف والكمبيوتر")
 print("💰 نظام تجميع الفلوس الفوري V7")
 print("🎣 نظام الصيد التلقائي")
-print("🚗 نظام الطيران الذكي للسيارات فقط")
+print("🚗 نظام الطيران الذكي + سرعة السيارة (1-500)")
 print("🔧 ميزات: سرعة، قفز، جاذبية، اختفاء، اختراق، طيران، دوران، FOV 120")
 print("📍 " .. #places .. " مكان للانتقال الفوري")
