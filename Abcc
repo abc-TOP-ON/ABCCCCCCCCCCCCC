@@ -1,180 +1,133 @@
--- واجهة تجميع الفلوس الفورية فائقة السرعة للـ PC - إصدار السرعة القصوى الحصري V8
-local CoreGui = game:GetService("CoreGui")
+-- قم بنسخ هذا الكود بالكامل ولصقه في منفذ دلتا (Delta Executor)
+local Player = game.Players.LocalPlayer
 local RunService = game:GetService("RunService")
+
+local Flying = false
+local MovingForward = false
+local Speed = 2.5 -- سرعة اندفاع السيارة (يمكنك زيادتها)
+
+-- دالة جلب السيارة
+local function GetVehicle()
+    if Player.Character and Player.Character:FindFirstChild("Humanoid") then
+        local Seat = Player.Character.Humanoid.SeatPart
+        if Seat and Seat:IsA("VehicleSeat") then
+            return Seat.Parent
+        end
+    end
+    return nil
+end
+
+-- حلقة التثبيت والتحرك في الخلفية
+RunService.Heartbeat:Connect(function()
+    if Flying then
+        local car = GetVehicle()
+        if car then
+            local PrimaryPart = car.PrimaryPart or car:FindFirstChildWhichIsA("BasePart")
+            if PrimaryPart then
+                local cam = workspace.CurrentCamera
+                local lookVector = cam.CFrame.LookVector
+                
+                -- تحديد الحركة بناءً على حالة الزر (مفعل أو معطل)
+                local moveDirection = Vector3.new(0, 0, 0)
+                if MovingForward then
+                    moveDirection = lookVector * Speed
+                end
+                
+                local currentPos = PrimaryPart.Position
+                local nextPos = currentPos + moveDirection
+                
+                -- تثبيت الزوايا ومنع الانقلاب
+                PrimaryPart.CFrame = CFrame.new(nextPos, nextPos + Vector3.new(lookVector.X, 0, lookVector.Z))
+                PrimaryPart.Velocity = Vector3.new(0, 0, 0) -- إلغاء الجاذبية
+                PrimaryPart.RotVelocity = Vector3.new(0, 0, 0) -- منع الدوران العشوائي
+            end
+        else
+            Flying = false
+            MovingForward = false
+        end
+    end
+end)
+
+-- بناء واجهة مستخدم (GUI) متوافقة مع القوائم
 local ScreenGui = Instance.new("ScreenGui")
 local MainFrame = Instance.new("Frame")
 local ToggleButton = Instance.new("TextButton")
-local Title = Instance.new("TextLabel")
+local MoveButton = Instance.new("TextButton")
+local UICorner1 = Instance.new("UICorner")
+local UICorner2 = Instance.new("UICorner")
+local UICorner3 = Instance.new("UICorner")
 
--- تنظيف الواجهات السابقة لمنع الـ Lag وتداخل السكربتات
-pcall(function()
-    if CoreGui:FindFirstChild("ArabsCashMaxSpeed_PC") then
-        CoreGui:FindFirstChild("ArabsCashMaxSpeed_PC"):Destroy()
-    end
-end)
-
-ScreenGui.Name = "ArabsCashMaxSpeed_PC"
-ScreenGui.Parent = CoreGui
-ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.Name = "SmartCarFly"
+ScreenGui.Parent = game.CoreGui
 ScreenGui.ResetOnSpawn = false
 
-MainFrame.Name = "ArabsCashMaxSpeed"
+-- إطار الواجهة (يمكنك سحبه وتغيير مكانه)
+MainFrame.Name = "MainFrame"
 MainFrame.Parent = ScreenGui
-MainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 MainFrame.Position = UDim2.new(0.05, 0, 0.3, 0)
-MainFrame.Size = UDim2.new(0, 240, 0, 140)
+MainFrame.Size = UDim2.new(0, 180, 0, 120)
 MainFrame.Active = true
+MainFrame.Draggable = true
+UICorner1.Parent = MainFrame
 
--- نظام تحريك الواجهة الاحترافي للـ PC باستخدام الماوس
-local UserInputService = game:GetService("UserInputService")
-local dragging, dragInput, dragStart, startPos
-
-local function update(input)
-    local delta = input.Position - dragStart
-    MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-end
-
-MainFrame.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        dragStart = input.Position
-        startPos = MainFrame.Position
-        
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                dragging = false
-            end
-        end)
-    end
-end)
-
-MainFrame.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement then
-        dragInput = input
-    end
-end)
-
-UserInputService.InputChanged:Connect(function(input)
-    if input == dragInput and dragging then
-        update(input)
-    end
-end)
-
-Title.Parent = MainFrame
-Title.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-Title.Size = UDim2.new(1, 0, 0, 35)
-Title.Font = Enum.Font.SourceSansBold
-Title.Text = "Arabs PC Hyper Speed V8"
-Title.TextColor3 = Color3.fromRGB(0, 255, 150)
-Title.TextSize = 14
-
+-- الزر الأول: تفعيل الجاذبية المعلقة (تشغيل/إطفاء وضع الطيران العام)
+ToggleButton.Name = "ToggleButton"
 ToggleButton.Parent = MainFrame
-ToggleButton.BackgroundColor3 = Color3.fromRGB(220, 40, 40)
-ToggleButton.Position = UDim2.new(0.1, 0, 0.45, 0)
-ToggleButton.Size = UDim2.new(0.8, 0, 0, 50)
+ToggleButton.BackgroundColor3 = Color3.fromRGB(220, 60, 60)
+ToggleButton.Position = UDim2.new(0.05, 0, 0.1, 0)
+ToggleButton.Size = UDim2.new(0, 160, 0, 45)
 ToggleButton.Font = Enum.Font.SourceSansBold
-ToggleButton.Text = "OFF"
+ToggleButton.Text = "وضع الطيران: مطفأ ❌"
 ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleButton.TextSize = 24
+ToggleButton.TextSize = 16
+UICorner2.Parent = ToggleButton
 
-_G.CashStealer = false
-local eventConnection
-
--- دالة معالجة القطع والضغط فائق السرعة الحصري للـ PC
-local function processItem(item)
-    if not _G.CashStealer then return end
-    
-    if item.Name == "CashDrop" and (item:IsA("Part") or item:IsA("MeshPart")) then
-        local fullName = item:GetFullName():lower()
-        
-        -- الفلاتر الصارمة لتجنب العوائق
-        if not fullName:find("table") and not fullName:find("board") and 
-           not fullName:find("game") and not fullName:find("ludo") and 
-           not fullName:find("جلسة") and not fullName:find("طاولة") and
-           not fullName:find("seat") and not fullName:find("chair") and 
-           not fullName:find("bench") and not fullName:find("lockedframe") and  
-           not fullName:find("barrier") then
-            
-            -- فحص البرومبت أو اللوحة بشكل فوري متوازي بدون تأخير ثواني
-            if item:FindFirstChildOfClass("BillboardGui") or item:FindFirstChildOfClass("ProximityPrompt") or item:FindFirstChildOfClass("ClickDetector") then
-                local player = game.Players.LocalPlayer
-                local character = player.Character or player.CharacterAdded:Wait()
-                local rootPart = character:FindFirstChild("HumanoidRootPart")
-                
-                if rootPart then
-                    local originalPosition = rootPart.CFrame
-                    rootPart.CFrame = item.CFrame
-                    
-                    local remote = game:GetService("ReplicatedStorage"):FindFirstChild("CashDrop", true)
-                    
-                    -- محرك الضغط الخارق للـ PC (يقوم بالضغط عشرات المرات في الثانية الواحدة بناءً على فريمات الشاشة)
-                    local connection
-                    connection = RunService.RenderStepped:Connect(function()
-                        if not item or not item.Parent or not _G.CashStealer then
-                            if connection then connection:Disconnect() end
-                            return
-                        end
-                        
-                        -- 1. إرسال ريموت فوري
-                        if remote and remote:IsA("RemoteEvent") then
-                            remote:FireServer(item)
-                        end
-                        
-                        -- 2. تفعيل فوري للـ ProximityPrompt المخصص للمحترفين على الـ PC
-                        local prompt = item:FindFirstChildOfClass("ProximityPrompt")
-                        if prompt then 
-                            fireproximityprompt(prompt)
-                        end
-                        
-                        -- 3. تفعيل فوري للـ ClickDetector
-                        local clicker = item:FindFirstChildOfClass("ClickDetector")
-                        if clicker then 
-                            fireclickdetector(clicker)
-                        end
-                    end)
-                    
-                    -- الانتظار حتى اختفاء القطعة تماماً لضمان عدم التعليق
-                    repeat task.wait() until not item or not item.Parent or not _G.CashStealer
-                    
-                    if connection then connection:Disconnect() end
-                    
-                    if _G.CashStealer then
-                        rootPart.CFrame = originalPosition
-                    end
-                end
-            end
-        end
-    end
-end
-
--- تشغيل الرصد والربط الفوري المتزامن
-local function startStealing()
-    for _, item in pairs(workspace:GetDescendants()) do
-        if item.Name == "CashDrop" then
-            task.spawn(function() pcall(processItem, item) end)
-        end
-    end
-    
-    eventConnection = workspace.DescendantAdded:Connect(function(item)
-        if item.Name == "CashDrop" then
-            task.spawn(function() pcall(processItem, item) end) -- استخدام task.spawn الفوري عند نزول أي كاش جديد
-        end
-    end)
-end
-
--- زر تفعيل النظام وعكس الحالة
 ToggleButton.MouseButton1Click:Connect(function()
-    _G.CashStealer = not _G.CashStealer
-    if _G.CashStealer then
-        ToggleButton.Text = "ON"
-        ToggleButton.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
-        startStealing()
+    local car = GetVehicle()
+    if not car then
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "تنبيه",
+            Text = "يجب أن تجلس في مقعد السائق أولاً!",
+            Duration = 3
+        })
+        return
+    end
+    
+    Flying = not Flying
+    if Flying then
+        ToggleButton.Text = "الوضع: معلقة بالهواء ✈️"
+        ToggleButton.BackgroundColor3 = Color3.fromRGB(40, 180, 70)
     else
-        ToggleButton.Text = "OFF"
-        ToggleButton.BackgroundColor3 = Color3.fromRGB(220, 40, 40)
-        if eventConnection then
-            eventConnection:Disconnect()
-            eventConnection = nil
-        end
+        ToggleButton.Text = "وضع الطيران: مطفأ ❌"
+        ToggleButton.BackgroundColor3 = Color3.fromRGB(220, 60, 60)
+        MovingForward = false
+        MoveButton.Text = "حركة السيارة: متوقفة 🛑"
+        MoveButton.BackgroundColor3 = Color3.fromRGB(220, 60, 60)
+    end
+end)
+
+-- الزر الثاني: زر التبديل الذكي للحركة (اضغط مرة للتحرك ومرة للوقوف)
+MoveButton.Name = "MoveButton"
+MoveButton.Parent = MainFrame
+MoveButton.BackgroundColor3 = Color3.fromRGB(220, 60, 60)
+MoveButton.Position = UDim2.new(0.05, 0, 0.55, 0)
+MoveButton.Size = UDim2.new(0, 160, 0, 45)
+MoveButton.Font = Enum.Font.SourceSansBold
+MoveButton.Text = "حركة السيارة: متوقفة 🛑"
+MoveButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+MoveButton.TextSize = 15
+UICorner3.Parent = MoveButton
+
+MoveButton.MouseButton1Click:Connect(function()
+    if not Flying then return end -- لا يعمل إلا إذا كان وضع الطيران العام مشغلاً
+    
+    MovingForward = not MovingForward
+    if MovingForward then
+        MoveButton.Text = "حركة السيارة: تندفع ➔"
+        MoveButton.BackgroundColor3 = Color3.fromRGB(0, 120, 255) -- أزرق أثناء الاندفاع
+    else
+        MoveButton.Text = "حركة السيارة: متوقفة 🛑"
+        MoveButton.BackgroundColor3 = Color3.fromRGB(220, 60, 60) -- أحمر عند التوقف الثابت
     end
 end)
