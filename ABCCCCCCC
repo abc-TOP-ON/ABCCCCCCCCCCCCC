@@ -1,4 +1,4 @@
--- 7MO HUB v15 - النسخة الكاملة (الفلوس + الصيد + الأخبار + السيارات + الطيران الذكي)
+-- 7MO HUB v15 - النسخة الكاملة (الفلوس + الصيد + الأخبار + الطيران الذكي فقط)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -412,7 +412,7 @@ createSidebarButton("💰 فلوس", 4, false)
 createSidebarButton("🎣 الصيد", 5, false)
 createSidebarButton("👥 لاعبين", 6, false)
 createSidebarButton("📰 الأخبار", 7, false)
-createSidebarButton("🚗 السياره", 8, false)
+createSidebarButton("🚗 الطيران الذكي", 8, false)
 createSidebarButton("⚙️ لاعب", 9, false)
 
 -- حاويات المحتوى
@@ -480,7 +480,7 @@ SettingsContainer.ZIndex = 1
 SettingsContainer.Visible = false
 
 -- ============================================
--- حاوية السيارات
+-- حاوية الطيران الذكي
 -- ============================================
 
 local CarContainer = Instance.new("Frame")
@@ -506,7 +506,7 @@ NewsContainer.ZIndex = 1
 NewsContainer.Visible = false
 
 -- ============================================
--- محتوى صفحة السيارات مع الطيران الذكي
+-- محتوى صفحة الطيران الذكي
 -- ============================================
 
 local CarFrame = Instance.new("Frame")
@@ -535,10 +535,10 @@ CarGlowCorner.CornerRadius = UDim.new(0, 15)
 CarGlowCorner.Parent = CarGlow
 
 local CarTitle = Instance.new("TextLabel")
-CarTitle.Size = UDim2.new(1, -40, 0, 35)
+CarTitle.Size = UDim2.new(1, -40, 0, 40)
 CarTitle.Position = UDim2.new(0, 20, 0, 8)
 CarTitle.BackgroundTransparency = 1
-CarTitle.Text = "🚗 السيارات والطيران 🚗"
+CarTitle.Text = "🚗 الطيران الذكي للسيارات 🚗"
 CarTitle.TextColor3 = Color3.fromRGB(255, 150, 0)
 CarTitle.TextSize = 18
 CarTitle.Font = Enum.Font.GothamBold
@@ -548,7 +548,7 @@ CarTitle.ZIndex = 6
 
 local CarDivider = Instance.new("Frame")
 CarDivider.Size = UDim2.new(0.6, 0, 0, 2)
-CarDivider.Position = UDim2.new(0.2, 0, 0, 48)
+CarDivider.Position = UDim2.new(0.2, 0, 0, 52)
 CarDivider.BackgroundColor3 = Color3.fromRGB(255, 150, 0)
 CarDivider.BackgroundTransparency = 0.4
 CarDivider.BorderSizePixel = 0
@@ -556,7 +556,7 @@ CarDivider.Parent = CarFrame
 CarDivider.ZIndex = 6
 
 -- ============================================
--- نظام الطيران والسيارة الذكية
+-- نظام الطيران الذكي
 -- ============================================
 
 -- متغيرات الطيران
@@ -640,11 +640,11 @@ end
 
 -- زر تفعيل الطيران
 local FlyToggleButton = Instance.new("TextButton")
-FlyToggleButton.Size = UDim2.new(0.42, 0, 0, 35)
-FlyToggleButton.Position = UDim2.new(0.05, 0, 0.07, 0)
+FlyToggleButton.Size = UDim2.new(0.42, 0, 0, 45)
+FlyToggleButton.Position = UDim2.new(0.05, 0, 0.08, 0)
 FlyToggleButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
 FlyToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-FlyToggleButton.TextSize = 13
+FlyToggleButton.TextSize = 14
 FlyToggleButton.Font = Enum.Font.SourceSansBold
 FlyToggleButton.Text = "✈️ الطيران: مطفأ"
 FlyToggleButton.Parent = CarFrame
@@ -683,11 +683,11 @@ end)
 
 -- زر تحريك السيارة
 local MoveCarButton = Instance.new("TextButton")
-MoveCarButton.Size = UDim2.new(0.42, 0, 0, 35)
-MoveCarButton.Position = UDim2.new(0.53, 0, 0.07, 0)
+MoveCarButton.Size = UDim2.new(0.42, 0, 0, 45)
+MoveCarButton.Position = UDim2.new(0.53, 0, 0.08, 0)
 MoveCarButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
 MoveCarButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-MoveCarButton.TextSize = 13
+MoveCarButton.TextSize = 14
 MoveCarButton.Font = Enum.Font.SourceSansBold
 MoveCarButton.Text = "⏹️ الحركة: متوقفة"
 MoveCarButton.Parent = CarFrame
@@ -717,8 +717,8 @@ end)
 
 -- شريط تعديل السرعة
 local SpeedSliderContainer = Instance.new("Frame")
-SpeedSliderContainer.Size = UDim2.new(0.9, 0, 0, 30)
-SpeedSliderContainer.Position = UDim2.new(0.05, 0, 0.17, 0)
+SpeedSliderContainer.Size = UDim2.new(0.9, 0, 0, 35)
+SpeedSliderContainer.Position = UDim2.new(0.05, 0, 0.2, 0)
 SpeedSliderContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
 SpeedSliderContainer.BorderSizePixel = 0
 SpeedSliderContainer.Parent = CarFrame
@@ -734,18 +734,18 @@ SpeedLabel.Position = UDim2.new(0, 5, 0, 0)
 SpeedLabel.BackgroundTransparency = 1
 SpeedLabel.Text = "🚀 السرعة: 2.5"
 SpeedLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
-SpeedLabel.TextSize = 12
+SpeedLabel.TextSize = 13
 SpeedLabel.Font = Enum.Font.GothamBold
 SpeedLabel.TextXAlignment = Enum.TextXAlignment.Left
 SpeedLabel.Parent = SpeedSliderContainer
 SpeedLabel.ZIndex = 8
 
 local SpeedSlider = Instance.new("TextBox")
-SpeedSlider.Size = UDim2.new(0.5, 0, 1, -4)
-SpeedSlider.Position = UDim2.new(0.45, 0, 0, 2)
+SpeedSlider.Size = UDim2.new(0.5, 0, 1, -6)
+SpeedSlider.Position = UDim2.new(0.45, 0, 0, 3)
 SpeedSlider.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
 SpeedSlider.TextColor3 = Color3.fromRGB(255, 255, 255)
-SpeedSlider.TextSize = 12
+SpeedSlider.TextSize = 13
 SpeedSlider.Font = Enum.Font.GothamBold
 SpeedSlider.Text = ""
 SpeedSlider.PlaceholderText = "أدخل السرعة (1-10)"
@@ -766,108 +766,31 @@ SpeedSlider.FocusLost:Connect(function()
     end
 end)
 
--- ============================================
--- قائمة السيارات
--- ============================================
+-- إرشادات الاستخدام
+local InfoBox = Instance.new("Frame")
+InfoBox.Size = UDim2.new(0.9, 0, 0, 90)
+InfoBox.Position = UDim2.new(0.05, 0, 0.3, 0)
+InfoBox.BackgroundColor3 = Color3.fromRGB(25, 25, 40)
+InfoBox.BorderSizePixel = 0
+InfoBox.Parent = CarFrame
+InfoBox.ZIndex = 7
 
-local CarScroll = Instance.new("ScrollingFrame")
-CarScroll.Size = UDim2.new(1, -10, 0.55, 0)
-CarScroll.Position = UDim2.new(0, 5, 0.35, 0)
-CarScroll.BackgroundTransparency = 1
-CarScroll.BorderSizePixel = 0
-CarScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
-CarScroll.ScrollBarThickness = 4
-CarScroll.Parent = CarFrame
-CarScroll.ZIndex = 6
+local InfoBoxCorner = Instance.new("UICorner")
+InfoBoxCorner.CornerRadius = UDim.new(0, 8)
+InfoBoxCorner.Parent = InfoBox
 
--- دالة تحديث قائمة السيارات
-local function UpdateCarList()
-    for _, child in pairs(CarScroll:GetChildren()) do
-        if child:IsA("TextButton") then
-            child:Destroy()
-        end
-    end
-    
-    local cars = {}
-    for _, obj in pairs(workspace:GetDescendants()) do
-        if obj:IsA("VehicleSeat") and obj.Parent and obj.Parent:IsA("Model") then
-            local model = obj.Parent
-            local carName = model.Name or "سيارة"
-            table.insert(cars, {name = carName, seat = obj})
-        end
-    end
-    
-    if #cars == 0 then
-        local noCarLabel = Instance.new("TextLabel")
-        noCarLabel.Size = UDim2.new(1, 0, 1, 0)
-        noCarLabel.BackgroundTransparency = 1
-        noCarLabel.Text = "🚫 لا توجد سيارات في السيرفر"
-        noCarLabel.TextColor3 = Color3.fromRGB(150, 150, 180)
-        noCarLabel.TextSize = 16
-        noCarLabel.Font = Enum.Font.GothamMedium
-        noCarLabel.TextXAlignment = Enum.TextXAlignment.Center
-        noCarLabel.Parent = CarScroll
-        noCarLabel.ZIndex = 7
-        CarScroll.CanvasSize = UDim2.new(0, 0, 0, 50)
-        return
-    end
-    
-    local yOffset = 5
-    local buttonHeight = 32
-    local spacing = 4
-    
-    for i, car in ipairs(cars) do
-        local button = Instance.new("TextButton")
-        button.Size = UDim2.new(0.92, 0, 0, buttonHeight)
-        button.Position = UDim2.new(0.04, 0, 0, yOffset)
-        button.BackgroundColor3 = Color3.fromRGB(45, 35, 25)
-        button.TextColor3 = Color3.fromRGB(255, 255, 255)
-        button.TextSize = 12
-        button.Font = Enum.Font.GothamSemibold
-        button.Text = "🚗 " .. car.name
-        button.Parent = CarScroll
-        button.ZIndex = 7
-        
-        local corner = Instance.new("UICorner")
-        corner.CornerRadius = UDim.new(0, 6)
-        corner.Parent = button
-        
-        button.MouseEnter:Connect(function()
-            button.BackgroundColor3 = Color3.fromRGB(70, 50, 35)
-        end)
-        button.MouseLeave:Connect(function()
-            button.BackgroundColor3 = Color3.fromRGB(45, 35, 25)
-        end)
-        
-        button.MouseButton1Click:Connect(function()
-            if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                LocalPlayer.Character.HumanoidRootPart.CFrame = car.seat.CFrame + Vector3.new(0, 2, 0)
-                showNotification("🚗 تم الانتقال إلى " .. car.name, CarFrame)
-            end
-        end)
-        
-        yOffset = yOffset + buttonHeight + spacing
-    end
-    
-    CarScroll.CanvasSize = UDim2.new(0, 0, 0, yOffset + 10)
-end
-
--- تحديث القائمة عند تغيير السيارات
-workspace.DescendantAdded:Connect(function(obj)
-    if obj:IsA("VehicleSeat") then
-        task.wait(0.2)
-        UpdateCarList()
-    end
-end)
-
-workspace.DescendantRemoving:Connect(function(obj)
-    if obj:IsA("VehicleSeat") then
-        task.wait(0.2)
-        UpdateCarList()
-    end
-end)
-
-UpdateCarList()
+local InfoText = Instance.new("TextLabel")
+InfoText.Size = UDim2.new(1, -10, 1, -10)
+InfoText.Position = UDim2.new(0, 5, 0, 5)
+InfoText.BackgroundTransparency = 1
+InfoText.Text = "🚗 كيفية استخدام الطيران الذكي:\n1️⃣ اركب سيارة (اجلس في مقعد السائق)\n2️⃣ اضغط على زر 'تفعيل الطيران'\n3️⃣ اضغط على زر 'تشغيل الحركة' للانطلاق\n4️⃣ عدل السرعة من 1 إلى 10"
+InfoText.TextColor3 = Color3.fromRGB(200, 200, 220)
+InfoText.TextSize = 13
+InfoText.Font = Enum.Font.GothamMedium
+InfoText.TextXAlignment = Enum.TextXAlignment.Center
+InfoText.TextYAlignment = Enum.TextYAlignment.Center
+InfoText.Parent = InfoBox
+InfoText.ZIndex = 8
 
 -- ============================================
 -- محتوى الأخبار
@@ -1009,7 +932,7 @@ createNewsCard("🎣", "تم إضافة نظام الصيد التلقائي!",
     Color3.fromRGB(0, 200, 255), false)
 
 createNewsCard("🚗", "تم إضافة نظام الطيران الذكي للسيارات!",
-    "اركب سيارة وافعل وضع الطيران لتطير بها وتحكم باتجاه الكاميرا!",
+    "اركب سيارة وافعل وضع الطيران لتطير بها وتتحكم باتجاه الكاميرا!",
     Color3.fromRGB(255, 150, 0), false)
 
 createNewsCard("📱", "دعم كامل للهاتف والكمبيوتر!",
@@ -1018,10 +941,6 @@ createNewsCard("📱", "دعم كامل للهاتف والكمبيوتر!",
 
 createNewsCard("⏳", "🔜 قريباً: نظام الكلبشة التلقائي!",
     "جاري العمل على نظام كلبشة تلقائي للاعبين.",
-    Color3.fromRGB(255, 200, 0), false)
-
-createNewsCard("⏳", "🔜 قريباً: نظام الحماية من الحظر!",
-    "سنضيف نظام حماية متقدم يمنع اكتشاف السكربت.",
     Color3.fromRGB(255, 200, 0), false)
 
 -- قسم الديسكورد
@@ -1125,7 +1044,7 @@ local function ShowNews()
 end
 
 -- ============================================
--- وظيفة عرض صفحة السيارات
+-- وظيفة عرض صفحة الطيران الذكي
 -- ============================================
 
 local function ShowCars()
@@ -1138,11 +1057,10 @@ local function ShowCars()
     SettingsContainer.Visible = false
     NewsContainer.Visible = false
     CarContainer.Visible = true
-    UpdateCarList()
     
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
-            if child.Text == "🚗 السياره" then
+            if child.Text == "🚗 الطيران الذكي" then
                 child.BackgroundColor3 = Color3.fromRGB(255, 150, 0)
                 child.TextColor3 = Color3.fromRGB(0, 0, 0)
             else
@@ -2868,7 +2786,7 @@ for _, child in pairs(Sidebar:GetChildren()) do
             child.MouseButton1Click:Connect(ShowPlayers)
         elseif child.Text == "📰 الأخبار" then
             child.MouseButton1Click:Connect(ShowNews)
-        elseif child.Text == "🚗 السياره" then
+        elseif child.Text == "🚗 الطيران الذكي" then
             child.MouseButton1Click:Connect(ShowCars)
         elseif child.Text == "⚙️ لاعب" then
             child.MouseButton1Click:Connect(ShowSettings)
@@ -2876,10 +2794,10 @@ for _, child in pairs(Sidebar:GetChildren()) do
     end
 end
 
-print("✅ 7MO HUB v15 - النسخة الكاملة تم تحميلها!")
+print("✅ 7MO HUB v15 - النسخة الكاملة (بدون قائمة سيارات)")
 print("📱 دعم كامل للهاتف والكمبيوتر")
 print("💰 نظام تجميع الفلوس الفوري V7")
 print("🎣 نظام الصيد التلقائي")
-print("🚗 نظام السيارات والطيران الذكي")
+print("🚗 نظام الطيران الذكي للسيارات فقط")
 print("🔧 ميزات: سرعة، قفز، جاذبية، اختفاء، اختراق، طيران، دوران، FOV 120")
 print("📍 " .. #places .. " مكان للانتقال الفوري")
