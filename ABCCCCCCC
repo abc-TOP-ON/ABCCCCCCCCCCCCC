@@ -506,7 +506,7 @@ NewsContainer.ZIndex = 1
 NewsContainer.Visible = false
 
 -- ============================================
--- محتوى صفحة الطيران الذكي
+-- محتوى صفحة الطيران الذكي (مرتب)
 -- ============================================
 
 local CarFrame = Instance.new("Frame")
@@ -556,7 +556,7 @@ CarDivider.Parent = CarFrame
 CarDivider.ZIndex = 6
 
 -- ============================================
--- نظام الطيران الذكي
+-- نظام الطيران الذكي (مرتب)
 -- ============================================
 
 -- متغيرات الطيران
@@ -638,16 +638,28 @@ local function StartFlyLoop()
     end)
 end
 
--- زر تفعيل الطيران
+-- ============================================
+-- الأزرار مرتبة بشكل أفقي
+-- ============================================
+
+-- صف الأزرار العلوي (الطيران والحركة)
+local ButtonsRow = Instance.new("Frame")
+ButtonsRow.Size = UDim2.new(0.9, 0, 0, 50)
+ButtonsRow.Position = UDim2.new(0.05, 0, 0.08, 0)
+ButtonsRow.BackgroundTransparency = 1
+ButtonsRow.Parent = CarFrame
+ButtonsRow.ZIndex = 7
+
+-- زر تفعيل الطيران (يسار)
 local FlyToggleButton = Instance.new("TextButton")
-FlyToggleButton.Size = UDim2.new(0.42, 0, 0, 45)
-FlyToggleButton.Position = UDim2.new(0.05, 0, 0.08, 0)
+FlyToggleButton.Size = UDim2.new(0.48, 0, 1, 0)
+FlyToggleButton.Position = UDim2.new(0, 0, 0, 0)
 FlyToggleButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
 FlyToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 FlyToggleButton.TextSize = 14
 FlyToggleButton.Font = Enum.Font.SourceSansBold
 FlyToggleButton.Text = "✈️ الطيران: مطفأ"
-FlyToggleButton.Parent = CarFrame
+FlyToggleButton.Parent = ButtonsRow
 FlyToggleButton.ZIndex = 7
 
 local FlyToggleCorner = Instance.new("UICorner")
@@ -681,16 +693,16 @@ FlyToggleButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- زر تحريك السيارة
+-- زر تحريك السيارة (يمين)
 local MoveCarButton = Instance.new("TextButton")
-MoveCarButton.Size = UDim2.new(0.42, 0, 0, 45)
-MoveCarButton.Position = UDim2.new(0.53, 0, 0.08, 0)
+MoveCarButton.Size = UDim2.new(0.48, 0, 1, 0)
+MoveCarButton.Position = UDim2.new(0.52, 0, 0, 0)
 MoveCarButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
 MoveCarButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 MoveCarButton.TextSize = 14
 MoveCarButton.Font = Enum.Font.SourceSansBold
 MoveCarButton.Text = "⏹️ الحركة: متوقفة"
-MoveCarButton.Parent = CarFrame
+MoveCarButton.Parent = ButtonsRow
 MoveCarButton.ZIndex = 7
 
 local MoveCarCorner = Instance.new("UICorner")
@@ -715,10 +727,13 @@ MoveCarButton.MouseButton1Click:Connect(function()
     end
 end)
 
+-- ============================================
 -- شريط تعديل السرعة
+-- ============================================
+
 local SpeedSliderContainer = Instance.new("Frame")
 SpeedSliderContainer.Size = UDim2.new(0.9, 0, 0, 35)
-SpeedSliderContainer.Position = UDim2.new(0.05, 0, 0.2, 0)
+SpeedSliderContainer.Position = UDim2.new(0.05, 0, 0.18, 0)
 SpeedSliderContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
 SpeedSliderContainer.BorderSizePixel = 0
 SpeedSliderContainer.Parent = CarFrame
@@ -766,10 +781,13 @@ SpeedSlider.FocusLost:Connect(function()
     end
 end)
 
+-- ============================================
 -- إرشادات الاستخدام
+-- ============================================
+
 local InfoBox = Instance.new("Frame")
-InfoBox.Size = UDim2.new(0.9, 0, 0, 90)
-InfoBox.Position = UDim2.new(0.05, 0, 0.3, 0)
+InfoBox.Size = UDim2.new(0.9, 0, 0, 100)
+InfoBox.Position = UDim2.new(0.05, 0, 0.26, 0)
 InfoBox.BackgroundColor3 = Color3.fromRGB(25, 25, 40)
 InfoBox.BorderSizePixel = 0
 InfoBox.Parent = CarFrame
@@ -783,12 +801,12 @@ local InfoText = Instance.new("TextLabel")
 InfoText.Size = UDim2.new(1, -10, 1, -10)
 InfoText.Position = UDim2.new(0, 5, 0, 5)
 InfoText.BackgroundTransparency = 1
-InfoText.Text = "🚗 كيفية استخدام الطيران الذكي:\n1️⃣ اركب سيارة (اجلس في مقعد السائق)\n2️⃣ اضغط على زر 'تفعيل الطيران'\n3️⃣ اضغط على زر 'تشغيل الحركة' للانطلاق\n4️⃣ عدل السرعة من 1 إلى 10"
+InfoText.Text = "🚗 كيفية استخدام الطيران الذكي:\n\n1️⃣ اركب سيارة (اجلس في مقعد السائق)\n2️⃣ اضغط على زر 'تفعيل الطيران'\n3️⃣ اضغط على زر 'تشغيل الحركة' للانطلاق\n4️⃣ عدل السرعة من 1 إلى 10"
 InfoText.TextColor3 = Color3.fromRGB(200, 200, 220)
 InfoText.TextSize = 13
 InfoText.Font = Enum.Font.GothamMedium
 InfoText.TextXAlignment = Enum.TextXAlignment.Center
-InfoText.TextYAlignment = Enum.TextYAlignment.Center
+InfoText.TextYAlignment = Enum.TextYAlignment.Top
 InfoText.Parent = InfoBox
 InfoText.ZIndex = 8
 
@@ -2794,7 +2812,7 @@ for _, child in pairs(Sidebar:GetChildren()) do
     end
 end
 
-print("✅ 7MO HUB v15 - النسخة الكاملة (بدون قائمة سيارات)")
+print("✅ 7MO HUB v15 - النسخة الكاملة (أزرار مرتبة)")
 print("📱 دعم كامل للهاتف والكمبيوتر")
 print("💰 نظام تجميع الفلوس الفوري V7")
 print("🎣 نظام الصيد التلقائي")
