@@ -1,173 +1,550 @@
--- استدعاء الخدمات الأساسية
+local Players = 
+local CoreGui = game:GetService("CoreGui")
 local Players = game:GetService("Players")
-local UserInputService = game:GetService("UserInputService")
-local localPlayer = Players.LocalPlayer
+local RunService = game:GetService("RunService")
+local Camera = workspace.CurrentCamera
+local LocalPlayer = Players.LocalPlayer
+local Mouse = LocalPlayer:GetMouse()
 
--- متغيرات التحكم
-_G.AutoPlay = false
-local SpeedBoost = 32
+--// Global Config
+local Config = {
+    Combat = { Aimbot = false, SilentAim = false, FOV = 250, TargetPart = "Head" },
+    Visuals = { Box = false, Info = false, Tracers = false, FOV = false, Skeleton = false },
+    Theme = { Main = Color3.fromRGB(20, 20, 20), Accent = Color3.fromRGB(0, 255, 255) }
+}
 
--- [[ إنشاء واجهة المستخدم تلقائياً ]]
-local ScreenGui = Instance.new("ScreenGui")
-local MainFrame = Instance.new("Frame")
-local TextLabel = Instance.new("TextLabel")
-local ToggleButton = Instance.new("TextButton")
-local UICorner_Frame = Instance.new("UICorner")
-local UICorner_Button = Instance.new("UICorner")
+--=========================================
+--// 1. MOBILE UI SETUP
+--=========================================
+local MeowUI = Instance.new("ScreenGui", CoreGui)
+MeowUI.Name = "MeowHubMobile"
+MeowUI.ResetOnSpawn = false
 
-ScreenGui.Parent = game:GetService("CoreGui")
-ScreenGui.ResetOnSpawn = false
+-- Open/Close Button (Draggable)
+local ToggleBtn = Instance.new("TextButton", MeowUI)
+ToggleBtn.Size = UDim2.new(0, 50, 0, 50)
+ToggleBtn.Position = UDim2.new(0, 10, 0, 10)
+ToggleBtn.BackgroundColor3 = Config.Theme.Main
+ToggleBtn.TextColor3 = Config.Theme.Accent
+ToggleBtn.Text = "ABC"
+ToggleBtn.Font = Enum.Font.GothamBold
+ToggleBtn.TextSize = 14
+Instance.new("UICorner", ToggleBtn).CornerRadius = UDim.new(1, 0)
+Instance.new("UIStroke", ToggleBtn).Color = Config.Theme.Accent
 
-MainFrame.Name = "DeltaAI_Frame"
-MainFrame.Parent = ScreenGui
-MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-MainFrame.Position = UDim2.new(0.4, 0, 0.4, 0)
-MainFrame.Size = UDim2.new(0, 220, 0, 130)
-MainFrame.Active = true
+-- Main Menu Frame
+local MainFrame = Instance.new("Frame", MeowUI)
+MainFrame.Size = UDim2.new(0, 220, 0, 340) -- Made slightly taller
+MainFrame.Position = UDim2.new(0.5, -110, 0.5, -170)
+MainFrame.BackgroundColor3 = Config.Theme.Main
+MainFrame.Visible = false
+Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 10)
+local FrameStroke = Instance.new("UIStroke", MainFrame)
+FrameStroke.Color = Config.Theme.Accent
+FrameStroke.Thickness = 2
 
-UICorner_Frame.CornerRadius = UDim.new(0, 10)
-UICorner_Frame.Parent = MainFrame
+local Title = Instance.new("TextLabel", MainFrame)
+Title.Size = UDim2.new(1, 0, 0, 40)
+Title.BackgroundTransparency = 1
+Title.Text = "ABC TOP ON"
+Title.TextColor3 = Config.Theme.Accent
+Title.Font = Enum.Font.GothamBlack
+Title.TextSize = 18
 
-TextLabel.Parent = MainFrame
-TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-TextLabel.BackgroundTransparency = 1.000
-TextLabel.Size = UDim2.new(1, 0, 0, 40)
-TextLabel.Font = Enum.Font.GothamBold
-TextLabel.Text = "BOMB CHASER AI 🤖"
-TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-TextLabel.TextSize = 16.000
+local ScrollList = Instance.new("ScrollingFrame", MainFrame)
+ScrollList.Size = UDim2.new(1, -20, 1, -50)
+ScrollList.Position = UDim2.new(0, 10, 0, 40)
+ScrollList.BackgroundTransparency = 1
+ScrollList.ScrollBarThickness = 4
+local Layout = Instance.new("UIListLayout", ScrollList)
+Layout.Padding = UDim.new(0, 5)
 
-ToggleButton.Name = "ToggleButton"
-ToggleButton.Parent = MainFrame
-ToggleButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-ToggleButton.Position = UDim2.new(0.05, 0, 0.45, 0)
-ToggleButton.Size = UDim2.new(0.9, 0, 0, 45)
-ToggleButton.Font = Enum.Font.GothamBold
-ToggleButton.Text = "تفعيل (OFF)"
-ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleButton.TextSize = 16.000
-
-UICorner_Button.CornerRadius = UDim.new(0, 8)
-UICorner_Button.Parent = ToggleButton
-
--- [[ كود السحب والتحرك للواجهة ]]
-local dragging, dragInput, dragStart, startPos
-local function update(input)
-    local delta = input.Position - dragStart
-    MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-end
-
-MainFrame.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        dragging = true
-        dragStart = input.Position
-        startPos = MainFrame.Position
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then dragging = false end
-        end)
-    end
+ToggleBtn.MouseButton1Click:Connect(function()
+    MainFrame.Visible = not MainFrame.Visible
 end)
 
-MainFrame.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end
-end)
-
-UserInputService.InputChanged:Connect(function(input)
-    if input == dragInput and dragging then update(input) end
-end)
-
--- [[ منطق زر التشغيل ]]
-ToggleButton.MouseButton1Click:Connect(function()
-    _G.AutoPlay = not _G.AutoPlay
-    if _G.AutoPlay then
-        ToggleButton.Text = "تشغيل (ON)"
-        ToggleButton.BackgroundColor3 = Color3.fromRGB(50, 180, 50)
-        startAI()
-    else
-        ToggleButton.Text = "تفعيل (OFF)"
-        ToggleButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-        if localPlayer.Character and localPlayer.Character:FindFirstChild("Humanoid") then
-            localPlayer.Character.Humanoid.WalkSpeed = 16
-        end
-    end
-end)
-
--- [[ ميكانيكية التحقق من القنبلة ]]
-local function iHaveBomb()
-    if localPlayer.Character then
-        -- فحص الحقيبة أو اليد بحثاً عن القنبلة أو أي أداة مفعلة
-        if localPlayer.Character:FindFirstChild("Bomb") or localPlayer.Character:FindFirstChildOfClass("Tool") or localPlayer.Backpack:FindFirstChild("Bomb") then
-            return true
-        end
-    end
-    return false
-end
-
--- [[ البحث عن أقرب لاعب حي وتجاهل الموتى ]]
-local function getClosestLivingPlayer()
-    local closestTarget = nil
-    local shortestDistance = math.huge
-    for _, player in ipairs(Players:GetPlayers()) do
-        if player ~= localPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-            local hum = player.Character:FindFirstChild("Humanoid")
-            if hum and hum.Health > 0 then
-                local distance = (localPlayer.Character.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).Magnitude
-                if distance < shortestDistance then
-                    shortestDistance = distance
-                    closestTarget = player.Character.HumanoidRootPart
-                end
-            end
-        end
-    end
-    return closestTarget
-end
-
-function startAI()
-    task.spawn(function()
-        -- نظام القفز التلقائي المدمج لفك التعليق أثناء الملاحقة
-        task.spawn(function()
-            while _G.AutoPlay do
-                pcall(function()
-                    if localPlayer.Character and localPlayer.Character:FindFirstChild("Humanoid") then
-                        local humanoid = localPlayer.Character.Humanoid
-                        local root = localPlayer.Character.HumanoidRootPart
-                        
-                        -- القفز إذا تعثر اللاعب بجدار أثناء الجري
-                        if root.Velocity.Magnitude < 5 and humanoid.MoveDirection.Magnitude > 0 then
-                            humanoid.Jump = true
-                        end
-                    end
-                end)
-                task.wait(0.1)
-            end
-        end)
-
-        -- حلقة الملاحقة الرئيسية
-        while _G.AutoPlay do
-            pcall(function()
-                if localPlayer.Character and localPlayer.Character:FindFirstChild("Humanoid") then
-                    local humanoid = localPlayer.Character.Humanoid
-                    local myRoot = localPlayer.Character.HumanoidRootPart
-                    
-                    if iHaveBomb() then
-                        -- الحالة الوحيدة للحركة: القنبلة معك -> ملاحقة فوتومترية لأقرب لاعب حي
-                        humanoid.WalkSpeed = SpeedBoost
-                        local target = getClosestLivingPlayer()
-                        if target then
-                            humanoid:MoveTo(target.Position)
-                            
-                            -- تفعيل الأداة تلقائياً عند الاقتراب لرمي القنبلة
-                            local tool = localPlayer.Character:FindFirstChildOfClass("Tool")
-                            if tool then tool:Activate() end
-                        end
-                    else
-                        -- القنبلة ليست معك -> إلغاء أي أوامر حركة والوقوف تماماً في مكانك
-                        humanoid:MoveTo(myRoot.Position)
-                        humanoid.WalkSpeed = 16 -- إعادة السرعة للطبيعية أثناء الانتظار
-                    end
-                end
-            end)
-            task.wait(0.05) -- استجابة سريعة جداً للحاق بالخصوم
+local function CreateToggleButton(Name, Category, Setting)
+    local Btn = Instance.new("TextButton", ScrollList)
+    Btn.Size = UDim2.new(1, 0, 0, 35)
+    Btn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Btn.Text = Name .. " : OFF"
+    Btn.Font = Enum.Font.GothamSemibold
+    Btn.TextSize = 14
+    Instance.new("UICorner", Btn).CornerRadius = UDim.new(0, 6)
+    
+    Btn.MouseButton1Click:Connect(function()
+        Config[Category][Setting] = not Config[Category][Setting]
+        if Config[Category][Setting] then
+            Btn.BackgroundColor3 = Config.Theme.Accent
+            Btn.TextColor3 = Color3.fromRGB(0, 0, 0)
+            Btn.Text = Name .. " : ON"
+        else
+            Btn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+            Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+            Btn.Text = Name .. " : OFF"
         end
     end)
 end
+
+CreateToggleButton("Aimbot Snap", "Combat", "Aimbot")
+CreateToggleButton("Silent Aim", "Combat", "SilentAim")
+CreateToggleButton("Show FOV", "Visuals", "FOV")
+CreateToggleButton("Box ESP", "Visuals", "Box")
+CreateToggleButton("Name/HP/Dist", "Visuals", "Info")
+CreateToggleButton("Tracers", "Visuals", "Tracers")
+CreateToggleButton("Skeleton ESP", "Visuals", "Skeleton") -- NEW SKELETON TOGGLE
+
+--=========================================
+--// 2. VISUALS (FOV, ESP, Tracers, Skeletons)
+--=========================================
+local FOVCircle = Instance.new("Frame", MeowUI)
+FOVCircle.Size = UDim2.new(0, Config.Combat.FOV * 2, 0, Config.Combat.FOV * 2)
+FOVCircle.AnchorPoint = Vector2.new(0.5, 0.5)
+FOVCircle.Position = UDim2.new(0.5, 0, 0.5, 0)
+FOVCircle.BackgroundTransparency = 1
+local FOVStroke = Instance.new("UIStroke", FOVCircle)
+FOVStroke.Thickness = 1.5
+FOVStroke.Color = Config.Theme.Accent
+Instance.new("UICorner", FOVCircle).CornerRadius = UDim.new(1, 0)
+
+-- Skeleton Bones Mapping
+local SkeletonBones = {
+    -- R15 Rig
+    {"Head", "UpperTorso"}, {"UpperTorso", "LowerTorso"},
+    {"UpperTorso", "LeftUpperArm"}, {"LeftUpperArm", "LeftLowerArm"}, {"LeftLowerArm", "LeftHand"},
+    {"UpperTorso", "RightUpperArm"}, {"RightUpperArm", "RightLowerArm"}, {"RightLowerArm", "RightHand"},
+    {"LowerTorso", "LeftUpperLeg"}, {"LeftUpperLeg", "LeftLowerLeg"}, {"LeftLowerLeg", "LeftFoot"},
+    {"LowerTorso", "RightUpperLeg"}, {"RightUpperLeg", "RightLowerLeg"}, {"RightLowerLeg", "RightFoot"},
+    -- R6 Fallback Rig
+    {"Head", "Torso"}, {"Torso", "Left Arm"}, {"Torso", "Right Arm"},
+    {"Torso", "Left Leg"}, {"Torso", "Right Leg"}
+}
+
+local function HandleVisuals(P)
+    local Bones = {}
+    -- Pre-create the drawing lines to save memory
+    for i = 1, #SkeletonBones do
+        local Line = Drawing.new("Line")
+        Line.Thickness = 1.5
+        Line.Color = Config.Theme.Accent
+        Line.Transparency = 0.8
+        Line.Visible = false
+        table.insert(Bones, Line)
+    end
+
+    local Tracer = Drawing.new("Line")
+    Tracer.Thickness = 1
+    Tracer.Color = Config.Theme.Accent
+    Tracer.Transparency = 0.6
+    Tracer.Visible = false
+
+    local function Setup(Char)
+        local Root = Char:WaitForChild("HumanoidRootPart", 10)
+        local Hum = Char:WaitForChild("Humanoid", 10)
+        
+        local BGui = Instance.new("BillboardGui", Root)
+        BGui.Size = UDim2.new(4, 0, 5.5, 0)
+        BGui.AlwaysOnTop = true
+        
+        local Box = Instance.new("Frame", BGui)
+        Box.Size = UDim2.new(1, 0, 1, 0)
+        Box.BackgroundTransparency = 1
+        local S = Instance.new("UIStroke", Box)
+        S.Color = Config.Theme.Accent
+        S.Transparency = 0.5
+
+        local Info = Instance.new("TextLabel", BGui)
+        Info.Size = UDim2.new(1, 0, 0, 40)
+        Info.Position = UDim2.new(0, 0, -0.4, 0)
+        Info.BackgroundTransparency = 1
+        Info.TextColor3 = Color3.new(1,1,1)
+        Info.TextSize = 10
+        Info.Font = Enum.Font.Code
+
+        RunService.RenderStepped:Connect(function()
+            FOVCircle.Visible = Config.Visuals.FOV
+            Box.Visible = Config.Visuals.Box
+            Info.Visible = Config.Visuals.Info
+
+            if Root and Root.Parent and Hum.Health > 0 then
+                local Pos, OnScreen = Camera:WorldToViewportPoint(Root.Position)
+                
+                -- Info Logic
+                if Config.Visuals.Info and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                    local Dist = math.floor((Root.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude)
+                    Info.Text = string.format("%s\n%s HP | %sm", P.Name, math.floor(Hum.Health), Dist)
+                end
+
+                -- Tracer Logic
+                if OnScreen and Config.Visuals.Tracers then
+                    Tracer.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
+                    Tracer.To = Vector2.new(Pos.X, Pos.Y)
+                    Tracer.Visible = true
+                else
+                    Tracer.Visible = false
+                end
+
+                -- Skeleton Logic
+                if Config.Visuals.Skeleton then
+                    for i, connection in ipairs(SkeletonBones) do
+                        local Part1 = Char:FindFirstChild(connection[1])
+                        local Part2 = Char:FindFirstChild(connection[2])
+                        
+                        if Part1 and Part2 then
+                            local P1, Vis1 = Camera:WorldToViewportPoint(Part1.Position)
+                            local P2, Vis2 = Camera:WorldToViewportPoint(Part2.Position)
+                            
+                            if Vis1 or Vis2 then
+                                Bones[i].From = Vector2.new(P1.X, P1.Y)
+                                Bones[i].To = Vector2.new(P2.X, P2.Y)
+                                Bones[i].Visible = true
+                            else
+                                Bones[i].Visible = false
+                            end
+                        else
+                            Bones[i].Visible = false
+                        end
+                    end
+                else
+                    for _, line in pairs(Bones) do line.Visible = false end
+                end
+            else
+                Tracer.Visible = false
+                for _, line in pairs(Bones) do line.Visible = false end
+            end
+        end)
+    end
+    P.CharacterAdded:Connect(Setup)
+    if P.Character then Setup(P.Character) end
+end
+
+for _, v in pairs(Players:GetPlayers()) do if v ~= LocalPlayer then HandleVisuals(v) end end
+Players.PlayerAdded:Connect(HandleVisuals)
+
+--=========================================
+--// 3. COMBAT LOGIC (Targeting & Silent Aim)
+--=========================================
+local function GetTarget()
+    local Target, Closest = nil, Config.Combat.FOV
+    local Center = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
+
+    for _, v in pairs(Players:GetPlayers()) do
+        if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild(Config.Combat.TargetPart) then
+            if v.Team == LocalPlayer.Team then continue end
+            local Hum = v.Character:FindFirstChildOfClass("Humanoid")
+            if Hum and Hum.Health > 0 then
+                local Part = v.Character[Config.Combat.TargetPart]
+                local Pos, OnScreen = Camera:WorldToViewportPoint(Part.Position)
+                
+                if OnScreen then
+                    local Dist = (Vector2.new(Pos.X, Pos.Y) - Center).Magnitude
+                    if Dist < Closest then
+                        local RayP = RaycastParams.new()
+                        RayP.FilterType = Enum.RaycastFilterType.Exclude
+                        RayP.FilterDescendantsInstances = {LocalPlayer.Character, Camera}
+                        local Result = workspace:Raycast(Camera.CFrame.Position, (Part.Position - Camera.CFrame.Position), RayP)
+                        
+                        if Result and Result.Instance:IsDescendantOf(v.Character) then
+                            Target = v
+                            Closest = Dist
+                        end
+                    end
+                end
+            end
+        end
+    end
+    return Target
+end
+
+-- Silent Aim (Mouse Hook)
+local OldIndex
+OldIndex = hookmetamethod(game, "__index", newcclosure(function(self, index)
+    if Config.Combat.SilentAim and self == Mouse and (index == "Hit" or index == "Target") and not checkcaller() then
+        local T = GetTarget()
+        if T then
+            local Part = T.Character[Config.Combat.TargetPart]
+            return (index == "Hit" and Part.CFrame or Part)
+        end
+    end
+    return OldIndex(self, index)
+end))
+
+-- Aimbot Lock
+RunService.RenderStepped:Connect(function()
+    if Config.Combat.Aimbot then
+        local T = GetTarget()
+        if T then
+            Camera.CFrame = CFrame.new(Camera.CFrame.Position, T.Character[Config.Combat.TargetPart].Position)
+        end
+    end
+end)
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+local camera = workspace.CurrentCamera
+
+-- =========================
+-- SETTINGS
+-- =========================
+local Settings = {
+    AimAssist = false,
+    AimStrength = 0.2,
+    FOV = 120,
+    ShowFOV = true,
+
+    HighlightEnabled = false,
+    HighlightColor = Color3.fromRGB(255,0,0),
+    Names = false
+}
+
+_G.Settings = Settings
+
+-- =========================
+-- INPUT (RIGHT CLICK AIM)
+-- =========================
+local rightClick = false
+
+UserInputService.InputBegan:Connect(function(i)
+    if i.UserInputType == Enum.UserInputType.MouseButton2 then
+        rightClick = true
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(i)
+    if i.UserInputType == Enum.UserInputType.MouseButton2 then
+        rightClick = false
+    end
+end)
+
+-- =========================
+-- AIM ASSIST (TRAINING SAFE)
+-- =========================
+local function getClosest()
+    local closest, dist = nil, math.huge
+
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr ~= player and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+            local pos, onScreen = camera:WorldToViewportPoint(plr.Character.HumanoidRootPart.Position)
+
+            if onScreen then
+                local d = (Vector2.new(pos.X,pos.Y) - Vector2.new(camera.ViewportSize.X/2, camera.ViewportSize.Y/2)).Magnitude
+                if d < Settings.FOV and d < dist then
+                    closest = plr
+                    dist = d
+                end
+            end
+        end
+    end
+
+    return closest
+end
+
+RunService.RenderStepped:Connect(function()
+    if Settings.AimAssist and rightClick then
+        local t = getClosest()
+        if t and t.Character then
+            local root = t.Character:FindFirstChild("HumanoidRootPart")
+            if root then
+                camera.CFrame = camera.CFrame:Lerp(
+                    CFrame.new(camera.CFrame.Position, root.Position),
+                    Settings.AimStrength
+                )
+            end
+        end
+    end
+end)
+
+-- =========================
+-- ðŸ”µ TRUE HOLLOW FOV CIRCLE (FIXED)
+-- =========================
+local gui = Instance.new("ScreenGui")
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local circle = Instance.new("Frame")
+circle.AnchorPoint = Vector2.new(0.5, 0.5)
+circle.Position = UDim2.new(0.5, 0, 0.5, 0)
+circle.BackgroundTransparency = 1
+circle.BorderSizePixel = 0
+circle.Parent = gui
+
+-- Makes it a REAL circle (not a square)
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(1, 0)
+corner.Parent = circle
+
+-- Only stroke is visible = hollow ring
+local stroke = Instance.new("UIStroke")
+stroke.Thickness = 2
+stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+stroke.Parent = circle
+
+RunService.RenderStepped:Connect(function()
+    local size = Settings.FOV * 2
+
+    circle.Size = UDim2.new(0, size, 0, size)
+    circle.Visible = Settings.ShowFOV
+
+    stroke.Color = Settings.HighlightColor
+end)
+-- =========================
+-- ðŸ‘ VISUAL SYSTEM (FIXED)
+-- =========================
+local ActiveHighlights = {}
+
+local function applyVisual(char)
+    if not char or char:FindFirstChild("DevVisual") then return end
+
+    local marker = Instance.new("BoolValue")
+    marker.Name = "DevVisual"
+    marker.Parent = char
+
+    local highlight = Instance.new("Highlight")
+    highlight.Name = "DevHighlight"
+    highlight.Parent = char
+    highlight.FillTransparency = 0.5
+    highlight.OutlineTransparency = 0
+
+    table.insert(ActiveHighlights, highlight)
+
+    local head = char:FindFirstChild("Head")
+
+    if head then
+        local tag = Instance.new("BillboardGui")
+        tag.Size = UDim2.new(0,120,0,40)
+        tag.StudsOffset = Vector3.new(0,2.5,0)
+        tag.Adornee = head
+        tag.Parent = head
+
+        local txt = Instance.new("TextLabel")
+        txt.Size = UDim2.new(1,0,1,0)
+        txt.BackgroundTransparency = 1
+        txt.TextScaled = true
+        txt.Text = char.Name
+        txt.TextColor3 = Color3.new(1,1,1)
+        txt.Parent = tag
+
+        RunService.RenderStepped:Connect(function()
+            tag.Enabled = Settings.Names
+        end)
+    end
+end
+
+-- =========================
+-- HIGHLIGHT CONTROLLER (FIXED ON/OFF + COLOR)
+-- =========================
+RunService.RenderStepped:Connect(function()
+    for i = #ActiveHighlights, 1, -1 do
+        local h = ActiveHighlights[i]
+
+        if not h or not h.Parent then
+            table.remove(ActiveHighlights, i)
+        else
+            h.Enabled = Settings.HighlightEnabled
+
+            if Settings.HighlightEnabled then
+                h.FillColor = Settings.HighlightColor
+                h.OutlineColor = Settings.HighlightColor
+            else
+                h.Enabled = false
+            end
+        end
+    end
+end)
+
+-- =========================
+-- CHARACTER HOOK (RESPAWN SAFE)
+-- =========================
+local function hookCharacter(char)
+    task.wait(1)
+    applyVisual(char)
+end
+
+for _, p in ipairs(Players:GetPlayers()) do
+    if p.Character then hookCharacter(p.Character) end
+    p.CharacterAdded:Connect(hookCharacter)
+end
+
+Players.PlayerAdded:Connect(function(p)
+    p.CharacterAdded:Connect(hookCharacter)
+end)
+
+-- =========================
+-- ðŸŽ›ï¸ RAYFIELD UI
+-- =========================
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+    Name = "LazyHub",
+    LoadingTitle = "Loading",
+    LoadingSubtitle = "LAZZZZZZY",
+    ConfigurationSaving = {Enabled=false}
+})
+
+-- AIM TAB
+local Aim = Window:CreateTab("Aim")
+
+Aim:CreateToggle({
+    Name="Aim Assist",
+    CurrentValue=false,
+    Callback=function(v)
+        Settings.AimAssist = v
+    end
+})
+
+Aim:CreateSlider({
+    Name="Strength",
+    Range={0,1},
+    Increment=0.01,
+    CurrentValue=0.2,
+    Callback=function(v)
+        Settings.AimStrength = v
+    end
+})
+
+Aim:CreateSlider({
+    Name="FOV Size",
+    Range={50,300},
+    Increment=5,
+    CurrentValue=120,
+    Callback=function(v)
+        Settings.FOV = v
+    end
+})
+
+Aim:CreateToggle({
+    Name="Show FOV Circle",
+    CurrentValue=true,
+    Callback=function(v)
+        Settings.ShowFOV = v
+    end
+})
+
+-- VISUAL TAB
+local Vis = Window:CreateTab("Visuals")
+
+Vis:CreateToggle({
+    Name="Highlights",
+    CurrentValue=false,
+    Callback=function(v)
+        Settings.HighlightEnabled = v
+    end
+})
+
+Vis:CreateColorPicker({
+    Name="Highlight Color",
+    Color=Color3.fromRGB(255,0,0),
+    Callback=function(v)
+        Settings.HighlightColor = v
+    end
+})
+
+Vis:CreateToggle({
+    Name="Name Tags",
+    CurrentValue=false,
+    Callback=function(v)
+        Settings.Names = v
+    end
+})
