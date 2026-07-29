@@ -1,4 +1,4 @@
--- LYNEX - النسخة النهائية (مع نظام سرعة السيارة المتقدم تحت التعليمات - منزّل للأسفل)
+-- LYNEX - النسخة النهائية (مع نظام سرعة السيارة المتقدم - منزل للأسفل أكثر)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -1398,7 +1398,7 @@ Players.PlayerAdded:Connect(function() UpdatePlayerList() end)
 Players.PlayerRemoving:Connect(function() UpdatePlayerList() end)
 
 -- ============================================
--- محتوى صفحة الطيران الذكي (مع نظام سرعة السيارة المتقدم - منزل للأسفل)
+-- محتوى صفحة الطيران الذكي (مع نظام سرعة السيارة المتقدم - منزل للأسفل أكثر)
 -- ============================================
 
 local CarFrame = Instance.new("Frame")
@@ -1704,7 +1704,7 @@ QuickFlyButton.MouseButton1Click:Connect(function()
 end)
 
 -- ============================================
--- تعليمات الاستخدام (مكبرة قليلاً ومنزلة للأسفل)
+-- تعليمات الاستخدام (مكبرة ومنزلة للأسفل أكثر)
 -- ============================================
 
 local InstructionsBox = Instance.new("Frame")
@@ -1773,7 +1773,7 @@ InstructionsText.ZIndex = 8
 
 local SpeedFrame = Instance.new("Frame")
 SpeedFrame.Size = UDim2.new(0.85, 0, 0, 80)
-SpeedFrame.Position = UDim2.new(0.075, 0, 0.58, 0)  -- نزلناه من 0.58 إلى 0.60
+SpeedFrame.Position = UDim2.new(0.075, 0, 0.62, 0)  -- نزلناه من 0.60 إلى 0.62
 SpeedFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 40)
 SpeedFrame.BorderSizePixel = 0
 SpeedFrame.Parent = CarFrame
@@ -2176,7 +2176,8 @@ local function ShowFishing()
     TeleportContainer.Visible = false
     MoneyContainer.Visible = false
     FishingContainer.Visible = true
-    PlayerContainer.Visible = false    NewsContainer.Visible = false
+    PlayerContainer.Visible = false
+    NewsContainer.Visible = false
     CarContainer.Visible = false
     
     for _, child in pairs(Sidebar:GetChildren()) do
@@ -2276,10 +2277,10 @@ end
 
 ShowTeleport()
 
-print("✅ LYNEX - النسخة النهائية (مع نظام سرعة السيارة المتقدم - منزل للأسفل)")
+print("✅ LYNEX - النسخة النهائية (مع نظام سرعة السيارة المتقدم - منزل للأسفل أكثر)")
 print("📌 الأزرار: انتقال الفوري | فلوس | صيد | لاعبين | أخبار | سرعة السيارة")
 print("💰 تصميم جديد لصفحة الفلوس")
 print("🔍 إضافة بحث للاعبين")
 print("🚀 إضافة زر القفز السريع للسيارة")
-print("🏎️ إضافة نظام سرعة السيارة المتقدم تحت التعليمات (منزل للأسفل)")
+print("🏎️ إضافة نظام سرعة السيارة المتقدم تحت التعليمات (منزل للأسفل أكثر)")
 print("🔗 رابط الديسكورد: https://discord.gg/fJTvyYW4A")
