@@ -1,4 +1,4 @@
--- LYNEX - النسخة النهائية (مع نظام سرعة السيارة المتقدم - مرتب تحت التعليمات)
+-- LYNEX - النسخة النهائية (مع زر كلبشة تلقائي شكلي فقط)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -410,6 +410,7 @@ createSidebarButton("🎣 الصيد", 3, false)
 createSidebarButton("👥 لاعبين", 4, false)
 createSidebarButton("📰 الأخبار", 5, false)
 createSidebarButton("🚗 الطيران الذكي", 6, false)
+createSidebarButton("🔄 كلبشة تلقائي", 7, false)  -- الزر الجديد (شكلي فقط)
 
 -- ============================================
 -- الحاويات
@@ -1398,7 +1399,7 @@ Players.PlayerAdded:Connect(function() UpdatePlayerList() end)
 Players.PlayerRemoving:Connect(function() UpdatePlayerList() end)
 
 -- ============================================
--- محتوى صفحة الطيران الذكي (مع نظام سرعة السيارة المتقدم - مرتب تحت التعليمات)
+-- محتوى صفحة الطيران الذكي (مع نظام سرعة السيارة المتقدم)
 -- ============================================
 
 local CarFrame = Instance.new("Frame")
@@ -1781,7 +1782,7 @@ SpeedTitle.ZIndex = 7
 
 local SpeedFrame = Instance.new("Frame")
 SpeedFrame.Size = UDim2.new(0.85, 0, 0, 65)
-SpeedFrame.Position = UDim2.new(0.075, 0, 0.59, 0)  -- تحت عنوان السرعة
+SpeedFrame.Position = UDim2.new(0.075, 0, 0.59, 0)
 SpeedFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 40)
 SpeedFrame.BorderSizePixel = 0
 SpeedFrame.Parent = CarFrame
@@ -2303,10 +2304,11 @@ end
 
 ShowTeleport()
 
-print("✅ LYNEX - النسخة النهائية (مع نظام سرعة السيارة المتقدم - مرتب تحت التعليمات)")
-print("📌 الأزرار: انتقال الفوري | فلوس | صيد | لاعبين | أخبار | سرعة السيارة")
+print("✅ LYNEX - النسخة النهائية (مع زر كلبشة تلقائي شكلي فقط)")
+print("📌 الأزرار: انتقال الفوري | فلوس | صيد | لاعبين | أخبار | طيران ذكي | كلبشة تلقائي")
 print("💰 تصميم جديد لصفحة الفلوس")
 print("🔍 إضافة بحث للاعبين")
 print("🚀 إضافة زر القفز السريع للسيارة")
-print("🏎️ إضافة نظام سرعة السيارة المتقدم تحت التعليمات (مرتب)")
+print("🏎️ إضافة نظام سرعة السيارة المتقدم")
+print("🔄 زر كلبشة تلقائي (شكلي فقط - بدون وظيفة)")
 print("🔗 رابط الديسكورد: https://discord.gg/fJTvyYW4A")
