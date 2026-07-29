@@ -1,4 +1,4 @@
--- LYNEX - النسخة النهائية (مع نظام سرعة السيارة المتقدم تحت التعليمات)
+-- LYNEX - النسخة النهائية (مع نظام سرعة السيارة المتقدم تحت التعليمات - منزّل للأسفل)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -1398,7 +1398,7 @@ Players.PlayerAdded:Connect(function() UpdatePlayerList() end)
 Players.PlayerRemoving:Connect(function() UpdatePlayerList() end)
 
 -- ============================================
--- محتوى صفحة الطيران الذكي (مع نظام سرعة السيارة المتقدم تحت التعليمات)
+-- محتوى صفحة الطيران الذكي (مع نظام سرعة السيارة المتقدم - منزل للأسفل)
 -- ============================================
 
 local CarFrame = Instance.new("Frame")
@@ -1704,13 +1704,12 @@ QuickFlyButton.MouseButton1Click:Connect(function()
 end)
 
 -- ============================================
--- واجهة نظام السرعة (تحت التعليمات)
+-- تعليمات الاستخدام (مكبرة قليلاً ومنزلة للأسفل)
 -- ============================================
 
--- تعليمات الاستخدام
 local InstructionsBox = Instance.new("Frame")
-InstructionsBox.Size = UDim2.new(0.85, 0, 0, 130)
-InstructionsBox.Position = UDim2.new(0.075, 0, 0.40, 0)
+InstructionsBox.Size = UDim2.new(0.85, 0, 0, 140)
+InstructionsBox.Position = UDim2.new(0.075, 0, 0.38, 0)
 InstructionsBox.BackgroundColor3 = Color3.fromRGB(20, 20, 40)
 InstructionsBox.BorderSizePixel = 0
 InstructionsBox.Parent = CarFrame
@@ -1769,12 +1768,12 @@ InstructionsText.Parent = InstructionsBox
 InstructionsText.ZIndex = 8
 
 -- ============================================
--- نظام السرعة (تحت التعليمات مباشرة)
+-- نظام السرعة (منزل للأسفل أكثر)
 -- ============================================
 
 local SpeedFrame = Instance.new("Frame")
-SpeedFrame.Size = UDim2.new(0.85, 0, 0, 75)
-SpeedFrame.Position = UDim2.new(0.075, 0, 0.58, 0)
+SpeedFrame.Size = UDim2.new(0.85, 0, 0, 80)
+SpeedFrame.Position = UDim2.new(0.075, 0, 0.58, 0)  -- نزلناه من 0.58 إلى 0.60
 SpeedFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 40)
 SpeedFrame.BorderSizePixel = 0
 SpeedFrame.Parent = CarFrame
@@ -2177,8 +2176,7 @@ local function ShowFishing()
     TeleportContainer.Visible = false
     MoneyContainer.Visible = false
     FishingContainer.Visible = true
-    PlayerContainer.Visible = false
-    NewsContainer.Visible = false
+    PlayerContainer.Visible = false    NewsContainer.Visible = false
     CarContainer.Visible = false
     
     for _, child in pairs(Sidebar:GetChildren()) do
@@ -2278,10 +2276,10 @@ end
 
 ShowTeleport()
 
-print("✅ LYNEX - النسخة النهائية (مع نظام سرعة السيارة المتقدم تحت التعليمات)")
+print("✅ LYNEX - النسخة النهائية (مع نظام سرعة السيارة المتقدم - منزل للأسفل)")
 print("📌 الأزرار: انتقال الفوري | فلوس | صيد | لاعبين | أخبار | سرعة السيارة")
 print("💰 تصميم جديد لصفحة الفلوس")
 print("🔍 إضافة بحث للاعبين")
 print("🚀 إضافة زر القفز السريع للسيارة")
-print("🏎️ إضافة نظام سرعة السيارة المتقدم تحت التعليمات")
+print("🏎️ إضافة نظام سرعة السيارة المتقدم تحت التعليمات (منزل للأسفل)")
 print("🔗 رابط الديسكورد: https://discord.gg/fJTvyYW4A")
