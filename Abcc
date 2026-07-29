@@ -1,4 +1,4 @@
--- LYNEX - النسخة النهائية (مع نظام سرعة السيارة المتقدم + كلبشة تلقائي)
+-- LYNEX - النسخة النهائية (مع زر كلبشة تلقائي شكلي فقط)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -410,7 +410,7 @@ createSidebarButton("🎣 الصيد", 3, false)
 createSidebarButton("👥 لاعبين", 4, false)
 createSidebarButton("📰 الأخبار", 5, false)
 createSidebarButton("🚗 الطيران الذكي", 6, false)
-createSidebarButton("🔄 كلبشة تلقائي", 7, false)  -- الزر الجديد
+createSidebarButton("🔄 كلبشة تلقائي", 7, false)  -- الزر الجديد (شكلي فقط)
 
 -- ============================================
 -- الحاويات
@@ -460,15 +460,6 @@ CarContainer.BackgroundTransparency = 1
 CarContainer.Parent = MainFrame
 CarContainer.ZIndex = 1
 CarContainer.Visible = false
-
-local FlipContainer = Instance.new("Frame")  -- حاوية الكلبشة الجديدة
-FlipContainer.Name = "FlipContainer"
-FlipContainer.Size = UDim2.new(1, -150, 1, -20)
-FlipContainer.Position = UDim2.new(0, 150, 0, 10)
-FlipContainer.BackgroundTransparency = 1
-FlipContainer.Parent = MainFrame
-FlipContainer.ZIndex = 1
-FlipContainer.Visible = false
 
 local NewsContainer = Instance.new("Frame")
 NewsContainer.Name = "NewsContainer"
@@ -1943,222 +1934,6 @@ RunService.Heartbeat:Connect(function()
 end)
 
 -- ============================================
--- محتوى صفحة الكلبشة التلقائي
--- ============================================
-
-local FlipFrame = Instance.new("Frame")
-FlipFrame.Size = UDim2.new(0.9, 0, 0.85, 0)
-FlipFrame.Position = UDim2.new(0.05, 0, 0.05, 0)
-FlipFrame.BackgroundColor3 = Color3.fromRGB(35, 15, 35)
-FlipFrame.BorderSizePixel = 0
-FlipFrame.Parent = FlipContainer
-FlipFrame.ZIndex = 5
-
-local FlipFrameCorner = Instance.new("UICorner")
-FlipFrameCorner.CornerRadius = UDim.new(0, 12)
-FlipFrameCorner.Parent = FlipFrame
-
-local FlipGlow = Instance.new("Frame")
-FlipGlow.Size = UDim2.new(1, 6, 1, 6)
-FlipGlow.Position = UDim2.new(0, -3, 0, -3)
-FlipGlow.BackgroundColor3 = Color3.fromRGB(200, 50, 200)
-FlipGlow.BackgroundTransparency = 0.3
-FlipGlow.BorderSizePixel = 0
-FlipGlow.Parent = FlipFrame
-FlipGlow.ZIndex = -1
-
-local FlipGlowCorner = Instance.new("UICorner")
-FlipGlowCorner.CornerRadius = UDim.new(0, 15)
-FlipGlowCorner.Parent = FlipGlow
-
-local FlipTitle = Instance.new("TextLabel")
-FlipTitle.Size = UDim2.new(1, -40, 0, 40)
-FlipTitle.Position = UDim2.new(0, 20, 0, 8)
-FlipTitle.BackgroundTransparency = 1
-FlipTitle.Text = "🔄 الكلبشة التلقائي 🔄"
-FlipTitle.TextColor3 = Color3.fromRGB(200, 50, 200)
-FlipTitle.TextSize = 20
-FlipTitle.Font = Enum.Font.GothamBold
-FlipTitle.TextXAlignment = Enum.TextXAlignment.Center
-FlipTitle.Parent = FlipFrame
-FlipTitle.ZIndex = 6
-
-local FlipDivider = Instance.new("Frame")
-FlipDivider.Size = UDim2.new(0.6, 0, 0, 2)
-FlipDivider.Position = UDim2.new(0.2, 0, 0, 52)
-FlipDivider.BackgroundColor3 = Color3.fromRGB(200, 50, 200)
-FlipDivider.BackgroundTransparency = 0.4
-FlipDivider.BorderSizePixel = 0
-FlipDivider.Parent = FlipFrame
-FlipDivider.ZIndex = 6
-
--- زر تشغيل الكلبشة
-local FlipToggleButton = Instance.new("TextButton")
-FlipToggleButton.Size = UDim2.new(0.7, 0, 0, 55)
-FlipToggleButton.Position = UDim2.new(0.15, 0, 0.15, 0)
-FlipToggleButton.BackgroundColor3 = Color3.fromRGB(200, 50, 150)
-FlipToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-FlipToggleButton.TextSize = 22
-FlipToggleButton.Font = Enum.Font.SourceSansBold
-FlipToggleButton.Text = "🔄 تشغيل الكلبشة"
-FlipToggleButton.Parent = FlipFrame
-FlipToggleButton.ZIndex = 7
-
-local FlipToggleCorner = Instance.new("UICorner")
-FlipToggleCorner.CornerRadius = UDim.new(0, 10)
-FlipToggleCorner.Parent = FlipToggleButton
-
--- حالة الكلبشة
-local FlipStatus = Instance.new("TextLabel")
-FlipStatus.Size = UDim2.new(1, -20, 0, 30)
-FlipStatus.Position = UDim2.new(0, 10, 0.35, 0)
-FlipStatus.BackgroundTransparency = 1
-FlipStatus.Text = "⏸️ الكلبشة متوقفة"
-FlipStatus.TextColor3 = Color3.fromRGB(255, 100, 100)
-FlipStatus.TextSize = 16
-FlipStatus.Font = Enum.Font.GothamBold
-FlipStatus.TextXAlignment = Enum.TextXAlignment.Center
-FlipStatus.Parent = FlipFrame
-FlipStatus.ZIndex = 7
-
--- إعدادات الكلبشة
-local SettingsBox = Instance.new("Frame")
-SettingsBox.Size = UDim2.new(0.85, 0, 0, 80)
-SettingsBox.Position = UDim2.new(0.075, 0, 0.45, 0)
-SettingsBox.BackgroundColor3 = Color3.fromRGB(25, 15, 30)
-SettingsBox.BorderSizePixel = 0
-SettingsBox.Parent = FlipFrame
-SettingsBox.ZIndex = 7
-
-local SettingsBoxCorner = Instance.new("UICorner")
-SettingsBoxCorner.CornerRadius = UDim.new(0, 8)
-SettingsBoxCorner.Parent = SettingsBox
-
-local SettingsText = Instance.new("TextLabel")
-SettingsText.Size = UDim2.new(1, -10, 1, -10)
-SettingsText.Position = UDim2.new(0, 5, 0, 5)
-SettingsText.BackgroundTransparency = 1
-SettingsText.Text = "⚙️ إعدادات الكلبشة:\n🔄 كل 3 ثواني تقلب السيارة على جنب\n🎲 اتجاه عشوائي (يمين/يسار/أمام/خلف)"
-SettingsText.TextColor3 = Color3.fromRGB(200, 180, 220)
-SettingsText.TextSize = 13
-SettingsText.Font = Enum.Font.GothamMedium
-SettingsText.TextXAlignment = Enum.TextXAlignment.Center
-SettingsText.TextYAlignment = Enum.TextYAlignment.Center
-SettingsText.Parent = SettingsBox
-SettingsText.ZIndex = 8
-
--- متغيرات الكلبشة
-local FlipActive = false
-local FlipConnection = nil
-
--- دالة جلب السيارة للكلبشة
-local function GetVehicleFlip()
-    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-        local Seat = LocalPlayer.Character.Humanoid.SeatPart
-        if Seat and Seat:IsA("VehicleSeat") then
-            return Seat.Parent
-        end
-    end
-    return nil
-end
-
--- دالة الكلبشة
-local function AutoFlip()
-    if not FlipActive then return end
-    
-    local character = LocalPlayer.Character
-    if not character then return end
-    
-    local humanoid = character:FindFirstChildOfClass("Humanoid")
-    if not humanoid or not humanoid.SeatPart then return end
-    
-    local seat = humanoid.SeatPart
-    if not seat:IsA("VehicleSeat") then return end
-    
-    local vehicle = seat.Parent
-    if not vehicle then return end
-    
-    local PrimaryPart = vehicle.PrimaryPart or seat
-    
-    -- اتجاه عشوائي للكلبشة
-    local randomDirection = math.random(1, 4)
-    local flipAngle = math.rad(85)  -- 85 درجة عشان ما تنقلب تماماً
-    
-    local axis = Vector3.new(0, 0, 0)
-    if randomDirection == 1 then
-        axis = Vector3.new(0, 0, 1)   -- كلبشة أمامية
-    elseif randomDirection == 2 then
-        axis = Vector3.new(0, 0, -1)  -- كلبشة خلفية
-    elseif randomDirection == 3 then
-        axis = Vector3.new(1, 0, 0)   -- كلبشة يمين
-    elseif randomDirection == 4 then
-        axis = Vector3.new(-1, 0, 0)  -- كلبشة يسار
-    end
-    
-    local currentCF = PrimaryPart.CFrame
-    local newCF = currentCF * CFrame.Angles(axis.X * flipAngle, axis.Y * flipAngle, axis.Z * flipAngle)
-    PrimaryPart.CFrame = newCF
-    
-    -- دفع خفيف عشان الحركة تكون واقعية
-    PrimaryPart.Velocity = Vector3.new(
-        math.random(-30, 30),
-        math.random(10, 50),
-        math.random(-30, 30)
-    )
-end
-
--- حلقة الكلبشة
-local function StartFlipLoop()
-    if FlipConnection then
-        FlipConnection:Disconnect()
-        FlipConnection = nil
-    end
-    
-    FlipConnection = RunService.Heartbeat:Connect(function()
-        if FlipActive then
-            -- كل 3 ثواني (عدل 0.33 عشان 3 ثواني)
-            if math.floor(tick() * 0.33) % 1 == 0 then
-                pcall(AutoFlip)
-            end
-        end
-    end)
-end
-
--- زر تشغيل/إيقاف الكلبشة
-FlipToggleButton.MouseButton1Click:Connect(function()
-    local car = GetVehicleFlip()
-    if not car then
-        showNotification("⚠️ لازم تركب سيارة أولاً!", FlipFrame)
-        return
-    end
-    
-    FlipActive = not FlipActive
-    
-    if FlipActive then
-        FlipToggleButton.Text = "⏹️ إيقاف الكلبشة"
-        FlipToggleButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-        FlipStatus.Text = "🟢 الكلبشة تعمل..."
-        FlipStatus.TextColor3 = Color3.fromRGB(0, 255, 100)
-        StartFlipLoop()
-        showNotification("🔄 تم تشغيل الكلبشة التلقائي!", FlipFrame)
-    else
-        FlipToggleButton.Text = "🔄 تشغيل الكلبشة"
-        FlipToggleButton.BackgroundColor3 = Color3.fromRGB(200, 50, 150)
-        FlipStatus.Text = "⏸️ الكلبشة متوقفة"
-        FlipStatus.TextColor3 = Color3.fromRGB(255, 100, 100)
-        if FlipConnection then
-            FlipConnection:Disconnect()
-            FlipConnection = nil
-        end
-        showNotification("⛔ تم إيقاف الكلبشة", FlipFrame)
-    end
-end)
-
--- تعيين الحالة الابتدائية
-FlipToggleButton.Text = "🔄 تشغيل الكلبشة"
-FlipToggleButton.BackgroundColor3 = Color3.fromRGB(200, 50, 150)
-
--- ============================================
 -- محتوى الأخبار
 -- ============================================
 
@@ -2300,10 +2075,6 @@ createNewsCard("🏎️", "تم إضافة نظام سرعة السيارة ال
     "أدخل قيمة السرعة المطلوبة واضغط ON لتفعيلها!",
     Color3.fromRGB(255, 150, 0), false)
 
-createNewsCard("🔄", "تم إضافة نظام الكلبشة التلقائي!",
-    "السيارة تنقلب على جنب تلقائياً كل 3 ثواني!",
-    Color3.fromRGB(200, 50, 200), false)
-
 createNewsCard("📱", "دعم كامل للهاتف والكمبيوتر!",
     "السكربت الآن يدعم جميع الأجهزة مع واجهة متجاوبة.",
     Color3.fromRGB(100, 255, 200), false)
@@ -2393,7 +2164,6 @@ local function ShowTeleport()
     PlayerContainer.Visible = false
     NewsContainer.Visible = false
     CarContainer.Visible = false
-    FlipContainer.Visible = false
     
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
@@ -2415,7 +2185,6 @@ local function ShowMoney()
     PlayerContainer.Visible = false
     NewsContainer.Visible = false
     CarContainer.Visible = false
-    FlipContainer.Visible = false
     
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
@@ -2437,7 +2206,6 @@ local function ShowFishing()
     PlayerContainer.Visible = false
     NewsContainer.Visible = false
     CarContainer.Visible = false
-    FlipContainer.Visible = false
     
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
@@ -2459,7 +2227,6 @@ local function ShowPlayers()
     PlayerContainer.Visible = true
     NewsContainer.Visible = false
     CarContainer.Visible = false
-    FlipContainer.Visible = false
     UpdatePlayerList()
     
     for _, child in pairs(Sidebar:GetChildren()) do
@@ -2482,7 +2249,6 @@ local function ShowNews()
     PlayerContainer.Visible = false
     NewsContainer.Visible = true
     CarContainer.Visible = false
-    FlipContainer.Visible = false
     
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
@@ -2504,35 +2270,12 @@ local function ShowCars()
     PlayerContainer.Visible = false
     NewsContainer.Visible = false
     CarContainer.Visible = true
-    FlipContainer.Visible = false
     
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
             if child.Text == "🚗 الطيران الذكي" then
                 child.BackgroundColor3 = Color3.fromRGB(255, 150, 0)
                 child.TextColor3 = Color3.fromRGB(0, 0, 0)
-            else
-                child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
-                child.TextColor3 = Color3.fromRGB(255, 255, 255)
-            end
-        end
-    end
-end
-
-local function ShowFlip()
-    TeleportContainer.Visible = false
-    MoneyContainer.Visible = false
-    FishingContainer.Visible = false
-    PlayerContainer.Visible = false
-    NewsContainer.Visible = false
-    CarContainer.Visible = false
-    FlipContainer.Visible = true
-    
-    for _, child in pairs(Sidebar:GetChildren()) do
-        if child:IsA("TextButton") then
-            if child.Text == "🔄 كلبشة تلقائي" then
-                child.BackgroundColor3 = Color3.fromRGB(200, 50, 200)
-                child.TextColor3 = Color3.fromRGB(255, 255, 255)
             else
                 child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
                 child.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -2555,19 +2298,17 @@ for _, child in pairs(Sidebar:GetChildren()) do
             child.MouseButton1Click:Connect(ShowNews)
         elseif child.Text == "🚗 الطيران الذكي" then
             child.MouseButton1Click:Connect(ShowCars)
-        elseif child.Text == "🔄 كلبشة تلقائي" then
-            child.MouseButton1Click:Connect(ShowFlip)
         end
     end
 end
 
 ShowTeleport()
 
-print("✅ LYNEX - النسخة النهائية (مع نظام سرعة السيارة المتقدم + كلبشة تلقائي)")
+print("✅ LYNEX - النسخة النهائية (مع زر كلبشة تلقائي شكلي فقط)")
 print("📌 الأزرار: انتقال الفوري | فلوس | صيد | لاعبين | أخبار | طيران ذكي | كلبشة تلقائي")
 print("💰 تصميم جديد لصفحة الفلوس")
 print("🔍 إضافة بحث للاعبين")
 print("🚀 إضافة زر القفز السريع للسيارة")
 print("🏎️ إضافة نظام سرعة السيارة المتقدم")
-print("🔄 إضافة نظام الكلبشة التلقائي")
+print("🔄 زر كلبشة تلقائي (شكلي فقط - بدون وظيفة)")
 print("🔗 رابط الديسكورد: https://discord.gg/fJTvyYW4A")
