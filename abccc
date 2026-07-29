@@ -1,4 +1,4 @@
--- LYNEX - النسخة النهائية (مع زر كلبشة تلقائي شكلي فقط)
+-- LYNEX - النسخة النهائية (مع زر كلبشة تلقائي + زر الاعب)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -410,7 +410,8 @@ createSidebarButton("🎣 الصيد", 3, false)
 createSidebarButton("👥 لاعبين", 4, false)
 createSidebarButton("📰 الأخبار", 5, false)
 createSidebarButton("🚗 الطيران الذكي", 6, false)
-createSidebarButton("🔄 كلبشة تلقائي", 7, false)  -- الزر الجديد (شكلي فقط)
+createSidebarButton("🔄 كلبشة تلقائي", 7, false)  -- الزر الجديد الأول
+createSidebarButton("🎮 الاعب", 8, false)  -- الزر الجديد الثاني
 
 -- ============================================
 -- الحاويات
@@ -2304,11 +2305,12 @@ end
 
 ShowTeleport()
 
-print("✅ LYNEX - النسخة النهائية (مع زر كلبشة تلقائي شكلي فقط)")
-print("📌 الأزرار: انتقال الفوري | فلوس | صيد | لاعبين | أخبار | طيران ذكي | كلبشة تلقائي")
+print("✅ LYNEX - النسخة النهائية (مع زر كلبشة تلقائي + زر الاعب)")
+print("📌 الأزرار: انتقال الفوري | فلوس | صيد | لاعبين | أخبار | طيران ذكي | كلبشة تلقائي | الاعب")
 print("💰 تصميم جديد لصفحة الفلوس")
 print("🔍 إضافة بحث للاعبين")
 print("🚀 إضافة زر القفز السريع للسيارة")
 print("🏎️ إضافة نظام سرعة السيارة المتقدم")
-print("🔄 زر كلبشة تلقائي (شكلي فقط - بدون وظيفة)")
+print("🔄 زر كلبشة تلقائي (شكلي فقط)")
+print("🎮 زر الاعب (شكلي فقط)")
 print("🔗 رابط الديسكورد: https://discord.gg/fJTvyYW4A")
