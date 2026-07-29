@@ -1,550 +1,1780 @@
-local Players = 
-local CoreGui = game:GetService("CoreGui")
+-- 7MO HUB v15 - النسخة المعدلة (شيل الترحيب والرئيسية واللاعب)
 local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local Camera = workspace.CurrentCamera
 local LocalPlayer = Players.LocalPlayer
-local Mouse = LocalPlayer:GetMouse()
+local UserId = LocalPlayer.UserId
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local Camera = workspace.CurrentCamera
+local TweenService = game:GetService("TweenService")
 
---// Global Config
-local Config = {
-    Combat = { Aimbot = false, SilentAim = false, FOV = 250, TargetPart = "Head" },
-    Visuals = { Box = false, Info = false, Tracers = false, FOV = false, Skeleton = false },
-    Theme = { Main = Color3.fromRGB(20, 20, 20), Accent = Color3.fromRGB(0, 255, 255) }
-}
+-- منع تكرار الواجهة
+if game:GetService("CoreGui"):FindFirstChild("7MOHUBv15") then
+    game:GetService("CoreGui"):FindFirstChild("7MOHUBv15"):Destroy()
+end
 
---=========================================
---// 1. MOBILE UI SETUP
---=========================================
-local MeowUI = Instance.new("ScreenGui", CoreGui)
-MeowUI.Name = "MeowHubMobile"
-MeowUI.ResetOnSpawn = false
+-- المتغيرات العامة
+local isOpen = false
+local buttonSize = 60
 
--- Open/Close Button (Draggable)
-local ToggleBtn = Instance.new("TextButton", MeowUI)
-ToggleBtn.Size = UDim2.new(0, 50, 0, 50)
-ToggleBtn.Position = UDim2.new(0, 10, 0, 10)
-ToggleBtn.BackgroundColor3 = Config.Theme.Main
-ToggleBtn.TextColor3 = Config.Theme.Accent
-ToggleBtn.Text = "ABC"
-ToggleBtn.Font = Enum.Font.GothamBold
-ToggleBtn.TextSize = 14
-Instance.new("UICorner", ToggleBtn).CornerRadius = UDim.new(1, 0)
-Instance.new("UIStroke", ToggleBtn).Color = Config.Theme.Accent
+-- ============================================
+-- زر الدخول والخروج الدائري
+-- ============================================
 
--- Main Menu Frame
-local MainFrame = Instance.new("Frame", MeowUI)
-MainFrame.Size = UDim2.new(0, 220, 0, 340) -- Made slightly taller
-MainFrame.Position = UDim2.new(0.5, -110, 0.5, -170)
-MainFrame.BackgroundColor3 = Config.Theme.Main
-MainFrame.Visible = false
-Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 10)
-local FrameStroke = Instance.new("UIStroke", MainFrame)
-FrameStroke.Color = Config.Theme.Accent
-FrameStroke.Thickness = 2
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "7MOHUBv15"
+ScreenGui.Parent = game:GetService("CoreGui")
+ScreenGui.ResetOnSpawn = false
 
-local Title = Instance.new("TextLabel", MainFrame)
-Title.Size = UDim2.new(1, 0, 0, 40)
-Title.BackgroundTransparency = 1
-Title.Text = "ABC TOP ON"
-Title.TextColor3 = Config.Theme.Accent
-Title.Font = Enum.Font.GothamBlack
-Title.TextSize = 18
+-- الزر الدائري الرئيسي
+local ToggleButton = Instance.new("ImageButton")
+ToggleButton.Name = "ToggleButton"
+ToggleButton.Size = UDim2.new(0, buttonSize, 0, buttonSize)
+ToggleButton.Position = UDim2.new(0.05, 0, 0.5, -buttonSize/2)
+ToggleButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+ToggleButton.BackgroundTransparency = 0
+ToggleButton.Image = "rbxassetid://0"
+ToggleButton.Parent = ScreenGui
+ToggleButton.ZIndex = 100
 
-local ScrollList = Instance.new("ScrollingFrame", MainFrame)
-ScrollList.Size = UDim2.new(1, -20, 1, -50)
-ScrollList.Position = UDim2.new(0, 10, 0, 40)
-ScrollList.BackgroundTransparency = 1
-ScrollList.ScrollBarThickness = 4
-local Layout = Instance.new("UIListLayout", ScrollList)
-Layout.Padding = UDim.new(0, 5)
+local ButtonCorner = Instance.new("UICorner")
+ButtonCorner.CornerRadius = UDim.new(1, 0)
+ButtonCorner.Parent = ToggleButton
 
-ToggleBtn.MouseButton1Click:Connect(function()
-    MainFrame.Visible = not MainFrame.Visible
+-- حلقة متحركة (Glow Ring)
+local GlowRing = Instance.new("ImageLabel")
+GlowRing.Name = "GlowRing"
+GlowRing.Size = UDim2.new(1.3, 0, 1.3, 0)
+GlowRing.Position = UDim2.new(-0.15, 0, -0.15, 0)
+GlowRing.BackgroundTransparency = 1
+GlowRing.Image = "rbxassetid://0"
+GlowRing.Parent = ToggleButton
+GlowRing.ZIndex = 99
+
+-- إطار النيون المتحرك
+local NeonRing = Instance.new("Frame")
+NeonRing.Name = "NeonRing"
+NeonRing.Size = UDim2.new(1.4, 0, 1.4, 0)
+NeonRing.Position = UDim2.new(-0.2, 0, -0.2, 0)
+NeonRing.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
+NeonRing.BackgroundTransparency = 0.3
+NeonRing.BorderSizePixel = 3
+NeonRing.BorderColor3 = Color3.fromRGB(180, 0, 255)
+NeonRing.Parent = ToggleButton
+NeonRing.ZIndex = 98
+
+local NeonCorner = Instance.new("UICorner")
+NeonCorner.CornerRadius = UDim.new(1, 0)
+NeonCorner.Parent = NeonRing
+
+-- حلقة متحركة ثانية (تأثير النبض)
+local PulseRing = Instance.new("Frame")
+PulseRing.Name = "PulseRing"
+PulseRing.Size = UDim2.new(1.5, 0, 1.5, 0)
+PulseRing.Position = UDim2.new(-0.25, 0, -0.25, 0)
+PulseRing.BackgroundColor3 = Color3.fromRGB(150, 0, 255)
+PulseRing.BackgroundTransparency = 0.5
+PulseRing.BorderSizePixel = 0
+PulseRing.Parent = ToggleButton
+PulseRing.ZIndex = 97
+
+local PulseCorner = Instance.new("UICorner")
+PulseCorner.CornerRadius = UDim.new(1, 0)
+PulseCorner.Parent = PulseRing
+
+-- النص داخل الزر
+local ButtonText = Instance.new("TextLabel")
+ButtonText.Name = "ButtonText"
+ButtonText.Size = UDim2.new(1, 0, 1, 0)
+ButtonText.Position = UDim2.new(0, 0, 0, 0)
+ButtonText.BackgroundTransparency = 1
+ButtonText.Text = "7MO"
+ButtonText.TextColor3 = Color3.fromRGB(255, 255, 255)
+ButtonText.TextSize = 22
+ButtonText.Font = Enum.Font.GothamBold
+ButtonText.TextScaled = true
+ButtonText.Parent = ToggleButton
+ButtonText.ZIndex = 101
+
+-- جعل الزر قابل للسحب
+local dragging = false
+local dragInput, dragStart, startPos
+
+ToggleButton.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = ToggleButton.Position
+        
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
 end)
 
-local function CreateToggleButton(Name, Category, Setting)
-    local Btn = Instance.new("TextButton", ScrollList)
-    Btn.Size = UDim2.new(1, 0, 0, 35)
-    Btn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Btn.Text = Name .. " : OFF"
-    Btn.Font = Enum.Font.GothamSemibold
-    Btn.TextSize = 14
-    Instance.new("UICorner", Btn).CornerRadius = UDim.new(0, 6)
+ToggleButton.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        if dragging then
+            local delta = input.Position - dragStart
+            ToggleButton.Position = UDim2.new(
+                startPos.X.Scale,
+                startPos.X.Offset + delta.X,
+                startPos.Y.Scale,
+                startPos.Y.Offset + delta.Y
+            )
+        end
+    end
+end)
+
+-- تأثيرات الحركة على الحلقات
+local ringColors = {
+    Color3.fromRGB(120, 0, 255),
+    Color3.fromRGB(180, 0, 255),
+    Color3.fromRGB(220, 0, 255),
+    Color3.fromRGB(180, 0, 255),
+    Color3.fromRGB(120, 0, 255)
+}
+
+local colorIndex = 1
+
+task.spawn(function()
+    while ScreenGui and ToggleButton.Parent do
+        colorIndex = colorIndex + 0.02
+        local index = math.floor(colorIndex) % #ringColors + 1
+        local nextIndex = index % #ringColors + 1
+        local alpha = colorIndex % 1
+        
+        local currentColor = ringColors[index]
+        local nextColor = ringColors[nextIndex]
+        
+        local r = currentColor.R + (nextColor.R - currentColor.R) * alpha
+        local g = currentColor.G + (nextColor.G - currentColor.G) * alpha
+        local b = currentColor.B + (nextColor.B - currentColor.B) * alpha
+        
+        local finalColor = Color3.new(r, g, b)
+        
+        NeonRing.BackgroundColor3 = finalColor
+        NeonRing.BorderColor3 = finalColor
+        
+        local breathe = 0.2 + math.sin(tick() * 2.5) * 0.2
+        NeonRing.BackgroundTransparency = breathe
+        PulseRing.BackgroundTransparency = breathe + 0.2
+        
+        local pulseSize = 1.5 + math.sin(tick() * 2) * 0.1
+        PulseRing.Size = UDim2.new(pulseSize, 0, pulseSize, 0)
+        PulseRing.Position = UDim2.new(-(pulseSize-1)/2, 0, -(pulseSize-1)/2, 0)
+        
+        task.wait(0.03)
+    end
+end)
+
+-- ============================================
+-- النافذة الرئيسية
+-- ============================================
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0, 520, 0, 480)
+MainFrame.Position = UDim2.new(0.5, -260, 0.5, -240)
+MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+MainFrame.BorderSizePixel = 0
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Parent = ScreenGui
+MainFrame.ZIndex = 2
+MainFrame.Visible = false
+
+local MainCorner = Instance.new("UICorner")
+MainCorner.CornerRadius = UDim.new(0, 12)
+MainCorner.Parent = MainFrame
+
+-- الإطار البنفسجي
+local GlowFrame = Instance.new("Frame")
+GlowFrame.Name = "GlowFrame"
+GlowFrame.Size = UDim2.new(1, 8, 1, 8)
+GlowFrame.Position = UDim2.new(0, -4, 0, -4)
+GlowFrame.BackgroundColor3 = Color3.fromRGB(120, 0, 255)
+GlowFrame.BackgroundTransparency = 0.3
+GlowFrame.BorderSizePixel = 0
+GlowFrame.Parent = MainFrame
+GlowFrame.ZIndex = 0
+
+local GlowCorner = Instance.new("UICorner")
+GlowCorner.CornerRadius = UDim.new(0, 16)
+GlowCorner.Parent = GlowFrame
+
+local GlowFrame2 = Instance.new("Frame")
+GlowFrame2.Name = "GlowFrame2"
+GlowFrame2.Size = UDim2.new(1, 14, 1, 14)
+GlowFrame2.Position = UDim2.new(0, -7, 0, -7)
+GlowFrame2.BackgroundColor3 = Color3.fromRGB(150, 0, 255)
+GlowFrame2.BackgroundTransparency = 0.15
+GlowFrame2.BorderSizePixel = 0
+GlowFrame2.Parent = MainFrame
+GlowFrame2.ZIndex = -1
+
+local GlowCorner2 = Instance.new("UICorner")
+GlowCorner2.CornerRadius = UDim.new(0, 20)
+GlowCorner2.Parent = GlowFrame2
+
+-- تحريك الإطار البنفسجي
+local glowColors2 = {
+    Color3.fromRGB(120, 0, 255),
+    Color3.fromRGB(180, 0, 255),
+    Color3.fromRGB(220, 0, 255),
+    Color3.fromRGB(180, 0, 255),
+    Color3.fromRGB(120, 0, 255)
+}
+
+local colorIndex2 = 1
+RunService.Heartbeat:Connect(function()
+    if not MainFrame.Visible then return end
+    colorIndex2 = colorIndex2 + 0.02
+    local index = math.floor(colorIndex2) % #glowColors2 + 1
+    local nextIndex = index % #glowColors2 + 1
+    local alpha = colorIndex2 % 1
     
-    Btn.MouseButton1Click:Connect(function()
-        Config[Category][Setting] = not Config[Category][Setting]
-        if Config[Category][Setting] then
-            Btn.BackgroundColor3 = Config.Theme.Accent
-            Btn.TextColor3 = Color3.fromRGB(0, 0, 0)
-            Btn.Text = Name .. " : ON"
-        else
-            Btn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-            Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-            Btn.Text = Name .. " : OFF"
+    local currentColor = glowColors2[index]
+    local nextColor = glowColors2[nextIndex]
+    
+    local r = currentColor.R + (nextColor.R - currentColor.R) * alpha
+    local g = currentColor.G + (nextColor.G - currentColor.G) * alpha
+    local b = currentColor.B + (nextColor.B - currentColor.B) * alpha
+    
+    GlowFrame.BackgroundColor3 = Color3.new(r, g, b)
+    GlowFrame2.BackgroundColor3 = Color3.new(r + 0.1, g + 0.1, b + 0.1)
+    
+    local breathe = 0.2 + math.sin(tick() * 2) * 0.15
+    GlowFrame.BackgroundTransparency = breathe
+    GlowFrame2.BackgroundTransparency = breathe - 0.1
+end)
+
+-- زر الإغلاق X
+local CloseX = Instance.new("TextButton")
+CloseX.Name = "CloseX"
+CloseX.Size = UDim2.new(0, 35, 0, 35)
+CloseX.Position = UDim2.new(1, -45, 0, 8)
+CloseX.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
+CloseX.BorderSizePixel = 0
+CloseX.Text = "✕"
+CloseX.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseX.TextSize = 20
+CloseX.Font = Enum.Font.GothamBold
+CloseX.Parent = MainFrame
+CloseX.ZIndex = 20
+
+local CloseCorner = Instance.new("UICorner")
+CloseCorner.CornerRadius = UDim.new(0, 8)
+CloseCorner.Parent = CloseX
+
+CloseX.MouseEnter:Connect(function()
+    CloseX.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+end)
+
+CloseX.MouseLeave:Connect(function()
+    CloseX.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
+end)
+
+CloseX.MouseButton1Click:Connect(function()
+    toggleUI()
+end)
+
+-- ============================================
+-- وظيفة إظهار/إخفاء الواجهة
+-- ============================================
+
+function toggleUI()
+    isOpen = not isOpen
+    MainFrame.Visible = isOpen
+    
+    if isOpen then
+        ToggleButton.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
+        ButtonText.TextColor3 = Color3.fromRGB(255, 255, 255)
+        local tween = TweenService:Create(ToggleButton, TweenInfo.new(0.2), {Size = UDim2.new(0, buttonSize * 1.1, 0, buttonSize * 1.1)})
+        tween:Play()
+        task.wait(0.2)
+        local tween2 = TweenService:Create(ToggleButton, TweenInfo.new(0.1), {Size = UDim2.new(0, buttonSize, 0, buttonSize)})
+        tween2:Play()
+    else
+        ToggleButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        ButtonText.TextColor3 = Color3.fromRGB(255, 255, 255)
+        local tween = TweenService:Create(ToggleButton, TweenInfo.new(0.2), {Size = UDim2.new(0, buttonSize * 0.9, 0, buttonSize * 0.9)})
+        tween:Play()
+        task.wait(0.2)
+        local tween2 = TweenService:Create(ToggleButton, TweenInfo.new(0.1), {Size = UDim2.new(0, buttonSize, 0, buttonSize)})
+        tween2:Play()
+    end
+end
+
+ToggleButton.MouseButton1Click:Connect(function()
+    if not dragging then
+        toggleUI()
+    end
+end)
+
+-- ============================================
+-- القائمة الجانبية
+-- ============================================
+
+local Sidebar = Instance.new("Frame")
+Sidebar.Name = "Sidebar"
+Sidebar.Size = UDim2.new(0, 140, 1, 0)
+Sidebar.BackgroundColor3 = Color3.fromRGB(22, 22, 30)
+Sidebar.BorderSizePixel = 0
+Sidebar.Parent = MainFrame
+Sidebar.ZIndex = 15
+
+local SidebarCorner = Instance.new("UICorner")
+SidebarCorner.CornerRadius = UDim.new(0, 12)
+SidebarCorner.Parent = Sidebar
+
+local SidebarFix = Instance.new("Frame")
+SidebarFix.Size = UDim2.new(0, 20, 1, 0)
+SidebarFix.Position = UDim2.new(1, -20, 0, 0)
+SidebarFix.BackgroundColor3 = Color3.fromRGB(22, 22, 30)
+SidebarFix.BorderSizePixel = 0
+SidebarFix.Parent = Sidebar
+SidebarFix.ZIndex = 15
+
+-- شعار 7MO HUB v15
+local LogoText = Instance.new("TextLabel")
+LogoText.Size = UDim2.new(1, 0, 0, 50)
+LogoText.BackgroundTransparency = 1
+LogoText.Text = "7MO HUB v15"
+LogoText.TextColor3 = Color3.fromRGB(180, 0, 255)
+LogoText.TextSize = 15
+LogoText.Font = Enum.Font.GothamBold
+LogoText.Parent = Sidebar
+LogoText.ZIndex = 16
+
+task.spawn(function()
+    while ScreenGui do
+        local brightness = 0.5 + math.sin(tick() * 1.5) * 0.5
+        LogoText.TextColor3 = Color3.new(0.5 + brightness * 0.2, 0, 0.7 + brightness * 0.3)
+        task.wait(0.05)
+    end
+end)
+
+-- أزرار القائمة الجانبية (معدلة - بدون ترحيب ورئيسية ولاعب)
+local function createSidebarButton(text, posIndex, isActive)
+    local Btn = Instance.new("TextButton")
+    Btn.Size = UDim2.new(1, -20, 0, 40)
+    Btn.Position = UDim2.new(0, 10, 0, 60 + ((posIndex - 1) * 48))
+    
+    if isActive then
+        Btn.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
+        Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    else
+        Btn.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
+        Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    end
+    
+    Btn.BorderSizePixel = 0
+    Btn.Text = text
+    Btn.TextSize = 14
+    Btn.Font = Enum.Font.GothamBold
+    Btn.Parent = Sidebar
+    Btn.ZIndex = 17
+
+    local BtnCorner = Instance.new("UICorner")
+    BtnCorner.CornerRadius = UDim.new(0, 8)
+    BtnCorner.Parent = Btn
+    
+    Btn.MouseEnter:Connect(function()
+        if not isActive then
+            Btn.BackgroundColor3 = Color3.fromRGB(70, 70, 95)
+        end
+    end)
+    Btn.MouseLeave:Connect(function()
+        if not isActive then
+            Btn.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
+        end
+    end)
+    
+    if isActive then
+        local Indicator = Instance.new("Frame")
+        Indicator.Size = UDim2.new(0, 4, 1, -12)
+        Indicator.Position = UDim2.new(0, 4, 0, 6)
+        Indicator.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        Indicator.BorderSizePixel = 0
+        Indicator.Parent = Btn
+        Indicator.ZIndex = 18
+    end
+end
+
+-- الأزرار الجديدة (بدون ترحيب ورئيسية ولاعب)
+createSidebarButton("⚡ انتقال الفوري", 1, true)
+createSidebarButton("💰 فلوس", 2, false)
+createSidebarButton("🎣 الصيد", 3, false)
+createSidebarButton("👥 لاعبين", 4, false)
+createSidebarButton("📰 الأخبار", 5, false)
+createSidebarButton("🚗 الطيران الذكي", 6, false)
+
+-- ============================================
+-- الحاويات
+-- ============================================
+
+local TeleportContainer = Instance.new("Frame")
+TeleportContainer.Name = "TeleportContainer"
+TeleportContainer.Size = UDim2.new(1, -150, 1, -20)
+TeleportContainer.Position = UDim2.new(0, 150, 0, 10)
+TeleportContainer.BackgroundTransparency = 1
+TeleportContainer.Parent = MainFrame
+TeleportContainer.ZIndex = 1
+TeleportContainer.Visible = true
+
+local MoneyContainer = Instance.new("Frame")
+MoneyContainer.Name = "MoneyContainer"
+MoneyContainer.Size = UDim2.new(1, -150, 1, -20)
+MoneyContainer.Position = UDim2.new(0, 150, 0, 10)
+MoneyContainer.BackgroundTransparency = 1
+MoneyContainer.Parent = MainFrame
+MoneyContainer.ZIndex = 1
+MoneyContainer.Visible = false
+
+local FishingContainer = Instance.new("Frame")
+FishingContainer.Name = "FishingContainer"
+FishingContainer.Size = UDim2.new(1, -150, 1, -20)
+FishingContainer.Position = UDim2.new(0, 150, 0, 10)
+FishingContainer.BackgroundTransparency = 1
+FishingContainer.Parent = MainFrame
+FishingContainer.ZIndex = 1
+FishingContainer.Visible = false
+
+local PlayerContainer = Instance.new("Frame")
+PlayerContainer.Name = "PlayerContainer"
+PlayerContainer.Size = UDim2.new(1, -150, 1, -20)
+PlayerContainer.Position = UDim2.new(0, 150, 0, 10)
+PlayerContainer.BackgroundTransparency = 1
+PlayerContainer.Parent = MainFrame
+PlayerContainer.ZIndex = 1
+PlayerContainer.Visible = false
+
+local CarContainer = Instance.new("Frame")
+CarContainer.Name = "CarContainer"
+CarContainer.Size = UDim2.new(1, -150, 1, -20)
+CarContainer.Position = UDim2.new(0, 150, 0, 10)
+CarContainer.BackgroundTransparency = 1
+CarContainer.Parent = MainFrame
+CarContainer.ZIndex = 1
+CarContainer.Visible = false
+
+local NewsContainer = Instance.new("Frame")
+NewsContainer.Name = "NewsContainer"
+NewsContainer.Size = UDim2.new(1, -150, 1, -20)
+NewsContainer.Position = UDim2.new(0, 150, 0, 10)
+NewsContainer.BackgroundTransparency = 1
+NewsContainer.Parent = MainFrame
+NewsContainer.ZIndex = 1
+NewsContainer.Visible = false
+
+-- ============================================
+-- محتوى صفحة الانتقال الفوري (Teleport)
+-- ============================================
+
+local TeleportFrame = Instance.new("Frame")
+TeleportFrame.Size = UDim2.new(0.9, 0, 0.85, 0)
+TeleportFrame.Position = UDim2.new(0.05, 0, 0.05, 0)
+TeleportFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 35)
+TeleportFrame.BorderSizePixel = 0
+TeleportFrame.Parent = TeleportContainer
+TeleportFrame.ZIndex = 5
+
+local TeleportFrameCorner = Instance.new("UICorner")
+TeleportFrameCorner.CornerRadius = UDim.new(0, 12)
+TeleportFrameCorner.Parent = TeleportFrame
+
+local TeleportGlow = Instance.new("Frame")
+TeleportGlow.Size = UDim2.new(1, 6, 1, 6)
+TeleportGlow.Position = UDim2.new(0, -3, 0, -3)
+TeleportGlow.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
+TeleportGlow.BackgroundTransparency = 0.3
+TeleportGlow.BorderSizePixel = 0
+TeleportGlow.Parent = TeleportFrame
+TeleportGlow.ZIndex = -1
+
+local TeleportGlowCorner = Instance.new("UICorner")
+TeleportGlowCorner.CornerRadius = UDim.new(0, 15)
+TeleportGlowCorner.Parent = TeleportGlow
+
+local TeleportTitle = Instance.new("TextLabel")
+TeleportTitle.Size = UDim2.new(1, -40, 0, 35)
+TeleportTitle.Position = UDim2.new(0, 20, 0, 8)
+TeleportTitle.BackgroundTransparency = 1
+TeleportTitle.Text = "⚡ انتقال فوري ⚡"
+TeleportTitle.TextColor3 = Color3.fromRGB(180, 0, 255)
+TeleportTitle.TextSize = 20
+TeleportTitle.Font = Enum.Font.GothamBold
+TeleportTitle.TextXAlignment = Enum.TextXAlignment.Center
+TeleportTitle.Parent = TeleportFrame
+TeleportTitle.ZIndex = 6
+
+local TeleportDivider = Instance.new("Frame")
+TeleportDivider.Size = UDim2.new(0.6, 0, 0, 2)
+TeleportDivider.Position = UDim2.new(0.2, 0, 0, 48)
+TeleportDivider.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
+TeleportDivider.BackgroundTransparency = 0.4
+TeleportDivider.BorderSizePixel = 0
+TeleportDivider.Parent = TeleportFrame
+TeleportDivider.ZIndex = 6
+
+local TeleportScroll = Instance.new("ScrollingFrame")
+TeleportScroll.Size = UDim2.new(1, -10, 1, -75)
+TeleportScroll.Position = UDim2.new(0, 5, 0, 55)
+TeleportScroll.BackgroundTransparency = 1
+TeleportScroll.BorderSizePixel = 0
+TeleportScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+TeleportScroll.ScrollBarThickness = 4
+TeleportScroll.Parent = TeleportFrame
+TeleportScroll.ZIndex = 6
+
+local places = {
+    {name = "🏠 البداية", cf = CFrame.new(-154.62, 5.17, 4.80), color = Color3.fromRGB(100, 100, 100)},
+    {name = "☕ الكوفي", cf = CFrame.new(46.80, 4.86, -282.78), color = Color3.fromRGB(0, 180, 100)},
+    {name = "⛺ الخيمة", cf = CFrame.new(-308.12, 4.62, -257.02), color = Color3.fromRGB(212, 143, 56)},
+    {name = "🎭 المسرح", cf = CFrame.new(-307.16, 8.82, -176.99), color = Color3.fromRGB(0, 120, 200)},
+    {name = "🍽️ المطعم", cf = CFrame.new(-153.43, 8.18, 262.25), color = Color3.fromRGB(180, 40, 40)},
+    {name = "🛒 المتجر", cf = CFrame.new(-90.87, 5.55, 282.49), color = Color3.fromRGB(120, 50, 160)},
+    {name = "❄️ جزيرة الثلج", cf = CFrame.new(-35.88, 5.34, 505.95), color = Color3.fromRGB(0, 190, 220)},
+    {name = "🎣 الصيد 1", cf = CFrame.new(-317.16, 15.29, 382.65), color = Color3.fromRGB(139, 94, 60)},
+    {name = "🎣 الصيد 2", cf = CFrame.new(-234.03, 5.07, 535.67), color = Color3.fromRGB(160, 114, 75)},
+    {name = "🎣 الصيد 3", cf = CFrame.new(-268.61, 5.07, 693.13), color = Color3.fromRGB(180, 135, 95)},
+    {name = "🎣 الصيد 4", cf = CFrame.new(197.76, 18.99, 644.84), color = Color3.fromRGB(200, 150, 110)},
+    {name = "🚗 متجر السيارات", cf = CFrame.new(238.83, 5.17, 164.67), color = Color3.fromRGB(90, 100, 110)},
+    {name = "🏦 البنك 1", cf = CFrame.new(265.02, 5.17, 179.93), color = Color3.fromRGB(15, 110, 70)},
+    {name = "🏦 البنك 2", cf = CFrame.new(-128.40, 5.17, 22.61), color = Color3.fromRGB(20, 130, 85)},
+    {name = "🏝️ الجزيرة الخاصة", cf = CFrame.new(644.16, 227.76, -98.30), color = Color3.fromRGB(140, 90, 210)},
+    {name = "🎹 البيانو", cf = CFrame.new(113.23, 7.01, -383.69), color = Color3.fromRGB(50, 55, 60)},
+    {name = "🏟️ الملعب", cf = CFrame.new(142.41, 4.17, 251.22), color = Color3.fromRGB(34, 139, 34)},
+    {name = "🐟 متجر السمك", cf = CFrame.new(-106.07, 5.43, 612.25), color = Color3.fromRGB(0, 75, 140)},
+    {name = "🏕️ المخيم", cf = CFrame.new(-112.13, 5.43, 635.56), color = Color3.fromRGB(120, 80, 50)},
+    {name = "🛖 الكوخ", cf = CFrame.new(106.04, 1.43, 684.97), color = Color3.fromRGB(160, 120, 90)},
+    {name = "🏜️ الصحراء", cf = CFrame.new(-33.01, 5.18, -180.50), color = Color3.fromRGB(210, 180, 80)},
+    {name = "🎣 الصيد 5", cf = CFrame.new(-59.19, 15.25, 454.89), color = Color3.fromRGB(115, 145, 95)},
+}
+
+local function createTeleportButtons()
+    local yOffset = 5
+    local buttonHeight = 32
+    local spacing = 6
+    
+    for i, place in ipairs(places) do
+        local button = Instance.new("TextButton")
+        button.Name = "TeleportBtn_" .. i
+        button.Size = UDim2.new(0.92, 0, 0, buttonHeight)
+        button.Position = UDim2.new(0.04, 0, 0, yOffset)
+        button.BackgroundColor3 = place.color
+        button.TextColor3 = Color3.fromRGB(255, 255, 255)
+        button.TextSize = 13
+        button.Font = Enum.Font.GothamSemibold
+        button.Text = place.name
+        button.Parent = TeleportScroll
+        button.ZIndex = 7
+        
+        local corner = Instance.new("UICorner")
+        corner.CornerRadius = UDim.new(0, 6)
+        corner.Parent = button
+        
+        local origColor = place.color
+        button.MouseEnter:Connect(function()
+            button.BackgroundColor3 = Color3.new(
+                math.min(origColor.R + 0.15, 1),
+                math.min(origColor.G + 0.15, 1),
+                math.min(origColor.B + 0.15, 1)
+            )
+        end)
+        button.MouseLeave:Connect(function()
+            button.BackgroundColor3 = origColor
+        end)
+        
+        button.MouseButton1Click:Connect(function()
+            if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                LocalPlayer.Character.HumanoidRootPart.CFrame = place.cf
+            end
+        end)
+        
+        yOffset = yOffset + buttonHeight + spacing
+    end
+    
+    TeleportScroll.CanvasSize = UDim2.new(0, 0, 0, yOffset + 10)
+end
+
+createTeleportButtons()
+
+local TeleportFooter = Instance.new("TextLabel")
+TeleportFooter.Size = UDim2.new(1, -40, 0, 18)
+TeleportFooter.Position = UDim2.new(0, 20, 1, -22)
+TeleportFooter.BackgroundTransparency = 1
+TeleportFooter.Text = "💜 " .. #places .. " مكاناً للانتقال الفوري"
+TeleportFooter.TextColor3 = Color3.fromRGB(150, 150, 180)
+TeleportFooter.TextSize = 11
+TeleportFooter.Font = Enum.Font.GothamMedium
+TeleportFooter.TextXAlignment = Enum.TextXAlignment.Center
+TeleportFooter.Parent = TeleportFrame
+TeleportFooter.ZIndex = 6
+
+-- ============================================
+-- محتوى صفحة الفلوس (Money)
+-- ============================================
+
+local MoneyFrame = Instance.new("Frame")
+MoneyFrame.Size = UDim2.new(0.9, 0, 0.85, 0)
+MoneyFrame.Position = UDim2.new(0.05, 0, 0.05, 0)
+MoneyFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+MoneyFrame.BorderSizePixel = 0
+MoneyFrame.Parent = MoneyContainer
+MoneyFrame.ZIndex = 5
+
+local MoneyFrameCorner = Instance.new("UICorner")
+MoneyFrameCorner.CornerRadius = UDim.new(0, 12)
+MoneyFrameCorner.Parent = MoneyFrame
+
+local MoneyTitle = Instance.new("TextLabel")
+MoneyTitle.Size = UDim2.new(1, 0, 0, 35)
+MoneyTitle.Position = UDim2.new(0, 0, 0, 5)
+MoneyTitle.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+MoneyTitle.Text = "💰 فلوس 💰"
+MoneyTitle.TextColor3 = Color3.fromRGB(180, 0, 255)
+MoneyTitle.TextSize = 18
+MoneyTitle.Font = Enum.Font.GothamBold
+MoneyTitle.Parent = MoneyFrame
+MoneyTitle.ZIndex = 6
+
+-- زر التشغيل/الإيقاف
+local ToggleButtonMoney = Instance.new("TextButton")
+ToggleButtonMoney.Size = UDim2.new(0.8, 0, 0, 50)
+ToggleButtonMoney.Position = UDim2.new(0.1, 0, 0.2, 0)
+ToggleButtonMoney.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+ToggleButtonMoney.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleButtonMoney.TextSize = 24
+ToggleButtonMoney.Font = Enum.Font.SourceSansBold
+ToggleButtonMoney.Text = "OFF ❌"
+ToggleButtonMoney.Parent = MoneyFrame
+ToggleButtonMoney.ZIndex = 7
+
+local ToggleCornerMoney = Instance.new("UICorner")
+ToggleCornerMoney.CornerRadius = UDim.new(0, 10)
+ToggleCornerMoney.Parent = ToggleButtonMoney
+
+-- إحصائيات الفلوس المجمعة
+local StatsFrame = Instance.new("Frame")
+StatsFrame.Size = UDim2.new(0.9, 0, 0, 60)
+StatsFrame.Position = UDim2.new(0.05, 0, 0.5, 0)
+StatsFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+StatsFrame.BorderSizePixel = 0
+StatsFrame.Parent = MoneyFrame
+StatsFrame.ZIndex = 7
+
+local StatsCorner = Instance.new("UICorner")
+StatsCorner.CornerRadius = UDim.new(0, 8)
+StatsCorner.Parent = StatsFrame
+
+local CountLabel = Instance.new("TextLabel")
+CountLabel.Size = UDim2.new(0.5, 0, 1, 0)
+CountLabel.Position = UDim2.new(0, 0, 0, 0)
+CountLabel.BackgroundTransparency = 1
+CountLabel.Text = "📦 0"
+CountLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
+CountLabel.TextSize = 18
+CountLabel.Font = Enum.Font.GothamBold
+CountLabel.TextXAlignment = Enum.TextXAlignment.Center
+CountLabel.Parent = StatsFrame
+CountLabel.ZIndex = 8
+
+local StatusLabel = Instance.new("TextLabel")
+StatusLabel.Size = UDim2.new(0.5, 0, 1, 0)
+StatusLabel.Position = UDim2.new(0.5, 0, 0, 0)
+StatusLabel.BackgroundTransparency = 1
+StatusLabel.Text = "⏸️ متوقف"
+StatusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+StatusLabel.TextSize = 18
+StatusLabel.Font = Enum.Font.GothamBold
+StatusLabel.TextXAlignment = Enum.TextXAlignment.Center
+StatusLabel.Parent = StatsFrame
+StatusLabel.ZIndex = 8
+
+-- متغيرات التشغيل
+_G.CashStealer = false
+local eventConnection = nil
+local collectedCount = 0
+
+local function processItem(item)
+    if not _G.CashStealer then return end
+    
+    if item.Name == "CashDrop" and (item:IsA("Part") or item:IsA("MeshPart")) then
+        local fullName = item:GetFullName():lower()
+        
+        if not fullName:find("table") and 
+           not fullName:find("board") and 
+           not fullName:find("game") and 
+           not fullName:find("ludo") and 
+           not fullName:find("جلسة") and 
+           not fullName:find("طاولة") and
+           not fullName:find("seat") and         
+           not fullName:find("chair") and        
+           not fullName:find("bench") and        
+           not fullName:find("lockedframe") and  
+           not fullName:find("barrier") then
+            
+            task.wait(0.02)
+            if item:FindFirstChildOfClass("BillboardGui") then
+                local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+                local rootPart = character:FindFirstChild("HumanoidRootPart")
+                
+                if rootPart then
+                    local originalPosition = rootPart.CFrame
+                    rootPart.CFrame = item.CFrame
+                    
+                    local remote = game:GetService("ReplicatedStorage"):FindFirstChild("CashDrop", true)
+                    
+                    while item and item.Parent and _G.CashStealer do
+                        if remote and remote:IsA("RemoteEvent") then
+                            remote:FireServer(item)
+                        end
+                        
+                        local prompt = item:FindFirstChildOfClass("ProximityPrompt")
+                        if prompt then fireproximityprompt(prompt) end
+                        
+                        local clicker = item:FindFirstChildOfClass("ClickDetector")
+                        if clicker then fireclickdetector(clicker) end
+                        
+                        task.wait(0.01)
+                    end
+                    
+                    if _G.CashStealer then
+                        collectedCount = collectedCount + 1
+                        CountLabel.Text = "📦 " .. collectedCount
+                    end
+                    
+                    if _G.CashStealer then
+                        rootPart.CFrame = originalPosition
+                    end
+                end
+            end
+        end
+    end
+end
+
+local function startStealing()
+    for _, item in pairs(workspace:GetDescendants()) do
+        if item.Name == "CashDrop" then
+            spawn(function() pcall(processItem, item) end)
+        end
+    end
+    
+    eventConnection = workspace.DescendantAdded:Connect(function(item)
+        if item.Name == "CashDrop" then
+            pcall(processItem, item)
         end
     end)
 end
 
-CreateToggleButton("Aimbot Snap", "Combat", "Aimbot")
-CreateToggleButton("Silent Aim", "Combat", "SilentAim")
-CreateToggleButton("Show FOV", "Visuals", "FOV")
-CreateToggleButton("Box ESP", "Visuals", "Box")
-CreateToggleButton("Name/HP/Dist", "Visuals", "Info")
-CreateToggleButton("Tracers", "Visuals", "Tracers")
-CreateToggleButton("Skeleton ESP", "Visuals", "Skeleton") -- NEW SKELETON TOGGLE
-
---=========================================
---// 2. VISUALS (FOV, ESP, Tracers, Skeletons)
---=========================================
-local FOVCircle = Instance.new("Frame", MeowUI)
-FOVCircle.Size = UDim2.new(0, Config.Combat.FOV * 2, 0, Config.Combat.FOV * 2)
-FOVCircle.AnchorPoint = Vector2.new(0.5, 0.5)
-FOVCircle.Position = UDim2.new(0.5, 0, 0.5, 0)
-FOVCircle.BackgroundTransparency = 1
-local FOVStroke = Instance.new("UIStroke", FOVCircle)
-FOVStroke.Thickness = 1.5
-FOVStroke.Color = Config.Theme.Accent
-Instance.new("UICorner", FOVCircle).CornerRadius = UDim.new(1, 0)
-
--- Skeleton Bones Mapping
-local SkeletonBones = {
-    -- R15 Rig
-    {"Head", "UpperTorso"}, {"UpperTorso", "LowerTorso"},
-    {"UpperTorso", "LeftUpperArm"}, {"LeftUpperArm", "LeftLowerArm"}, {"LeftLowerArm", "LeftHand"},
-    {"UpperTorso", "RightUpperArm"}, {"RightUpperArm", "RightLowerArm"}, {"RightLowerArm", "RightHand"},
-    {"LowerTorso", "LeftUpperLeg"}, {"LeftUpperLeg", "LeftLowerLeg"}, {"LeftLowerLeg", "LeftFoot"},
-    {"LowerTorso", "RightUpperLeg"}, {"RightUpperLeg", "RightLowerLeg"}, {"RightLowerLeg", "RightFoot"},
-    -- R6 Fallback Rig
-    {"Head", "Torso"}, {"Torso", "Left Arm"}, {"Torso", "Right Arm"},
-    {"Torso", "Left Leg"}, {"Torso", "Right Leg"}
-}
-
-local function HandleVisuals(P)
-    local Bones = {}
-    -- Pre-create the drawing lines to save memory
-    for i = 1, #SkeletonBones do
-        local Line = Drawing.new("Line")
-        Line.Thickness = 1.5
-        Line.Color = Config.Theme.Accent
-        Line.Transparency = 0.8
-        Line.Visible = false
-        table.insert(Bones, Line)
+ToggleButtonMoney.MouseButton1Click:Connect(function()
+    _G.CashStealer = not _G.CashStealer
+    if _G.CashStealer then
+        ToggleButtonMoney.Text = "ON ✅"
+        ToggleButtonMoney.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
+        StatusLabel.Text = "🟢 يعمل..."
+        StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 100)
+        collectedCount = 0
+        CountLabel.Text = "📦 0"
+        startStealing()
+        showNotification("✅ تم تشغيل تجميع الفلوس!", MoneyFrame)
+    else
+        ToggleButtonMoney.Text = "OFF ❌"
+        ToggleButtonMoney.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+        StatusLabel.Text = "⏸️ متوقف"
+        StatusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+        if eventConnection then
+            eventConnection:Disconnect()
+            eventConnection = nil
+        end
+        showNotification("⛔ تم إيقاف تجميع الفلوس", MoneyFrame)
     end
+end)
 
-    local Tracer = Drawing.new("Line")
-    Tracer.Thickness = 1
-    Tracer.Color = Config.Theme.Accent
-    Tracer.Transparency = 0.6
-    Tracer.Visible = false
+local ResetBtn = Instance.new("TextButton")
+ResetBtn.Size = UDim2.new(0.3, 0, 0, 30)
+ResetBtn.Position = UDim2.new(0.35, 0, 0.72, 0)
+ResetBtn.BackgroundColor3 = Color3.fromRGB(200, 100, 50)
+ResetBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+ResetBtn.TextSize = 13
+ResetBtn.Font = Enum.Font.SourceSansBold
+ResetBtn.Text = "🔄 إعادة تعيين"
+ResetBtn.Parent = MoneyFrame
+ResetBtn.ZIndex = 7
 
-    local function Setup(Char)
-        local Root = Char:WaitForChild("HumanoidRootPart", 10)
-        local Hum = Char:WaitForChild("Humanoid", 10)
+local ResetCorner = Instance.new("UICorner")
+ResetCorner.CornerRadius = UDim.new(0, 6)
+ResetCorner.Parent = ResetBtn
+
+ResetBtn.MouseButton1Click:Connect(function()
+    collectedCount = 0
+    CountLabel.Text = "📦 0"
+    showNotification("🔄 تم إعادة تعيين العداد", MoneyFrame)
+end)
+
+-- ============================================
+-- محتوى صفحة الصيد (Fishing)
+-- ============================================
+
+local FishingFrame = Instance.new("Frame")
+FishingFrame.Size = UDim2.new(0.9, 0, 0.85, 0)
+FishingFrame.Position = UDim2.new(0.05, 0, 0.05, 0)
+FishingFrame.BackgroundColor3 = Color3.fromRGB(15, 25, 35)
+FishingFrame.BorderSizePixel = 0
+FishingFrame.Parent = FishingContainer
+FishingFrame.ZIndex = 5
+
+local FishingFrameCorner = Instance.new("UICorner")
+FishingFrameCorner.CornerRadius = UDim.new(0, 12)
+FishingFrameCorner.Parent = FishingFrame
+
+local FishingGlow = Instance.new("Frame")
+FishingGlow.Size = UDim2.new(1, 6, 1, 6)
+FishingGlow.Position = UDim2.new(0, -3, 0, -3)
+FishingGlow.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
+FishingGlow.BackgroundTransparency = 0.3
+FishingGlow.BorderSizePixel = 0
+FishingGlow.Parent = FishingFrame
+FishingGlow.ZIndex = -1
+
+local FishingGlowCorner = Instance.new("UICorner")
+FishingGlowCorner.CornerRadius = UDim.new(0, 15)
+FishingGlowCorner.Parent = FishingGlow
+
+local FishingTitle = Instance.new("TextLabel")
+FishingTitle.Size = UDim2.new(1, 0, 0, 40)
+FishingTitle.Position = UDim2.new(0, 0, 0, 5)
+FishingTitle.BackgroundColor3 = Color3.fromRGB(0, 40, 60)
+FishingTitle.Text = "🎣 الصيد التلقائي 🎣"
+FishingTitle.TextColor3 = Color3.fromRGB(0, 200, 255)
+FishingTitle.TextSize = 20
+FishingTitle.Font = Enum.Font.GothamBold
+FishingTitle.Parent = FishingFrame
+FishingTitle.ZIndex = 6
+
+local FishingToggleButton = Instance.new("TextButton")
+FishingToggleButton.Size = UDim2.new(0.7, 0, 0, 55)
+FishingToggleButton.Position = UDim2.new(0.15, 0, 0.2, 0)
+FishingToggleButton.BackgroundColor3 = Color3.fromRGB(0, 150, 200)
+FishingToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+FishingToggleButton.TextSize = 22
+FishingToggleButton.Font = Enum.Font.SourceSansBold
+FishingToggleButton.Text = "🎣 تشغيل الصيد"
+FishingToggleButton.Parent = FishingFrame
+FishingToggleButton.ZIndex = 7
+
+local FishingToggleCorner = Instance.new("UICorner")
+FishingToggleCorner.CornerRadius = UDim.new(0, 10)
+FishingToggleCorner.Parent = FishingToggleButton
+
+local FishingStatus = Instance.new("TextLabel")
+FishingStatus.Size = UDim2.new(1, -20, 0, 30)
+FishingStatus.Position = UDim2.new(0, 10, 0.45, 0)
+FishingStatus.BackgroundTransparency = 1
+FishingStatus.Text = "⏸️ الصيد متوقف"
+FishingStatus.TextColor3 = Color3.fromRGB(255, 100, 100)
+FishingStatus.TextSize = 16
+FishingStatus.Font = Enum.Font.GothamBold
+FishingStatus.TextXAlignment = Enum.TextXAlignment.Center
+FishingStatus.Parent = FishingFrame
+FishingStatus.ZIndex = 7
+
+local InfoBox = Instance.new("Frame")
+InfoBox.Size = UDim2.new(0.85, 0, 0, 80)
+InfoBox.Position = UDim2.new(0.075, 0, 0.55, 0)
+InfoBox.BackgroundColor3 = Color3.fromRGB(0, 30, 50)
+InfoBox.BorderSizePixel = 0
+InfoBox.Parent = FishingFrame
+InfoBox.ZIndex = 7
+
+local InfoBoxCorner = Instance.new("UICorner")
+InfoBoxCorner.CornerRadius = UDim.new(0, 8)
+InfoBoxCorner.Parent = InfoBox
+
+local InfoText = Instance.new("TextLabel")
+InfoText.Size = UDim2.new(1, -10, 1, -10)
+InfoText.Position = UDim2.new(0, 5, 0, 5)
+InfoText.BackgroundTransparency = 1
+InfoText.Text = "🐟 سكربت الصيد التلقائي\n📌 اضغط على الزر لتفعيل الصيد"
+InfoText.TextColor3 = Color3.fromRGB(150, 200, 255)
+InfoText.TextSize = 14
+InfoText.Font = Enum.Font.GothamMedium
+InfoText.TextXAlignment = Enum.TextXAlignment.Center
+InfoText.TextYAlignment = Enum.TextYAlignment.Center
+InfoText.Parent = InfoBox
+InfoText.ZIndex = 8
+
+local fishingActive = false
+local fishingConnection = nil
+
+local function startFishing()
+    if fishingActive then
+        fishingActive = false
+        FishingToggleButton.Text = "🎣 تشغيل الصيد"
+        FishingToggleButton.BackgroundColor3 = Color3.fromRGB(0, 150, 200)
+        FishingStatus.Text = "⏸️ الصيد متوقف"
+        FishingStatus.TextColor3 = Color3.fromRGB(255, 100, 100)
+        InfoText.Text = "🐟 تم إيقاف الصيد التلقائي"
+        if fishingConnection then
+            fishingConnection:Disconnect()
+            fishingConnection = nil
+        end
+        showNotification("⛔ تم إيقاف الصيد", FishingFrame)
+    else
+        fishingActive = true
+        FishingToggleButton.Text = "⏹️ إيقاف الصيد"
+        FishingToggleButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+        FishingStatus.Text = "🟢 جاري الصيد..."
+        FishingStatus.TextColor3 = Color3.fromRGB(0, 255, 100)
+        InfoText.Text = "🐟 جاري الصيد التلقائي... 🎣"
         
-        local BGui = Instance.new("BillboardGui", Root)
-        BGui.Size = UDim2.new(4, 0, 5.5, 0)
-        BGui.AlwaysOnTop = true
+        local success = pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/salihmahdu12-ui/SA-ALONE-THE-REAL/refs/heads/main/.ALARAB"))()
+        end)
         
-        local Box = Instance.new("Frame", BGui)
-        Box.Size = UDim2.new(1, 0, 1, 0)
-        Box.BackgroundTransparency = 1
-        local S = Instance.new("UIStroke", Box)
-        S.Color = Config.Theme.Accent
-        S.Transparency = 0.5
-
-        local Info = Instance.new("TextLabel", BGui)
-        Info.Size = UDim2.new(1, 0, 0, 40)
-        Info.Position = UDim2.new(0, 0, -0.4, 0)
-        Info.BackgroundTransparency = 1
-        Info.TextColor3 = Color3.new(1,1,1)
-        Info.TextSize = 10
-        Info.Font = Enum.Font.Code
-
-        RunService.RenderStepped:Connect(function()
-            FOVCircle.Visible = Config.Visuals.FOV
-            Box.Visible = Config.Visuals.Box
-            Info.Visible = Config.Visuals.Info
-
-            if Root and Root.Parent and Hum.Health > 0 then
-                local Pos, OnScreen = Camera:WorldToViewportPoint(Root.Position)
-                
-                -- Info Logic
-                if Config.Visuals.Info and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                    local Dist = math.floor((Root.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude)
-                    Info.Text = string.format("%s\n%s HP | %sm", P.Name, math.floor(Hum.Health), Dist)
-                end
-
-                -- Tracer Logic
-                if OnScreen and Config.Visuals.Tracers then
-                    Tracer.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
-                    Tracer.To = Vector2.new(Pos.X, Pos.Y)
-                    Tracer.Visible = true
-                else
-                    Tracer.Visible = false
-                end
-
-                -- Skeleton Logic
-                if Config.Visuals.Skeleton then
-                    for i, connection in ipairs(SkeletonBones) do
-                        local Part1 = Char:FindFirstChild(connection[1])
-                        local Part2 = Char:FindFirstChild(connection[2])
-                        
-                        if Part1 and Part2 then
-                            local P1, Vis1 = Camera:WorldToViewportPoint(Part1.Position)
-                            local P2, Vis2 = Camera:WorldToViewportPoint(Part2.Position)
-                            
-                            if Vis1 or Vis2 then
-                                Bones[i].From = Vector2.new(P1.X, P1.Y)
-                                Bones[i].To = Vector2.new(P2.X, P2.Y)
-                                Bones[i].Visible = true
-                            else
-                                Bones[i].Visible = false
-                            end
-                        else
-                            Bones[i].Visible = false
-                        end
-                    end
-                else
-                    for _, line in pairs(Bones) do line.Visible = false end
-                end
-            else
-                Tracer.Visible = false
-                for _, line in pairs(Bones) do line.Visible = false end
-            end
-        end)
-    end
-    P.CharacterAdded:Connect(Setup)
-    if P.Character then Setup(P.Character) end
-end
-
-for _, v in pairs(Players:GetPlayers()) do if v ~= LocalPlayer then HandleVisuals(v) end end
-Players.PlayerAdded:Connect(HandleVisuals)
-
---=========================================
---// 3. COMBAT LOGIC (Targeting & Silent Aim)
---=========================================
-local function GetTarget()
-    local Target, Closest = nil, Config.Combat.FOV
-    local Center = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
-
-    for _, v in pairs(Players:GetPlayers()) do
-        if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild(Config.Combat.TargetPart) then
-            if v.Team == LocalPlayer.Team then continue end
-            local Hum = v.Character:FindFirstChildOfClass("Humanoid")
-            if Hum and Hum.Health > 0 then
-                local Part = v.Character[Config.Combat.TargetPart]
-                local Pos, OnScreen = Camera:WorldToViewportPoint(Part.Position)
-                
-                if OnScreen then
-                    local Dist = (Vector2.new(Pos.X, Pos.Y) - Center).Magnitude
-                    if Dist < Closest then
-                        local RayP = RaycastParams.new()
-                        RayP.FilterType = Enum.RaycastFilterType.Exclude
-                        RayP.FilterDescendantsInstances = {LocalPlayer.Character, Camera}
-                        local Result = workspace:Raycast(Camera.CFrame.Position, (Part.Position - Camera.CFrame.Position), RayP)
-                        
-                        if Result and Result.Instance:IsDescendantOf(v.Character) then
-                            Target = v
-                            Closest = Dist
-                        end
-                    end
-                end
-            end
-        end
-    end
-    return Target
-end
-
--- Silent Aim (Mouse Hook)
-local OldIndex
-OldIndex = hookmetamethod(game, "__index", newcclosure(function(self, index)
-    if Config.Combat.SilentAim and self == Mouse and (index == "Hit" or index == "Target") and not checkcaller() then
-        local T = GetTarget()
-        if T then
-            local Part = T.Character[Config.Combat.TargetPart]
-            return (index == "Hit" and Part.CFrame or Part)
-        end
-    end
-    return OldIndex(self, index)
-end))
-
--- Aimbot Lock
-RunService.RenderStepped:Connect(function()
-    if Config.Combat.Aimbot then
-        local T = GetTarget()
-        if T then
-            Camera.CFrame = CFrame.new(Camera.CFrame.Position, T.Character[Config.Combat.TargetPart].Position)
-        end
-    end
-end)
-local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
-
-local player = Players.LocalPlayer
-local camera = workspace.CurrentCamera
-
--- =========================
--- SETTINGS
--- =========================
-local Settings = {
-    AimAssist = false,
-    AimStrength = 0.2,
-    FOV = 120,
-    ShowFOV = true,
-
-    HighlightEnabled = false,
-    HighlightColor = Color3.fromRGB(255,0,0),
-    Names = false
-}
-
-_G.Settings = Settings
-
--- =========================
--- INPUT (RIGHT CLICK AIM)
--- =========================
-local rightClick = false
-
-UserInputService.InputBegan:Connect(function(i)
-    if i.UserInputType == Enum.UserInputType.MouseButton2 then
-        rightClick = true
-    end
-end)
-
-UserInputService.InputEnded:Connect(function(i)
-    if i.UserInputType == Enum.UserInputType.MouseButton2 then
-        rightClick = false
-    end
-end)
-
--- =========================
--- AIM ASSIST (TRAINING SAFE)
--- =========================
-local function getClosest()
-    local closest, dist = nil, math.huge
-
-    for _, plr in ipairs(Players:GetPlayers()) do
-        if plr ~= player and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-            local pos, onScreen = camera:WorldToViewportPoint(plr.Character.HumanoidRootPart.Position)
-
-            if onScreen then
-                local d = (Vector2.new(pos.X,pos.Y) - Vector2.new(camera.ViewportSize.X/2, camera.ViewportSize.Y/2)).Magnitude
-                if d < Settings.FOV and d < dist then
-                    closest = plr
-                    dist = d
-                end
-            end
-        end
-    end
-
-    return closest
-end
-
-RunService.RenderStepped:Connect(function()
-    if Settings.AimAssist and rightClick then
-        local t = getClosest()
-        if t and t.Character then
-            local root = t.Character:FindFirstChild("HumanoidRootPart")
-            if root then
-                camera.CFrame = camera.CFrame:Lerp(
-                    CFrame.new(camera.CFrame.Position, root.Position),
-                    Settings.AimStrength
-                )
-            end
-        end
-    end
-end)
-
--- =========================
--- ðŸ”µ TRUE HOLLOW FOV CIRCLE (FIXED)
--- =========================
-local gui = Instance.new("ScreenGui")
-gui.ResetOnSpawn = false
-gui.Parent = player:WaitForChild("PlayerGui")
-
-local circle = Instance.new("Frame")
-circle.AnchorPoint = Vector2.new(0.5, 0.5)
-circle.Position = UDim2.new(0.5, 0, 0.5, 0)
-circle.BackgroundTransparency = 1
-circle.BorderSizePixel = 0
-circle.Parent = gui
-
--- Makes it a REAL circle (not a square)
-local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(1, 0)
-corner.Parent = circle
-
--- Only stroke is visible = hollow ring
-local stroke = Instance.new("UIStroke")
-stroke.Thickness = 2
-stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-stroke.Parent = circle
-
-RunService.RenderStepped:Connect(function()
-    local size = Settings.FOV * 2
-
-    circle.Size = UDim2.new(0, size, 0, size)
-    circle.Visible = Settings.ShowFOV
-
-    stroke.Color = Settings.HighlightColor
-end)
--- =========================
--- ðŸ‘ VISUAL SYSTEM (FIXED)
--- =========================
-local ActiveHighlights = {}
-
-local function applyVisual(char)
-    if not char or char:FindFirstChild("DevVisual") then return end
-
-    local marker = Instance.new("BoolValue")
-    marker.Name = "DevVisual"
-    marker.Parent = char
-
-    local highlight = Instance.new("Highlight")
-    highlight.Name = "DevHighlight"
-    highlight.Parent = char
-    highlight.FillTransparency = 0.5
-    highlight.OutlineTransparency = 0
-
-    table.insert(ActiveHighlights, highlight)
-
-    local head = char:FindFirstChild("Head")
-
-    if head then
-        local tag = Instance.new("BillboardGui")
-        tag.Size = UDim2.new(0,120,0,40)
-        tag.StudsOffset = Vector3.new(0,2.5,0)
-        tag.Adornee = head
-        tag.Parent = head
-
-        local txt = Instance.new("TextLabel")
-        txt.Size = UDim2.new(1,0,1,0)
-        txt.BackgroundTransparency = 1
-        txt.TextScaled = true
-        txt.Text = char.Name
-        txt.TextColor3 = Color3.new(1,1,1)
-        txt.Parent = tag
-
-        RunService.RenderStepped:Connect(function()
-            tag.Enabled = Settings.Names
-        end)
-    end
-end
-
--- =========================
--- HIGHLIGHT CONTROLLER (FIXED ON/OFF + COLOR)
--- =========================
-RunService.RenderStepped:Connect(function()
-    for i = #ActiveHighlights, 1, -1 do
-        local h = ActiveHighlights[i]
-
-        if not h or not h.Parent then
-            table.remove(ActiveHighlights, i)
+        if success then
+            showNotification("✅ تم تشغيل الصيد!", FishingFrame)
         else
-            h.Enabled = Settings.HighlightEnabled
+            showNotification("❌ فشل تحميل سكربت الصيد!", FishingFrame)
+            fishingActive = false
+            FishingToggleButton.Text = "🎣 تشغيل الصيد"
+            FishingToggleButton.BackgroundColor3 = Color3.fromRGB(0, 150, 200)
+            FishingStatus.Text = "❌ فشل التشغيل"
+            FishingStatus.TextColor3 = Color3.fromRGB(255, 50, 50)
+        end
+    end
+end
 
-            if Settings.HighlightEnabled then
-                h.FillColor = Settings.HighlightColor
-                h.OutlineColor = Settings.HighlightColor
+FishingToggleButton.MouseButton1Click:Connect(startFishing)
+
+-- ============================================
+-- محتوى صفحة اللاعبين (Player List)
+-- ============================================
+
+local PlayerFrame = Instance.new("Frame")
+PlayerFrame.Size = UDim2.new(0.9, 0, 0.85, 0)
+PlayerFrame.Position = UDim2.new(0.05, 0, 0.05, 0)
+PlayerFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 35)
+PlayerFrame.BorderSizePixel = 0
+PlayerFrame.Parent = PlayerContainer
+PlayerFrame.ZIndex = 5
+
+local PlayerFrameCorner = Instance.new("UICorner")
+PlayerFrameCorner.CornerRadius = UDim.new(0, 12)
+PlayerFrameCorner.Parent = PlayerFrame
+
+local PlayerGlow = Instance.new("Frame")
+PlayerGlow.Size = UDim2.new(1, 6, 1, 6)
+PlayerGlow.Position = UDim2.new(0, -3, 0, -3)
+PlayerGlow.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
+PlayerGlow.BackgroundTransparency = 0.3
+PlayerGlow.BorderSizePixel = 0
+PlayerGlow.Parent = PlayerFrame
+PlayerGlow.ZIndex = -1
+
+local PlayerGlowCorner = Instance.new("UICorner")
+PlayerGlowCorner.CornerRadius = UDim.new(0, 15)
+PlayerGlowCorner.Parent = PlayerGlow
+
+local PlayerTitle = Instance.new("TextLabel")
+PlayerTitle.Size = UDim2.new(1, -40, 0, 35)
+PlayerTitle.Position = UDim2.new(0, 20, 0, 8)
+PlayerTitle.BackgroundTransparency = 1
+PlayerTitle.Text = "👥 قائمة اللاعبين"
+PlayerTitle.TextColor3 = Color3.fromRGB(180, 0, 255)
+PlayerTitle.TextSize = 20
+PlayerTitle.Font = Enum.Font.GothamBold
+PlayerTitle.TextXAlignment = Enum.TextXAlignment.Center
+PlayerTitle.Parent = PlayerFrame
+PlayerTitle.ZIndex = 6
+
+local PlayerDivider = Instance.new("Frame")
+PlayerDivider.Size = UDim2.new(0.6, 0, 0, 2)
+PlayerDivider.Position = UDim2.new(0.2, 0, 0, 48)
+PlayerDivider.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
+PlayerDivider.BackgroundTransparency = 0.4
+PlayerDivider.BorderSizePixel = 0
+PlayerDivider.Parent = PlayerFrame
+PlayerDivider.ZIndex = 6
+
+local PlayerScroll = Instance.new("ScrollingFrame")
+PlayerScroll.Size = UDim2.new(1, -10, 1, -80)
+PlayerScroll.Position = UDim2.new(0, 5, 0, 55)
+PlayerScroll.BackgroundTransparency = 1
+PlayerScroll.BorderSizePixel = 0
+PlayerScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+PlayerScroll.ScrollBarThickness = 4
+PlayerScroll.Parent = PlayerFrame
+PlayerScroll.ZIndex = 6
+
+local PlayerCountLabel = Instance.new("TextLabel")
+PlayerCountLabel.Size = UDim2.new(1, -40, 0, 18)
+PlayerCountLabel.Position = UDim2.new(0, 20, 1, -22)
+PlayerCountLabel.BackgroundTransparency = 1
+PlayerCountLabel.TextColor3 = Color3.fromRGB(150, 150, 180)
+PlayerCountLabel.TextSize = 11
+PlayerCountLabel.Font = Enum.Font.GothamMedium
+PlayerCountLabel.TextXAlignment = Enum.TextXAlignment.Center
+PlayerCountLabel.Parent = PlayerFrame
+PlayerCountLabel.ZIndex = 6
+
+local function UpdatePlayerList()
+    for _, child in pairs(PlayerScroll:GetChildren()) do
+        if child:IsA("TextButton") then
+            child:Destroy()
+        end
+    end
+    
+    local allPlayers = Players:GetPlayers()
+    local yOffset = 5
+    local buttonHeight = 35
+    local spacing = 5
+    
+    PlayerCountLabel.Text = "👥 " .. #allPlayers .. " لاعب في السيرفر"
+    
+    for i, player in ipairs(allPlayers) do
+        local isLocal = (player == LocalPlayer)
+        local displayName = player.DisplayName
+        local username = player.Name
+        
+        local button = Instance.new("TextButton")
+        button.Size = UDim2.new(0.92, 0, 0, buttonHeight)
+        button.Position = UDim2.new(0.04, 0, 0, yOffset)
+        
+        if isLocal then
+            button.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
+        else
+            button.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
+        end
+        
+        button.TextColor3 = Color3.fromRGB(255, 255, 255)
+        button.TextSize = 13
+        button.Font = Enum.Font.GothamSemibold
+        
+        if isLocal then
+            button.Text = "⭐ " .. displayName .. " (أنت)"
+        else
+            button.Text = "👤 " .. displayName .. " @" .. username
+        end
+        
+        button.Parent = PlayerScroll
+        button.ZIndex = 7
+        
+        local corner = Instance.new("UICorner")
+        corner.CornerRadius = UDim.new(0, 6)
+        corner.Parent = button
+        
+        button.MouseEnter:Connect(function()
+            if not isLocal then
+                button.BackgroundColor3 = Color3.fromRGB(70, 70, 95)
+            end
+        end)
+        button.MouseLeave:Connect(function()
+            if not isLocal then
+                button.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
+            end
+        end)
+        
+        if not isLocal then
+            button.MouseButton1Click:Connect(function()
+                if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                        LocalPlayer.Character.HumanoidRootPart.CFrame = player.Character.HumanoidRootPart.CFrame
+                    end
+                end
+            end)
+        end
+        
+        yOffset = yOffset + buttonHeight + spacing
+    end
+    
+    PlayerScroll.CanvasSize = UDim2.new(0, 0, 0, yOffset + 10)
+end
+
+UpdatePlayerList()
+
+Players.PlayerAdded:Connect(function() UpdatePlayerList() end)
+Players.PlayerRemoving:Connect(function() UpdatePlayerList() end)
+
+-- ============================================
+-- محتوى صفحة الطيران الذكي (مرتب عمودي)
+-- ============================================
+
+local CarFrame = Instance.new("Frame")
+CarFrame.Size = UDim2.new(0.9, 0, 0.85, 0)
+CarFrame.Position = UDim2.new(0.05, 0, 0.05, 0)
+CarFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 35)
+CarFrame.BorderSizePixel = 0
+CarFrame.Parent = CarContainer
+CarFrame.ZIndex = 5
+
+local CarFrameCorner = Instance.new("UICorner")
+CarFrameCorner.CornerRadius = UDim.new(0, 12)
+CarFrameCorner.Parent = CarFrame
+
+local CarGlow = Instance.new("Frame")
+CarGlow.Size = UDim2.new(1, 6, 1, 6)
+CarGlow.Position = UDim2.new(0, -3, 0, -3)
+CarGlow.BackgroundColor3 = Color3.fromRGB(255, 150, 0)
+CarGlow.BackgroundTransparency = 0.3
+CarGlow.BorderSizePixel = 0
+CarGlow.Parent = CarFrame
+CarGlow.ZIndex = -1
+
+local CarGlowCorner = Instance.new("UICorner")
+CarGlowCorner.CornerRadius = UDim.new(0, 15)
+CarGlowCorner.Parent = CarGlow
+
+local CarTitle = Instance.new("TextLabel")
+CarTitle.Size = UDim2.new(1, -40, 0, 40)
+CarTitle.Position = UDim2.new(0, 20, 0, 8)
+CarTitle.BackgroundTransparency = 1
+CarTitle.Text = "🚗 الطيران الذكي للسيارات 🚗"
+CarTitle.TextColor3 = Color3.fromRGB(255, 150, 0)
+CarTitle.TextSize = 18
+CarTitle.Font = Enum.Font.GothamBold
+CarTitle.TextXAlignment = Enum.TextXAlignment.Center
+CarTitle.Parent = CarFrame
+CarTitle.ZIndex = 6
+
+local CarDivider = Instance.new("Frame")
+CarDivider.Size = UDim2.new(0.6, 0, 0, 2)
+CarDivider.Position = UDim2.new(0.2, 0, 0, 52)
+CarDivider.BackgroundColor3 = Color3.fromRGB(255, 150, 0)
+CarDivider.BackgroundTransparency = 0.4
+CarDivider.BorderSizePixel = 0
+CarDivider.Parent = CarFrame
+CarDivider.ZIndex = 6
+
+-- ============================================
+-- نظام الطيران الذكي (مرتب عمودي)
+-- ============================================
+
+-- متغيرات الطيران
+local Flying = false
+local MovingForward = false
+local FlySpeed = 2.5
+local flyConnection = nil
+
+-- دالة جلب السيارة
+local function GetVehicle()
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+        local Seat = LocalPlayer.Character.Humanoid.SeatPart
+        if Seat and Seat:IsA("VehicleSeat") then
+            return Seat.Parent
+        end
+    end
+    return nil
+end
+
+-- دالة الإشعارات
+function showNotification(text, parent)
+    local notif = Instance.new("TextLabel")
+    notif.Size = UDim2.new(0, 220, 0, 30)
+    notif.Position = UDim2.new(0.5, -110, 0.85, 0)
+    notif.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
+    notif.BackgroundTransparency = 0.1
+    notif.TextColor3 = Color3.fromRGB(0, 255, 150)
+    notif.TextSize = 13
+    notif.Font = Enum.Font.GothamBold
+    notif.Text = text
+    notif.Parent = parent
+    
+    local notifCorner = Instance.new("UICorner")
+    notifCorner.CornerRadius = UDim.new(0, 8)
+    notifCorner.Parent = notif
+    
+    task.wait(1.5)
+    notif:Destroy()
+end
+
+-- حلقة الطيران
+local function StartFlyLoop()
+    if flyConnection then
+        flyConnection:Disconnect()
+        flyConnection = nil
+    end
+    
+    flyConnection = RunService.Heartbeat:Connect(function()
+        if Flying then
+            local car = GetVehicle()
+            if car then
+                local PrimaryPart = car.PrimaryPart or car:FindFirstChildWhichIsA("BasePart")
+                if PrimaryPart then
+                    local cam = workspace.CurrentCamera
+                    local lookVector = cam.CFrame.LookVector
+                    
+                    local moveDirection = Vector3.new(0, 0, 0)
+                    if MovingForward then
+                        moveDirection = lookVector * FlySpeed
+                    end
+                    
+                    local currentPos = PrimaryPart.Position
+                    local nextPos = currentPos + moveDirection
+                    
+                    PrimaryPart.CFrame = CFrame.new(nextPos, nextPos + Vector3.new(lookVector.X, 0, lookVector.Z))
+                    PrimaryPart.Velocity = Vector3.new(0, 0, 0)
+                    PrimaryPart.RotVelocity = Vector3.new(0, 0, 0)
+                end
             else
-                h.Enabled = false
+                Flying = false
+                MovingForward = false
+                FlyToggleButton.Text = "✈️ الطيران: مطفأ"
+                FlyToggleButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+                MoveCarButton.Text = "⏹️ الحركة: متوقفة"
+                MoveCarButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+                showNotification("⚠️ فقدت السيارة!", CarFrame)
+            end
+        end
+    end)
+end
+
+-- ============================================
+-- الأزرار مرتبة عمودياً (تحت بعض)
+-- ============================================
+
+-- زر تفعيل الطيران (الأول)
+local FlyToggleButton = Instance.new("TextButton")
+FlyToggleButton.Size = UDim2.new(0.8, 0, 0, 45)
+FlyToggleButton.Position = UDim2.new(0.1, 0, 0.1, 0)
+FlyToggleButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+FlyToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+FlyToggleButton.TextSize = 15
+FlyToggleButton.Font = Enum.Font.SourceSansBold
+FlyToggleButton.Text = "✈️ الطيران: مطفأ"
+FlyToggleButton.Parent = CarFrame
+FlyToggleButton.ZIndex = 7
+
+local FlyToggleCorner = Instance.new("UICorner")
+FlyToggleCorner.CornerRadius = UDim.new(0, 8)
+FlyToggleCorner.Parent = FlyToggleButton
+
+FlyToggleButton.MouseButton1Click:Connect(function()
+    local car = GetVehicle()
+    if not car then
+        showNotification("⚠️ لازم تركب سيارة أولاً!", CarFrame)
+        return
+    end
+    
+    Flying = not Flying
+    if Flying then
+        FlyToggleButton.Text = "✈️ الطيران: مفعل ✅"
+        FlyToggleButton.BackgroundColor3 = Color3.fromRGB(40, 180, 70)
+        StartFlyLoop()
+        showNotification("✅ تم تفعيل الطيران!", CarFrame)
+    else
+        FlyToggleButton.Text = "✈️ الطيران: مطفأ"
+        FlyToggleButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+        MovingForward = false
+        MoveCarButton.Text = "⏹️ الحركة: متوقفة"
+        MoveCarButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+        if flyConnection then
+            flyConnection:Disconnect()
+            flyConnection = nil
+        end
+        showNotification("⛔ تم إيقاف الطيران", CarFrame)
+    end
+end)
+
+-- زر تحريك السيارة (الثاني)
+local MoveCarButton = Instance.new("TextButton")
+MoveCarButton.Size = UDim2.new(0.8, 0, 0, 45)
+MoveCarButton.Position = UDim2.new(0.1, 0, 0.2, 0)
+MoveCarButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+MoveCarButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+MoveCarButton.TextSize = 15
+MoveCarButton.Font = Enum.Font.SourceSansBold
+MoveCarButton.Text = "⏹️ الحركة: متوقفة"
+MoveCarButton.Parent = CarFrame
+MoveCarButton.ZIndex = 7
+
+local MoveCarCorner = Instance.new("UICorner")
+MoveCarCorner.CornerRadius = UDim.new(0, 8)
+MoveCarCorner.Parent = MoveCarButton
+
+MoveCarButton.MouseButton1Click:Connect(function()
+    if not Flying then
+        showNotification("⚠️ فعّل الطيران أولاً!", CarFrame)
+        return
+    end
+    
+    MovingForward = not MovingForward
+    if MovingForward then
+        MoveCarButton.Text = "▶️ الحركة: تندفع 🚀"
+        MoveCarButton.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+        showNotification("🚀 السيارة تندفع!", CarFrame)
+    else
+        MoveCarButton.Text = "⏹️ الحركة: متوقفة"
+        MoveCarButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+        showNotification("⏹️ تم إيقاف السيارة", CarFrame)
+    end
+end)
+
+-- ============================================
+-- شريط تعديل السرعة (الثالث)
+-- ============================================
+
+local SpeedSliderContainer = Instance.new("Frame")
+SpeedSliderContainer.Size = UDim2.new(0.8, 0, 0, 35)
+SpeedSliderContainer.Position = UDim2.new(0.1, 0, 0.3, 0)
+SpeedSliderContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+SpeedSliderContainer.BorderSizePixel = 0
+SpeedSliderContainer.Parent = CarFrame
+SpeedSliderContainer.ZIndex = 7
+
+local SpeedSliderCorner = Instance.new("UICorner")
+SpeedSliderCorner.CornerRadius = UDim.new(0, 6)
+SpeedSliderCorner.Parent = SpeedSliderContainer
+
+local SpeedLabel = Instance.new("TextLabel")
+SpeedLabel.Size = UDim2.new(0.4, 0, 1, 0)
+SpeedLabel.Position = UDim2.new(0, 5, 0, 0)
+SpeedLabel.BackgroundTransparency = 1
+SpeedLabel.Text = "🚀 السرعة: 2.5"
+SpeedLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
+SpeedLabel.TextSize = 13
+SpeedLabel.Font = Enum.Font.GothamBold
+SpeedLabel.TextXAlignment = Enum.TextXAlignment.Left
+SpeedLabel.Parent = SpeedSliderContainer
+SpeedLabel.ZIndex = 8
+
+local SpeedSlider = Instance.new("TextBox")
+SpeedSlider.Size = UDim2.new(0.5, 0, 1, -6)
+SpeedSlider.Position = UDim2.new(0.45, 0, 0, 3)
+SpeedSlider.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+SpeedSlider.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpeedSlider.TextSize = 13
+SpeedSlider.Font = Enum.Font.GothamBold
+SpeedSlider.Text = ""
+SpeedSlider.PlaceholderText = "أدخل السرعة (1-10)"
+SpeedSlider.Parent = SpeedSliderContainer
+SpeedSlider.ZIndex = 8
+
+local SpeedSliderCorner2 = Instance.new("UICorner")
+SpeedSliderCorner2.CornerRadius = UDim.new(0, 4)
+SpeedSliderCorner2.Parent = SpeedSlider
+
+SpeedSlider.FocusLost:Connect(function()
+    local val = tonumber(SpeedSlider.Text)
+    if val then
+        FlySpeed = math.clamp(val, 1, 10)
+        SpeedLabel.Text = "🚀 السرعة: " .. string.format("%.1f", FlySpeed)
+        SpeedSlider.Text = ""
+        showNotification("✅ السرعة = " .. string.format("%.1f", FlySpeed), CarFrame)
+    end
+end)
+
+-- ============================================
+-- إرشادات الاستخدام (الرابع)
+-- ============================================
+
+local InfoBox = Instance.new("Frame")
+InfoBox.Size = UDim2.new(0.8, 0, 0, 110)
+InfoBox.Position = UDim2.new(0.1, 0, 0.38, 0)
+InfoBox.BackgroundColor3 = Color3.fromRGB(25, 25, 40)
+InfoBox.BorderSizePixel = 0
+InfoBox.Parent = CarFrame
+InfoBox.ZIndex = 7
+
+local InfoBoxCorner = Instance.new("UICorner")
+InfoBoxCorner.CornerRadius = UDim.new(0, 8)
+InfoBoxCorner.Parent = InfoBox
+
+local InfoText = Instance.new("TextLabel")
+InfoText.Size = UDim2.new(1, -10, 1, -10)
+InfoText.Position = UDim2.new(0, 5, 0, 5)
+InfoText.BackgroundTransparency = 1
+InfoText.Text = "🚗 كيفية استخدام الطيران الذكي:\n\n1️⃣ اركب سيارة (اجلس في مقعد السائق)\n2️⃣ اضغط على زر 'تفعيل الطيران'\n3️⃣ اضغط على زر 'تشغيل الحركة' للانطلاق\n4️⃣ عدل السرعة من 1 إلى 10"
+InfoText.TextColor3 = Color3.fromRGB(200, 200, 220)
+InfoText.TextSize = 13
+InfoText.Font = Enum.Font.GothamMedium
+InfoText.TextXAlignment = Enum.TextXAlignment.Center
+InfoText.TextYAlignment = Enum.TextYAlignment.Top
+InfoText.Parent = InfoBox
+InfoText.ZIndex = 8
+
+-- ============================================
+-- محتوى الأخبار
+-- ============================================
+
+local NewsFrame = Instance.new("Frame")
+NewsFrame.Size = UDim2.new(0.92, 0, 0.88, 0)
+NewsFrame.Position = UDim2.new(0.04, 0, 0.04, 0)
+NewsFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 30)
+NewsFrame.BorderSizePixel = 0
+NewsFrame.Parent = NewsContainer
+NewsFrame.ZIndex = 5
+
+local NewsFrameCorner = Instance.new("UICorner")
+NewsFrameCorner.CornerRadius = UDim.new(0, 12)
+NewsFrameCorner.Parent = NewsFrame
+
+local NewsGlow = Instance.new("Frame")
+NewsGlow.Size = UDim2.new(1, 6, 1, 6)
+NewsGlow.Position = UDim2.new(0, -3, 0, -3)
+NewsGlow.BackgroundColor3 = Color3.fromRGB(255, 200, 0)
+NewsGlow.BackgroundTransparency = 0.3
+NewsGlow.BorderSizePixel = 0
+NewsGlow.Parent = NewsFrame
+NewsGlow.ZIndex = -1
+
+local NewsGlowCorner = Instance.new("UICorner")
+NewsGlowCorner.CornerRadius = UDim.new(0, 15)
+NewsGlowCorner.Parent = NewsGlow
+
+local NewsTitle = Instance.new("TextLabel")
+NewsTitle.Size = UDim2.new(1, -40, 0, 40)
+NewsTitle.Position = UDim2.new(0, 20, 0, 5)
+NewsTitle.BackgroundTransparency = 1
+NewsTitle.Text = "📰 آخر الأخبار والتحديثات"
+NewsTitle.TextColor3 = Color3.fromRGB(255, 200, 0)
+NewsTitle.TextSize = 20
+NewsTitle.Font = Enum.Font.GothamBold
+NewsTitle.TextXAlignment = Enum.TextXAlignment.Center
+NewsTitle.Parent = NewsFrame
+NewsTitle.ZIndex = 6
+
+local NewsDivider = Instance.new("Frame")
+NewsDivider.Size = UDim2.new(0.7, 0, 0, 2)
+NewsDivider.Position = UDim2.new(0.15, 0, 0, 50)
+NewsDivider.BackgroundColor3 = Color3.fromRGB(255, 200, 0)
+NewsDivider.BackgroundTransparency = 0.4
+NewsDivider.BorderSizePixel = 0
+NewsDivider.Parent = NewsFrame
+NewsDivider.ZIndex = 6
+
+local NewsScroll = Instance.new("ScrollingFrame")
+NewsScroll.Size = UDim2.new(1, -10, 1, -75)
+NewsScroll.Position = UDim2.new(0, 5, 0, 55)
+NewsScroll.BackgroundTransparency = 1
+NewsScroll.BorderSizePixel = 0
+NewsScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+NewsScroll.ScrollBarThickness = 4
+NewsScroll.Parent = NewsFrame
+NewsScroll.ZIndex = 6
+
+local newsY = 5
+
+local function createNewsCard(icon, title, desc, color, isImportant)
+    local card = Instance.new("Frame")
+    card.Size = UDim2.new(0.94, 0, 0, isImportant and 70 or 60)
+    card.Position = UDim2.new(0.03, 0, 0, newsY)
+    card.BackgroundColor3 = isImportant and Color3.fromRGB(40, 20, 20) or Color3.fromRGB(28, 28, 42)
+    card.BorderSizePixel = 0
+    card.Parent = NewsScroll
+    card.ZIndex = 7
+    
+    local cardCorner = Instance.new("UICorner")
+    cardCorner.CornerRadius = UDim.new(0, 8)
+    cardCorner.Parent = card
+    
+    if isImportant then
+        local glowBar = Instance.new("Frame")
+        glowBar.Size = UDim2.new(0, 4, 1, -8)
+        glowBar.Position = UDim2.new(0, 0, 0, 4)
+        glowBar.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+        glowBar.BorderSizePixel = 0
+        glowBar.Parent = card
+        glowBar.ZIndex = 8
+        
+        local glowBarCorner = Instance.new("UICorner")
+        glowBarCorner.CornerRadius = UDim.new(0, 4)
+        glowBarCorner.Parent = glowBar
+    end
+    
+    local iconLabel = Instance.new("TextLabel")
+    iconLabel.Size = UDim2.new(0, 40, 1, 0)
+    iconLabel.Position = UDim2.new(0, 6, 0, 0)
+    iconLabel.BackgroundTransparency = 1
+    iconLabel.Text = icon
+    iconLabel.TextColor3 = color or Color3.fromRGB(255, 255, 255)
+    iconLabel.TextSize = isImportant and 26 or 22
+    iconLabel.Font = Enum.Font.GothamBold
+    iconLabel.TextXAlignment = Enum.TextXAlignment.Center
+    iconLabel.Parent = card
+    iconLabel.ZIndex = 8
+    
+    local titleLabel = Instance.new("TextLabel")
+    titleLabel.Size = UDim2.new(1, -55, 0, 22)
+    titleLabel.Position = UDim2.new(0, 50, 0, 4)
+    titleLabel.BackgroundTransparency = 1
+    titleLabel.Text = title
+    titleLabel.TextColor3 = isImportant and Color3.fromRGB(255, 100, 100) or Color3.fromRGB(255, 200, 0)
+    titleLabel.TextSize = isImportant and 15 or 14
+    titleLabel.Font = Enum.Font.GothamBold
+    titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    titleLabel.Parent = card
+    titleLabel.ZIndex = 8
+    
+    local descLabel = Instance.new("TextLabel")
+    descLabel.Size = UDim2.new(1, -55, 0, isImportant and 34 or 28)
+    descLabel.Position = UDim2.new(0, 50, 0, 26)
+    descLabel.BackgroundTransparency = 1
+    descLabel.Text = desc
+    descLabel.TextColor3 = isImportant and Color3.fromRGB(255, 200, 200) or Color3.fromRGB(180, 180, 200)
+    descLabel.TextSize = 12
+    descLabel.Font = Enum.Font.GothamMedium
+    descLabel.TextXAlignment = Enum.TextXAlignment.Left
+    descLabel.TextWrapped = true
+    descLabel.Parent = card
+    descLabel.ZIndex = 8
+    
+    newsY = newsY + (isImportant and 78 or 68)
+    return card
+end
+
+-- إضافة الأخبار
+createNewsCard("✅", "تم إضافة نظام سرقة الفلوس التلقائي V7!",
+    "الآن يمكنك تجميع الفلوس من الأرض تلقائياً وبسرعة فائقة!",
+    Color3.fromRGB(0, 255, 100), true)
+
+createNewsCard("🎣", "تم إضافة نظام الصيد التلقائي!",
+    "اضغط على زر 'تشغيل الصيد' وابدأ بصيد الأسماك تلقائياً!",
+    Color3.fromRGB(0, 200, 255), false)
+
+createNewsCard("🚗", "تم إضافة نظام الطيران الذكي للسيارات!",
+    "اركب سيارة وافعل وضع الطيران لتطير بها وتتحكم باتجاه الكاميرا!",
+    Color3.fromRGB(255, 150, 0), false)
+
+createNewsCard("📱", "دعم كامل للهاتف والكمبيوتر!",
+    "السكربت الآن يدعم جميع الأجهزة مع واجهة متجاوبة.",
+    Color3.fromRGB(100, 255, 200), false)
+
+createNewsCard("⏳", "🔜 قريباً: نظام الكلبشة التلقائي!",
+    "جاري العمل على نظام كلبشة تلقائي للاعبين.",
+    Color3.fromRGB(255, 200, 0), false)
+
+-- قسم الديسكورد
+local DiscordSection = Instance.new("Frame")
+DiscordSection.Size = UDim2.new(0.94, 0, 0, 75)
+DiscordSection.Position = UDim2.new(0.03, 0, 0, newsY + 5)
+DiscordSection.BackgroundColor3 = Color3.fromRGB(20, 30, 50)
+DiscordSection.BorderSizePixel = 0
+DiscordSection.Parent = NewsScroll
+DiscordSection.ZIndex = 7
+
+local DiscordCorner = Instance.new("UICorner")
+DiscordCorner.CornerRadius = UDim.new(0, 8)
+DiscordCorner.Parent = DiscordSection
+
+local DiscordGlow2 = Instance.new("Frame")
+DiscordGlow2.Size = UDim2.new(1, 6, 1, 6)
+DiscordGlow2.Position = UDim2.new(0, -3, 0, -3)
+DiscordGlow2.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
+DiscordGlow2.BackgroundTransparency = 0.3
+DiscordGlow2.BorderSizePixel = 0
+DiscordGlow2.Parent = DiscordSection
+DiscordGlow2.ZIndex = -1
+
+local DiscordGlowCorner2 = Instance.new("UICorner")
+DiscordGlowCorner2.CornerRadius = UDim.new(0, 10)
+DiscordGlowCorner2.Parent = DiscordGlow2
+
+local DiscordIcon = Instance.new("TextLabel")
+DiscordIcon.Size = UDim2.new(0, 45, 1, 0)
+DiscordIcon.Position = UDim2.new(0, 6, 0, 0)
+DiscordIcon.BackgroundTransparency = 1
+DiscordIcon.Text = "💬"
+DiscordIcon.TextColor3 = Color3.fromRGB(88, 101, 242)
+DiscordIcon.TextSize = 30
+DiscordIcon.Font = Enum.Font.GothamBold
+DiscordIcon.TextXAlignment = Enum.TextXAlignment.Center
+DiscordIcon.Parent = DiscordSection
+DiscordIcon.ZIndex = 8
+
+local DiscordTitle = Instance.new("TextLabel")
+DiscordTitle.Size = UDim2.new(1, -60, 0, 22)
+DiscordTitle.Position = UDim2.new(0, 55, 0, 4)
+DiscordTitle.BackgroundTransparency = 1
+DiscordTitle.Text = "💬 سيرفر ديسكورد"
+DiscordTitle.TextColor3 = Color3.fromRGB(88, 101, 242)
+DiscordTitle.TextSize = 15
+DiscordTitle.Font = Enum.Font.GothamBold
+DiscordTitle.TextXAlignment = Enum.TextXAlignment.Left
+DiscordTitle.Parent = DiscordSection
+DiscordTitle.ZIndex = 8
+
+local DiscordLink = Instance.new("TextButton")
+DiscordLink.Size = UDim2.new(1, -60, 0, 30)
+DiscordLink.Position = UDim2.new(0, 55, 0, 30)
+DiscordLink.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
+DiscordLink.TextColor3 = Color3.fromRGB(255, 255, 255)
+DiscordLink.TextSize = 12
+DiscordLink.Font = Enum.Font.GothamBold
+DiscordLink.Text = "🔗 https://discord.gg/w9FDeSx9f"
+DiscordLink.Parent = DiscordSection
+DiscordLink.ZIndex = 8
+
+local DiscordLinkCorner = Instance.new("UICorner")
+DiscordLinkCorner.CornerRadius = UDim.new(0, 6)
+DiscordLinkCorner.Parent = DiscordLink
+
+DiscordLink.MouseButton1Click:Connect(function()
+    if setclipboard then
+        setclipboard("https://discord.gg/w9FDeSx9f")
+    end
+    showNotification("✅ تم نسخ رابط الديسكورد!", NewsFrame)
+end)
+
+newsY = newsY + 85
+NewsScroll.CanvasSize = UDim2.new(0, 0, 0, newsY + 30)
+
+-- ============================================
+-- وظائف عرض الصفحات
+-- ============================================
+
+local function ShowTeleport()
+    TeleportContainer.Visible = true
+    MoneyContainer.Visible = false
+    FishingContainer.Visible = false
+    PlayerContainer.Visible = false
+    NewsContainer.Visible = false
+    CarContainer.Visible = false
+    
+    for _, child in pairs(Sidebar:GetChildren()) do
+        if child:IsA("TextButton") then
+            if child.Text == "⚡ انتقال الفوري" then
+                child.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
+                child.TextColor3 = Color3.fromRGB(255, 255, 255)
+            else
+                child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
+                child.TextColor3 = Color3.fromRGB(255, 255, 255)
             end
         end
     end
-end)
-
--- =========================
--- CHARACTER HOOK (RESPAWN SAFE)
--- =========================
-local function hookCharacter(char)
-    task.wait(1)
-    applyVisual(char)
 end
 
-for _, p in ipairs(Players:GetPlayers()) do
-    if p.Character then hookCharacter(p.Character) end
-    p.CharacterAdded:Connect(hookCharacter)
+local function ShowMoney()
+    TeleportContainer.Visible = false
+    MoneyContainer.Visible = true
+    FishingContainer.Visible = false
+    PlayerContainer.Visible = false
+    NewsContainer.Visible = false
+    CarContainer.Visible = false
+    
+    for _, child in pairs(Sidebar:GetChildren()) do
+        if child:IsA("TextButton") then
+            if child.Text == "💰 فلوس" then
+                child.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
+                child.TextColor3 = Color3.fromRGB(255, 255, 255)
+            else
+                child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
+                child.TextColor3 = Color3.fromRGB(255, 255, 255)
+            end
+        end
+    end
 end
 
-Players.PlayerAdded:Connect(function(p)
-    p.CharacterAdded:Connect(hookCharacter)
-end)
-
--- =========================
--- ðŸŽ›ï¸ RAYFIELD UI
--- =========================
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
-
-local Window = Rayfield:CreateWindow({
-    Name = "LazyHub",
-    LoadingTitle = "Loading",
-    LoadingSubtitle = "LAZZZZZZY",
-    ConfigurationSaving = {Enabled=false}
-})
-
--- AIM TAB
-local Aim = Window:CreateTab("Aim")
-
-Aim:CreateToggle({
-    Name="Aim Assist",
-    CurrentValue=false,
-    Callback=function(v)
-        Settings.AimAssist = v
+local function ShowFishing()
+    TeleportContainer.Visible = false
+    MoneyContainer.Visible = false
+    FishingContainer.Visible = true
+    PlayerContainer.Visible = false
+    NewsContainer.Visible = false
+    CarContainer.Visible = false
+    
+    for _, child in pairs(Sidebar:GetChildren()) do
+        if child:IsA("TextButton") then
+            if child.Text == "🎣 الصيد" then
+                child.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
+                child.TextColor3 = Color3.fromRGB(0, 0, 0)
+            else
+                child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
+                child.TextColor3 = Color3.fromRGB(255, 255, 255)
+            end
+        end
     end
-})
+end
 
-Aim:CreateSlider({
-    Name="Strength",
-    Range={0,1},
-    Increment=0.01,
-    CurrentValue=0.2,
-    Callback=function(v)
-        Settings.AimStrength = v
+local function ShowPlayers()
+    TeleportContainer.Visible = false
+    MoneyContainer.Visible = false
+    FishingContainer.Visible = false
+    PlayerContainer.Visible = true
+    NewsContainer.Visible = false
+    CarContainer.Visible = false
+    UpdatePlayerList()
+    
+    for _, child in pairs(Sidebar:GetChildren()) do
+        if child:IsA("TextButton") then
+            if child.Text == "👥 لاعبين" then
+                child.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
+                child.TextColor3 = Color3.fromRGB(255, 255, 255)
+            else
+                child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
+                child.TextColor3 = Color3.fromRGB(255, 255, 255)
+            end
+        end
     end
-})
+end
 
-Aim:CreateSlider({
-    Name="FOV Size",
-    Range={50,300},
-    Increment=5,
-    CurrentValue=120,
-    Callback=function(v)
-        Settings.FOV = v
+local function ShowNews()
+    TeleportContainer.Visible = false
+    MoneyContainer.Visible = false
+    FishingContainer.Visible = false
+    PlayerContainer.Visible = false
+    NewsContainer.Visible = true
+    CarContainer.Visible = false
+    
+    for _, child in pairs(Sidebar:GetChildren()) do
+        if child:IsA("TextButton") then
+            if child.Text == "📰 الأخبار" then
+                child.BackgroundColor3 = Color3.fromRGB(255, 200, 0)
+                child.TextColor3 = Color3.fromRGB(0, 0, 0)
+            else
+                child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
+                child.TextColor3 = Color3.fromRGB(255, 255, 255)
+            end
+        end
     end
-})
+end
 
-Aim:CreateToggle({
-    Name="Show FOV Circle",
-    CurrentValue=true,
-    Callback=function(v)
-        Settings.ShowFOV = v
+local function ShowCars()
+    TeleportContainer.Visible = false
+    MoneyContainer.Visible = false
+    FishingContainer.Visible = false
+    PlayerContainer.Visible = false
+    NewsContainer.Visible = false
+    CarContainer.Visible = true
+    
+    for _, child in pairs(Sidebar:GetChildren()) do
+        if child:IsA("TextButton") then
+            if child.Text == "🚗 الطيران الذكي" then
+                child.BackgroundColor3 = Color3.fromRGB(255, 150, 0)
+                child.TextColor3 = Color3.fromRGB(0, 0, 0)
+            else
+                child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
+                child.TextColor3 = Color3.fromRGB(255, 255, 255)
+            end
+        end
     end
-})
+end
 
--- VISUAL TAB
-local Vis = Window:CreateTab("Visuals")
-
-Vis:CreateToggle({
-    Name="Highlights",
-    CurrentValue=false,
-    Callback=function(v)
-        Settings.HighlightEnabled = v
+-- ربط أزرار القائمة الجانبية
+for _, child in pairs(Sidebar:GetChildren()) do
+    if child:IsA("TextButton") then
+        if child.Text == "⚡ انتقال الفوري" then
+            child.MouseButton1Click:Connect(ShowTeleport)
+        elseif child.Text == "💰 فلوس" then
+            child.MouseButton1Click:Connect(ShowMoney)
+        elseif child.Text == "🎣 الصيد" then
+            child.MouseButton1Click:Connect(ShowFishing)
+        elseif child.Text == "👥 لاعبين" then
+            child.MouseButton1Click:Connect(ShowPlayers)
+        elseif child.Text == "📰 الأخبار" then
+            child.MouseButton1Click:Connect(ShowNews)
+        elseif child.Text == "🚗 الطيران الذكي" then
+            child.MouseButton1Click:Connect(ShowCars)
+        end
     end
-})
+end
 
-Vis:CreateColorPicker({
-    Name="Highlight Color",
-    Color=Color3.fromRGB(255,0,0),
-    Callback=function(v)
-        Settings.HighlightColor = v
-    end
-})
+-- فتح الصفحة الافتراضية (انتقال الفوري)
+ShowTeleport()
 
-Vis:CreateToggle({
-    Name="Name Tags",
-    CurrentValue=false,
-    Callback=function(v)
-        Settings.Names = v
-    end
-})
+print("✅ 7MO HUB v15 - النسخة المعدلة")
+print("📌 الأزرار: انتقال الفوري | فلوس | صيد | لاعبين | أخبار | طيران ذكي")
+print("🚀 تم شيل: ترحيب، رئيسية، لاعب")
