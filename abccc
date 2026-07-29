@@ -1,4 +1,4 @@
--- LYNEX - النسخة المعدلة
+-- LYNEX - النسخة المعدلة (تصميم فلوس جديد + بحث باللاعبين)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -127,7 +127,7 @@ ToggleButton.InputChanged:Connect(function(input)
     end
 end)
 
--- تأثيرات الحركة على الحلقات (ألوان سماوية)
+-- تأثيرات الحركة على الحلقات
 local ringColors = {
     Color3.fromRGB(0, 150, 255),
     Color3.fromRGB(0, 200, 255),
@@ -615,13 +615,13 @@ TeleportFooter.Parent = TeleportFrame
 TeleportFooter.ZIndex = 6
 
 -- ============================================
--- محتوى صفحة الفلوس (Money)
+-- محتوى صفحة الفلوس (تصميم جديد ومحسن)
 -- ============================================
 
 local MoneyFrame = Instance.new("Frame")
 MoneyFrame.Size = UDim2.new(0.9, 0, 0.85, 0)
 MoneyFrame.Position = UDim2.new(0.05, 0, 0.05, 0)
-MoneyFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+MoneyFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 20)
 MoneyFrame.BorderSizePixel = 0
 MoneyFrame.Parent = MoneyContainer
 MoneyFrame.ZIndex = 5
@@ -630,69 +630,308 @@ local MoneyFrameCorner = Instance.new("UICorner")
 MoneyFrameCorner.CornerRadius = UDim.new(0, 12)
 MoneyFrameCorner.Parent = MoneyFrame
 
+-- إطار مضيء ذهبي للفلوس
+local MoneyGlow = Instance.new("Frame")
+MoneyGlow.Size = UDim2.new(1, 8, 1, 8)
+MoneyGlow.Position = UDim2.new(0, -4, 0, -4)
+MoneyGlow.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
+MoneyGlow.BackgroundTransparency = 0.25
+MoneyGlow.BorderSizePixel = 0
+MoneyGlow.Parent = MoneyFrame
+MoneyGlow.ZIndex = -1
+
+local MoneyGlowCorner = Instance.new("UICorner")
+MoneyGlowCorner.CornerRadius = UDim.new(0, 16)
+MoneyGlowCorner.Parent = MoneyGlow
+
+-- رأس الصفحة
+local MoneyHeader = Instance.new("Frame")
+MoneyHeader.Size = UDim2.new(1, 0, 0, 50)
+MoneyHeader.Position = UDim2.new(0, 0, 0, 0)
+MoneyHeader.BackgroundColor3 = Color3.fromRGB(20, 15, 5)
+MoneyHeader.BorderSizePixel = 0
+MoneyHeader.Parent = MoneyFrame
+MoneyHeader.ZIndex = 6
+
+local MoneyHeaderCorner = Instance.new("UICorner")
+MoneyHeaderCorner.CornerRadius = UDim.new(0, 12)
+MoneyHeaderCorner.Parent = MoneyHeader
+
+-- أيقونة الفلوس
+local MoneyIcon = Instance.new("TextLabel")
+MoneyIcon.Size = UDim2.new(0, 50, 1, 0)
+MoneyIcon.Position = UDim2.new(0, 10, 0, 0)
+MoneyIcon.BackgroundTransparency = 1
+MoneyIcon.Text = "💰"
+MoneyIcon.TextColor3 = Color3.fromRGB(255, 215, 0)
+MoneyIcon.TextSize = 30
+MoneyIcon.Font = Enum.Font.GothamBold
+MoneyIcon.TextXAlignment = Enum.TextXAlignment.Center
+MoneyIcon.Parent = MoneyHeader
+MoneyIcon.ZIndex = 7
+
 local MoneyTitle = Instance.new("TextLabel")
-MoneyTitle.Size = UDim2.new(1, 0, 0, 35)
-MoneyTitle.Position = UDim2.new(0, 0, 0, 5)
-MoneyTitle.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-MoneyTitle.Text = "💰 فلوس 💰"
-MoneyTitle.TextColor3 = Color3.fromRGB(0, 200, 255)
+MoneyTitle.Size = UDim2.new(1, -70, 1, 0)
+MoneyTitle.Position = UDim2.new(0, 60, 0, 0)
+MoneyTitle.BackgroundTransparency = 1
+MoneyTitle.Text = "💰 نظام جمع الفلوس التلقائي 💰"
+MoneyTitle.TextColor3 = Color3.fromRGB(255, 215, 0)
 MoneyTitle.TextSize = 18
 MoneyTitle.Font = Enum.Font.GothamBold
-MoneyTitle.Parent = MoneyFrame
-MoneyTitle.ZIndex = 6
+MoneyTitle.TextXAlignment = Enum.TextXAlignment.Center
+MoneyTitle.Parent = MoneyHeader
+MoneyTitle.ZIndex = 7
 
--- زر التشغيل/الإيقاف
-local ToggleButtonMoney = Instance.new("TextButton")
-ToggleButtonMoney.Size = UDim2.new(0.8, 0, 0, 50)
-ToggleButtonMoney.Position = UDim2.new(0.1, 0, 0.2, 0)
-ToggleButtonMoney.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-ToggleButtonMoney.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleButtonMoney.TextSize = 24
-ToggleButtonMoney.Font = Enum.Font.SourceSansBold
-ToggleButtonMoney.Text = "OFF ❌"
-ToggleButtonMoney.Parent = MoneyFrame
-ToggleButtonMoney.ZIndex = 7
+-- الإحصائيات الرئيسية (كروت)
+local StatsContainer = Instance.new("Frame")
+StatsContainer.Size = UDim2.new(0.92, 0, 0, 80)
+StatsContainer.Position = UDim2.new(0.04, 0, 0.12, 0)
+StatsContainer.BackgroundTransparency = 1
+StatsContainer.Parent = MoneyFrame
+StatsContainer.ZIndex = 7
 
-local ToggleCornerMoney = Instance.new("UICorner")
-ToggleCornerMoney.CornerRadius = UDim.new(0, 10)
-ToggleCornerMoney.Parent = ToggleButtonMoney
+-- كارت عدد الفلوس
+local Card1 = Instance.new("Frame")
+Card1.Size = UDim2.new(0.48, -5, 1, 0)
+Card1.Position = UDim2.new(0, 0, 0, 0)
+Card1.BackgroundColor3 = Color3.fromRGB(25, 20, 10)
+Card1.BorderSizePixel = 0
+Card1.Parent = StatsContainer
+Card1.ZIndex = 8
 
--- إحصائيات الفلوس المجمعة
-local StatsFrame = Instance.new("Frame")
-StatsFrame.Size = UDim2.new(0.9, 0, 0, 60)
-StatsFrame.Position = UDim2.new(0.05, 0, 0.5, 0)
-StatsFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
-StatsFrame.BorderSizePixel = 0
-StatsFrame.Parent = MoneyFrame
-StatsFrame.ZIndex = 7
+local Card1Corner = Instance.new("UICorner")
+Card1Corner.CornerRadius = UDim.new(0, 10)
+Card1Corner.Parent = Card1
 
-local StatsCorner = Instance.new("UICorner")
-StatsCorner.CornerRadius = UDim.new(0, 8)
-StatsCorner.Parent = StatsFrame
+-- إطار ذهبي للكارت
+local Card1Glow = Instance.new("Frame")
+Card1Glow.Size = UDim2.new(1, 4, 1, 4)
+Card1Glow.Position = UDim2.new(0, -2, 0, -2)
+Card1Glow.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
+Card1Glow.BackgroundTransparency = 0.3
+Card1Glow.BorderSizePixel = 0
+Card1Glow.Parent = Card1
+Card1Glow.ZIndex = -1
+
+local Card1GlowCorner = Instance.new("UICorner")
+Card1GlowCorner.CornerRadius = UDim.new(0, 12)
+Card1GlowCorner.Parent = Card1Glow
+
+local Card1Icon = Instance.new("TextLabel")
+Card1Icon.Size = UDim2.new(0, 35, 1, 0)
+Card1Icon.Position = UDim2.new(0, 8, 0, 0)
+Card1Icon.BackgroundTransparency = 1
+Card1Icon.Text = "📦"
+Card1Icon.TextColor3 = Color3.fromRGB(255, 215, 0)
+Card1Icon.TextSize = 25
+Card1Icon.Font = Enum.Font.GothamBold
+Card1Icon.TextXAlignment = Enum.TextXAlignment.Center
+Card1Icon.Parent = Card1
+Card1Icon.ZIndex = 9
+
+local Card1Label = Instance.new("TextLabel")
+Card1Label.Size = UDim2.new(1, -50, 0, 20)
+Card1Label.Position = UDim2.new(0, 48, 0, 8)
+Card1Label.BackgroundTransparency = 1
+Card1Label.Text = "الفلوس المجمعة"
+Card1Label.TextColor3 = Color3.fromRGB(200, 200, 200)
+Card1Label.TextSize = 11
+Card1Label.Font = Enum.Font.GothamMedium
+Card1Label.TextXAlignment = Enum.TextXAlignment.Left
+Card1Label.Parent = Card1
+Card1Label.ZIndex = 9
 
 local CountLabel = Instance.new("TextLabel")
-CountLabel.Size = UDim2.new(0.5, 0, 1, 0)
-CountLabel.Position = UDim2.new(0, 0, 0, 0)
+CountLabel.Size = UDim2.new(1, -50, 0, 35)
+CountLabel.Position = UDim2.new(0, 48, 0, 28)
 CountLabel.BackgroundTransparency = 1
-CountLabel.Text = "📦 0"
+CountLabel.Text = "0"
 CountLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
-CountLabel.TextSize = 18
+CountLabel.TextSize = 28
 CountLabel.Font = Enum.Font.GothamBold
-CountLabel.TextXAlignment = Enum.TextXAlignment.Center
-CountLabel.Parent = StatsFrame
-CountLabel.ZIndex = 8
+CountLabel.TextXAlignment = Enum.TextXAlignment.Left
+CountLabel.Parent = Card1
+CountLabel.ZIndex = 9
+
+-- كارت الحالة
+local Card2 = Instance.new("Frame")
+Card2.Size = UDim2.new(0.48, -5, 1, 0)
+Card2.Position = UDim2.new(0.52, 0, 0, 0)
+Card2.BackgroundColor3 = Color3.fromRGB(20, 25, 20)
+Card2.BorderSizePixel = 0
+Card2.Parent = StatsContainer
+Card2.ZIndex = 8
+
+local Card2Corner = Instance.new("UICorner")
+Card2Corner.CornerRadius = UDim.new(0, 10)
+Card2Corner.Parent = Card2
+
+local Card2Glow = Instance.new("Frame")
+Card2Glow.Size = UDim2.new(1, 4, 1, 4)
+Card2Glow.Position = UDim2.new(0, -2, 0, -2)
+Card2Glow.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
+Card2Glow.BackgroundTransparency = 0.3
+Card2Glow.BorderSizePixel = 0
+Card2Glow.Parent = Card2
+Card2Glow.ZIndex = -1
+
+local Card2GlowCorner = Instance.new("UICorner")
+Card2GlowCorner.CornerRadius = UDim.new(0, 12)
+Card2GlowCorner.Parent = Card2Glow
+
+local Card2Icon = Instance.new("TextLabel")
+Card2Icon.Size = UDim2.new(0, 35, 1, 0)
+Card2Icon.Position = UDim2.new(0, 8, 0, 0)
+Card2Icon.BackgroundTransparency = 1
+Card2Icon.Text = "⚡"
+Card2Icon.TextColor3 = Color3.fromRGB(0, 200, 255)
+Card2Icon.TextSize = 25
+Card2Icon.Font = Enum.Font.GothamBold
+Card2Icon.TextXAlignment = Enum.TextXAlignment.Center
+Card2Icon.Parent = Card2
+Card2Icon.ZIndex = 9
+
+local Card2Label = Instance.new("TextLabel")
+Card2Label.Size = UDim2.new(1, -50, 0, 20)
+Card2Label.Position = UDim2.new(0, 48, 0, 8)
+Card2Label.BackgroundTransparency = 1
+Card2Label.Text = "الحالة"
+Card2Label.TextColor3 = Color3.fromRGB(200, 200, 200)
+Card2Label.TextSize = 11
+Card2Label.Font = Enum.Font.GothamMedium
+Card2Label.TextXAlignment = Enum.TextXAlignment.Left
+Card2Label.Parent = Card2
+Card2Label.ZIndex = 9
 
 local StatusLabel = Instance.new("TextLabel")
-StatusLabel.Size = UDim2.new(0.5, 0, 1, 0)
-StatusLabel.Position = UDim2.new(0.5, 0, 0, 0)
+StatusLabel.Size = UDim2.new(1, -50, 0, 35)
+StatusLabel.Position = UDim2.new(0, 48, 0, 28)
 StatusLabel.BackgroundTransparency = 1
 StatusLabel.Text = "⏸️ متوقف"
 StatusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-StatusLabel.TextSize = 18
+StatusLabel.TextSize = 20
 StatusLabel.Font = Enum.Font.GothamBold
-StatusLabel.TextXAlignment = Enum.TextXAlignment.Center
-StatusLabel.Parent = StatsFrame
-StatusLabel.ZIndex = 8
+StatusLabel.TextXAlignment = Enum.TextXAlignment.Left
+StatusLabel.Parent = Card2
+StatusLabel.ZIndex = 9
+
+-- زر التشغيل الكبير
+local ToggleButtonMoney = Instance.new("TextButton")
+ToggleButtonMoney.Size = UDim2.new(0.7, 0, 0, 55)
+ToggleButtonMoney.Position = UDim2.new(0.15, 0, 0.35, 0)
+ToggleButtonMoney.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+ToggleButtonMoney.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleButtonMoney.TextSize = 22
+ToggleButtonMoney.Font = Enum.Font.SourceSansBold
+ToggleButtonMoney.Text = "⏹️ إيقاف"
+ToggleButtonMoney.Parent = MoneyFrame
+ToggleButtonMoney.ZIndex = 10
+
+local ToggleCornerMoney = Instance.new("UICorner")
+ToggleCornerMoney.CornerRadius = UDim.new(0, 12)
+ToggleCornerMoney.Parent = ToggleButtonMoney
+
+-- تأثير hover للزر
+ToggleButtonMoney.MouseEnter:Connect(function()
+    if ToggleButtonMoney.Text == "▶️ تشغيل" then
+        ToggleButtonMoney.BackgroundColor3 = Color3.fromRGB(50, 220, 50)
+    end
+end)
+ToggleButtonMoney.MouseLeave:Connect(function()
+    if ToggleButtonMoney.Text == "▶️ تشغيل" then
+        ToggleButtonMoney.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
+    end
+end)
+
+-- أزرار مساعدة
+local BtnContainer = Instance.new("Frame")
+BtnContainer.Size = UDim2.new(0.7, 0, 0, 35)
+BtnContainer.Position = UDim2.new(0.15, 0, 0.48, 0)
+BtnContainer.BackgroundTransparency = 1
+BtnContainer.Parent = MoneyFrame
+BtnContainer.ZIndex = 10
+
+-- زر إعادة تعيين
+local ResetBtn = Instance.new("TextButton")
+ResetBtn.Size = UDim2.new(0.45, -5, 1, 0)
+ResetBtn.Position = UDim2.new(0, 0, 0, 0)
+ResetBtn.BackgroundColor3 = Color3.fromRGB(200, 100, 50)
+ResetBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+ResetBtn.TextSize = 14
+ResetBtn.Font = Enum.Font.SourceSansBold
+ResetBtn.Text = "🔄 إعادة تعيين"
+ResetBtn.Parent = BtnContainer
+ResetBtn.ZIndex = 11
+
+local ResetCorner = Instance.new("UICorner")
+ResetCorner.CornerRadius = UDim.new(0, 8)
+ResetCorner.Parent = ResetBtn
+
+ResetBtn.MouseEnter:Connect(function()
+    ResetBtn.BackgroundColor3 = Color3.fromRGB(220, 120, 60)
+end)
+ResetBtn.MouseLeave:Connect(function()
+    ResetBtn.BackgroundColor3 = Color3.fromRGB(200, 100, 50)
+end)
+
+ResetBtn.MouseButton1Click:Connect(function()
+    collectedCount = 0
+    CountLabel.Text = "0"
+    showNotification("🔄 تم إعادة تعيين العداد", MoneyFrame)
+end)
+
+-- زر مساعدة
+local HelpBtn = Instance.new("TextButton")
+HelpBtn.Size = UDim2.new(0.45, -5, 1, 0)
+HelpBtn.Position = UDim2.new(0.55, 0, 0, 0)
+HelpBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 70)
+HelpBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+HelpBtn.TextSize = 14
+HelpBtn.Font = Enum.Font.SourceSansBold
+HelpBtn.Text = "❓ تعليمات"
+HelpBtn.Parent = BtnContainer
+HelpBtn.ZIndex = 11
+
+local HelpCorner = Instance.new("UICorner")
+HelpCorner.CornerRadius = UDim.new(0, 8)
+HelpCorner.Parent = HelpBtn
+
+HelpBtn.MouseEnter:Connect(function()
+    HelpBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 90)
+end)
+HelpBtn.MouseLeave:Connect(function()
+    HelpBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 70)
+end)
+
+HelpBtn.MouseButton1Click:Connect(function()
+    showNotification("📌 اضغط تشغيل لجمع الفلوس تلقائياً!", MoneyFrame)
+end)
+
+-- مربع معلومات أسفل
+local InfoBoxMoney = Instance.new("Frame")
+InfoBoxMoney.Size = UDim2.new(0.85, 0, 0, 55)
+InfoBoxMoney.Position = UDim2.new(0.075, 0, 0.58, 0)
+InfoBoxMoney.BackgroundColor3 = Color3.fromRGB(15, 15, 25)
+InfoBoxMoney.BorderSizePixel = 0
+InfoBoxMoney.Parent = MoneyFrame
+InfoBoxMoney.ZIndex = 10
+
+local InfoBoxMoneyCorner = Instance.new("UICorner")
+InfoBoxMoneyCorner.CornerRadius = UDim.new(0, 8)
+InfoBoxMoneyCorner.Parent = InfoBoxMoney
+
+local InfoBoxMoneyText = Instance.new("TextLabel")
+InfoBoxMoneyText.Size = UDim2.new(1, -10, 1, -10)
+InfoBoxMoneyText.Position = UDim2.new(0, 5, 0, 5)
+InfoBoxMoneyText.BackgroundTransparency = 1
+InfoBoxMoneyText.Text = "💡 النظام يجمع الفلوس من الأرض تلقائياً\n🔹 زر 'تشغيل' للبدء - 'إيقاف' للتوقف"
+InfoBoxMoneyText.TextColor3 = Color3.fromRGB(180, 180, 200)
+InfoBoxMoneyText.TextSize = 13
+InfoBoxMoneyText.Font = Enum.Font.GothamMedium
+InfoBoxMoneyText.TextXAlignment = Enum.TextXAlignment.Center
+InfoBoxMoneyText.TextYAlignment = Enum.TextYAlignment.Center
+InfoBoxMoneyText.Parent = InfoBoxMoney
+InfoBoxMoneyText.ZIndex = 11
 
 -- متغيرات التشغيل
 _G.CashStealer = false
@@ -744,7 +983,7 @@ local function processItem(item)
                     
                     if _G.CashStealer then
                         collectedCount = collectedCount + 1
-                        CountLabel.Text = "📦 " .. collectedCount
+                        CountLabel.Text = tostring(collectedCount)
                     end
                     
                     if _G.CashStealer then
@@ -773,19 +1012,21 @@ end
 ToggleButtonMoney.MouseButton1Click:Connect(function()
     _G.CashStealer = not _G.CashStealer
     if _G.CashStealer then
-        ToggleButtonMoney.Text = "ON ✅"
-        ToggleButtonMoney.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
+        ToggleButtonMoney.Text = "⏹️ إيقاف"
+        ToggleButtonMoney.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
         StatusLabel.Text = "🟢 يعمل..."
         StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 100)
+        Card2Glow.BackgroundColor3 = Color3.fromRGB(0, 255, 100)
         collectedCount = 0
-        CountLabel.Text = "📦 0"
+        CountLabel.Text = "0"
         startStealing()
         showNotification("✅ تم تشغيل تجميع الفلوس!", MoneyFrame)
     else
-        ToggleButtonMoney.Text = "OFF ❌"
-        ToggleButtonMoney.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+        ToggleButtonMoney.Text = "▶️ تشغيل"
+        ToggleButtonMoney.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
         StatusLabel.Text = "⏸️ متوقف"
         StatusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+        Card2Glow.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
         if eventConnection then
             eventConnection:Disconnect()
             eventConnection = nil
@@ -794,26 +1035,9 @@ ToggleButtonMoney.MouseButton1Click:Connect(function()
     end
 end)
 
-local ResetBtn = Instance.new("TextButton")
-ResetBtn.Size = UDim2.new(0.3, 0, 0, 30)
-ResetBtn.Position = UDim2.new(0.35, 0, 0.72, 0)
-ResetBtn.BackgroundColor3 = Color3.fromRGB(200, 100, 50)
-ResetBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-ResetBtn.TextSize = 13
-ResetBtn.Font = Enum.Font.SourceSansBold
-ResetBtn.Text = "🔄 إعادة تعيين"
-ResetBtn.Parent = MoneyFrame
-ResetBtn.ZIndex = 7
-
-local ResetCorner = Instance.new("UICorner")
-ResetCorner.CornerRadius = UDim.new(0, 6)
-ResetCorner.Parent = ResetBtn
-
-ResetBtn.MouseButton1Click:Connect(function()
-    collectedCount = 0
-    CountLabel.Text = "📦 0"
-    showNotification("🔄 تم إعادة تعيين العداد", MoneyFrame)
-end)
+-- تعيين الحالة الابتدائية
+ToggleButtonMoney.Text = "▶️ تشغيل"
+ToggleButtonMoney.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
 
 -- ============================================
 -- محتوى صفحة الصيد (Fishing)
@@ -951,7 +1175,7 @@ end
 FishingToggleButton.MouseButton1Click:Connect(startFishing)
 
 -- ============================================
--- محتوى صفحة اللاعبين (Player List)
+-- محتوى صفحة اللاعبين (مع بحث)
 -- ============================================
 
 local PlayerFrame = Instance.new("Frame")
@@ -1000,9 +1224,74 @@ PlayerDivider.BorderSizePixel = 0
 PlayerDivider.Parent = PlayerFrame
 PlayerDivider.ZIndex = 6
 
+-- ========== مربع البحث ==========
+local SearchContainer = Instance.new("Frame")
+SearchContainer.Size = UDim2.new(0.92, 0, 0, 40)
+SearchContainer.Position = UDim2.new(0.04, 0, 0.1, 0)
+SearchContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
+SearchContainer.BorderSizePixel = 0
+SearchContainer.Parent = PlayerFrame
+SearchContainer.ZIndex = 7
+
+local SearchCorner = Instance.new("UICorner")
+SearchCorner.CornerRadius = UDim.new(0, 8)
+SearchCorner.Parent = SearchContainer
+
+-- أيقونة البحث
+local SearchIcon = Instance.new("TextLabel")
+SearchIcon.Size = UDim2.new(0, 35, 1, 0)
+SearchIcon.Position = UDim2.new(0, 5, 0, 0)
+SearchIcon.BackgroundTransparency = 1
+SearchIcon.Text = "🔍"
+SearchIcon.TextColor3 = Color3.fromRGB(0, 200, 255)
+SearchIcon.TextSize = 18
+SearchIcon.Font = Enum.Font.GothamBold
+SearchIcon.TextXAlignment = Enum.TextXAlignment.Center
+SearchIcon.Parent = SearchContainer
+SearchIcon.ZIndex = 8
+
+-- مربع إدخال البحث
+local SearchBox = Instance.new("TextBox")
+SearchBox.Size = UDim2.new(0.7, 0, 1, -10)
+SearchBox.Position = UDim2.new(0.08, 0, 0, 5)
+SearchBox.BackgroundColor3 = Color3.fromRGB(15, 15, 25)
+SearchBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+SearchBox.TextSize = 14
+SearchBox.Font = Enum.Font.GothamMedium
+SearchBox.Text = ""
+SearchBox.PlaceholderText = "🔎 ابحث عن لاعب..."
+SearchBox.Parent = SearchContainer
+SearchBox.ZIndex = 8
+
+local SearchBoxCorner = Instance.new("UICorner")
+SearchBoxCorner.CornerRadius = UDim.new(0, 6)
+SearchBoxCorner.Parent = SearchBox
+
+-- زر مسح البحث
+local ClearSearchBtn = Instance.new("TextButton")
+ClearSearchBtn.Size = UDim2.new(0, 30, 1, -10)
+ClearSearchBtn.Position = UDim2.new(0.82, 0, 0, 5)
+ClearSearchBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+ClearSearchBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+ClearSearchBtn.TextSize = 14
+ClearSearchBtn.Font = Enum.Font.GothamBold
+ClearSearchBtn.Text = "✕"
+ClearSearchBtn.Parent = SearchContainer
+ClearSearchBtn.ZIndex = 8
+
+local ClearSearchCorner = Instance.new("UICorner")
+ClearSearchCorner.CornerRadius = UDim.new(0, 6)
+ClearSearchCorner.Parent = ClearSearchBtn
+
+ClearSearchBtn.MouseButton1Click:Connect(function()
+    SearchBox.Text = ""
+    UpdatePlayerList()
+end)
+
+-- قائمة اللاعبين
 local PlayerScroll = Instance.new("ScrollingFrame")
-PlayerScroll.Size = UDim2.new(1, -10, 1, -80)
-PlayerScroll.Position = UDim2.new(0, 5, 0, 55)
+PlayerScroll.Size = UDim2.new(1, -10, 1, -110)
+PlayerScroll.Position = UDim2.new(0, 5, 0, 95)
 PlayerScroll.BackgroundTransparency = 1
 PlayerScroll.BorderSizePixel = 0
 PlayerScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
@@ -1029,70 +1318,81 @@ local function UpdatePlayerList()
     end
     
     local allPlayers = Players:GetPlayers()
+    local searchText = SearchBox.Text:lower()
     local yOffset = 5
     local buttonHeight = 35
     local spacing = 5
-    
-    PlayerCountLabel.Text = "👥 " .. #allPlayers .. " لاعب في السيرفر"
+    local shownCount = 0
     
     for i, player in ipairs(allPlayers) do
-        local isLocal = (player == LocalPlayer)
-        local displayName = player.DisplayName
-        local username = player.Name
+        local displayName = player.DisplayName:lower()
+        local username = player.Name:lower()
         
-        local button = Instance.new("TextButton")
-        button.Size = UDim2.new(0.92, 0, 0, buttonHeight)
-        button.Position = UDim2.new(0.04, 0, 0, yOffset)
-        
-        if isLocal then
-            button.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
-        else
-            button.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
-        end
-        
-        button.TextColor3 = Color3.fromRGB(255, 255, 255)
-        button.TextSize = 13
-        button.Font = Enum.Font.GothamSemibold
-        
-        if isLocal then
-            button.Text = "⭐ " .. displayName .. " (أنت)"
-        else
-            button.Text = "👤 " .. displayName .. " @" .. username
-        end
-        
-        button.Parent = PlayerScroll
-        button.ZIndex = 7
-        
-        local corner = Instance.new("UICorner")
-        corner.CornerRadius = UDim.new(0, 6)
-        corner.Parent = button
-        
-        button.MouseEnter:Connect(function()
-            if not isLocal then
-                button.BackgroundColor3 = Color3.fromRGB(70, 70, 95)
-            end
-        end)
-        button.MouseLeave:Connect(function()
-            if not isLocal then
+        -- فلترة حسب البحث
+        if searchText == "" or displayName:find(searchText) or username:find(searchText) then
+            local isLocal = (player == LocalPlayer)
+            shownCount = shownCount + 1
+            
+            local button = Instance.new("TextButton")
+            button.Size = UDim2.new(0.92, 0, 0, buttonHeight)
+            button.Position = UDim2.new(0.04, 0, 0, yOffset)
+            
+            if isLocal then
+                button.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
+            else
                 button.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
             end
-        end)
-        
-        if not isLocal then
-            button.MouseButton1Click:Connect(function()
-                if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                        LocalPlayer.Character.HumanoidRootPart.CFrame = player.Character.HumanoidRootPart.CFrame
-                    end
+            
+            button.TextColor3 = Color3.fromRGB(255, 255, 255)
+            button.TextSize = 13
+            button.Font = Enum.Font.GothamSemibold
+            
+            if isLocal then
+                button.Text = "⭐ " .. player.DisplayName .. " (أنت)"
+            else
+                button.Text = "👤 " .. player.DisplayName .. " @" .. player.Name
+            end
+            
+            button.Parent = PlayerScroll
+            button.ZIndex = 7
+            
+            local corner = Instance.new("UICorner")
+            corner.CornerRadius = UDim.new(0, 6)
+            corner.Parent = button
+            
+            button.MouseEnter:Connect(function()
+                if not isLocal then
+                    button.BackgroundColor3 = Color3.fromRGB(70, 70, 95)
                 end
             end)
+            button.MouseLeave:Connect(function()
+                if not isLocal then
+                    button.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
+                end
+            end)
+            
+            if not isLocal then
+                button.MouseButton1Click:Connect(function()
+                    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                            LocalPlayer.Character.HumanoidRootPart.CFrame = player.Character.HumanoidRootPart.CFrame
+                        end
+                    end
+                end)
+            end
+            
+            yOffset = yOffset + buttonHeight + spacing
         end
-        
-        yOffset = yOffset + buttonHeight + spacing
     end
     
+    PlayerCountLabel.Text = "👥 " .. shownCount .. " لاعب" .. (shownCount > 1 and "ين" or "") .. (searchText ~= "" and " (نتائج البحث)" or " في السيرفر")
     PlayerScroll.CanvasSize = UDim2.new(0, 0, 0, yOffset + 10)
 end
+
+-- تحديث عند تغيير البحث
+SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
+    UpdatePlayerList()
+end)
 
 UpdatePlayerList()
 
@@ -1377,7 +1677,7 @@ InfoText.Parent = InfoBox
 InfoText.ZIndex = 8
 
 -- ============================================
--- محتوى الأخبار (مع رابط ديسكورد الجديد)
+-- محتوى الأخبار
 -- ============================================
 
 local NewsFrame = Instance.new("Frame")
@@ -1527,7 +1827,7 @@ createNewsCard("⏳", "🔜 قريباً: نظام الكلبشة التلقائ
     "جاري العمل على نظام كلبشة تلقائي للاعبين.",
     Color3.fromRGB(255, 200, 0), false)
 
--- قسم الديسكورد (رابط جديد)
+-- قسم الديسكورد
 local DiscordSection = Instance.new("Frame")
 DiscordSection.Size = UDim2.new(0.94, 0, 0, 75)
 DiscordSection.Position = UDim2.new(0.03, 0, 0, newsY + 5)
@@ -1755,7 +2055,8 @@ end
 -- فتح الصفحة الافتراضية (انتقال الفوري)
 ShowTeleport()
 
-print("✅ LYNEX - النسخة المعدلة")
+print("✅ LYNEX - النسخة المحدثة")
 print("📌 الأزرار: انتقال الفوري | فلوس | صيد | لاعبين | أخبار | طيران ذكي")
+print("💰 تصميم جديد لصفحة الفلوس")
+print("🔍 إضافة بحث للاعبين")
 print("🔗 رابط الديسكورد: https://discord.gg/fJTvyYW4A")
-print("🎨 الألوان: سماوي (Cyan) بدلاً من البنفسجي")
