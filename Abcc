@@ -1,4 +1,4 @@
--- LYNEX - النسخة النهائية (زر القفز تحت مساعدة سريعة - معدل)
+-- LYNEX - النسخة الكاملة (مع قفز فوري وتعليمات)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -470,7 +470,7 @@ NewsContainer.ZIndex = 1
 NewsContainer.Visible = false
 
 -- ============================================
--- محتوى صفحة الانتقال الفوري (Teleport)
+-- محتوى صفحة الانتقال الفوري
 -- ============================================
 
 local TeleportFrame = Instance.new("Frame")
@@ -630,7 +630,6 @@ local MoneyFrameCorner = Instance.new("UICorner")
 MoneyFrameCorner.CornerRadius = UDim.new(0, 12)
 MoneyFrameCorner.Parent = MoneyFrame
 
--- إطار مضيء ذهبي للفلوس
 local MoneyGlow = Instance.new("Frame")
 MoneyGlow.Size = UDim2.new(1, 8, 1, 8)
 MoneyGlow.Position = UDim2.new(0, -4, 0, -4)
@@ -644,7 +643,6 @@ local MoneyGlowCorner = Instance.new("UICorner")
 MoneyGlowCorner.CornerRadius = UDim.new(0, 16)
 MoneyGlowCorner.Parent = MoneyGlow
 
--- رأس الصفحة
 local MoneyHeader = Instance.new("Frame")
 MoneyHeader.Size = UDim2.new(1, 0, 0, 50)
 MoneyHeader.Position = UDim2.new(0, 0, 0, 0)
@@ -689,7 +687,6 @@ StatsContainer.BackgroundTransparency = 1
 StatsContainer.Parent = MoneyFrame
 StatsContainer.ZIndex = 7
 
--- كارت عدد الفلوس
 local Card1 = Instance.new("Frame")
 Card1.Size = UDim2.new(0.48, -5, 1, 0)
 Card1.Position = UDim2.new(0, 0, 0, 0)
@@ -751,7 +748,6 @@ CountLabel.TextXAlignment = Enum.TextXAlignment.Left
 CountLabel.Parent = Card1
 CountLabel.ZIndex = 9
 
--- كارت الحالة
 local Card2 = Instance.new("Frame")
 Card2.Size = UDim2.new(0.48, -5, 1, 0)
 Card2.Position = UDim2.new(0.52, 0, 0, 0)
@@ -813,15 +809,14 @@ StatusLabel.TextXAlignment = Enum.TextXAlignment.Left
 StatusLabel.Parent = Card2
 StatusLabel.ZIndex = 9
 
--- زر التشغيل
 local ToggleButtonMoney = Instance.new("TextButton")
 ToggleButtonMoney.Size = UDim2.new(0.7, 0, 0, 55)
 ToggleButtonMoney.Position = UDim2.new(0.15, 0, 0.35, 0)
-ToggleButtonMoney.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+ToggleButtonMoney.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
 ToggleButtonMoney.TextColor3 = Color3.fromRGB(255, 255, 255)
 ToggleButtonMoney.TextSize = 22
 ToggleButtonMoney.Font = Enum.Font.SourceSansBold
-ToggleButtonMoney.Text = "⏹️ إيقاف"
+ToggleButtonMoney.Text = "▶️ تشغيل"
 ToggleButtonMoney.Parent = MoneyFrame
 ToggleButtonMoney.ZIndex = 10
 
@@ -829,18 +824,6 @@ local ToggleCornerMoney = Instance.new("UICorner")
 ToggleCornerMoney.CornerRadius = UDim.new(0, 12)
 ToggleCornerMoney.Parent = ToggleButtonMoney
 
-ToggleButtonMoney.MouseEnter:Connect(function()
-    if ToggleButtonMoney.Text == "▶️ تشغيل" then
-        ToggleButtonMoney.BackgroundColor3 = Color3.fromRGB(50, 220, 50)
-    end
-end)
-ToggleButtonMoney.MouseLeave:Connect(function()
-    if ToggleButtonMoney.Text == "▶️ تشغيل" then
-        ToggleButtonMoney.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
-    end
-end)
-
--- أزرار مساعدة
 local BtnContainer = Instance.new("Frame")
 BtnContainer.Size = UDim2.new(0.7, 0, 0, 35)
 BtnContainer.Position = UDim2.new(0.15, 0, 0.48, 0)
@@ -1028,9 +1011,6 @@ ToggleButtonMoney.MouseButton1Click:Connect(function()
         showNotification("⛔ تم إيقاف تجميع الفلوس", MoneyFrame)
     end
 end)
-
-ToggleButtonMoney.Text = "▶️ تشغيل"
-ToggleButtonMoney.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
 
 -- ============================================
 -- محتوى صفحة الصيد
@@ -1387,7 +1367,7 @@ Players.PlayerAdded:Connect(function() UpdatePlayerList() end)
 Players.PlayerRemoving:Connect(function() UpdatePlayerList() end)
 
 -- ============================================
--- محتوى صفحة الطيران الذكي (مع زر القفز تحت مساعدة سريعة)
+-- محتوى صفحة الطيران الذكي (مع قفز فوري وتعليمات)
 -- ============================================
 
 local CarFrame = Instance.new("Frame")
@@ -1479,7 +1459,7 @@ function showNotification(text, parent)
 end
 
 -- ============================================
--- دالة قفز السيارة (معدلة - 3 طرق)
+-- دالة قفز السيارة (فورية)
 -- ============================================
 local function JumpCar()
     local car = GetVehicle()
@@ -1488,7 +1468,6 @@ local function JumpCar()
         return
     end
     
-    -- البحث عن الجزء الرئيسي
     local PrimaryPart = car.PrimaryPart
     if not PrimaryPart then
         for _, part in pairs(car:GetDescendants()) do
@@ -1504,30 +1483,16 @@ local function JumpCar()
         return
     end
     
-    -- الطريقة 1: BodyVelocity
+    -- قوة فورية عالية
     local bv = Instance.new("BodyVelocity")
-    bv.Velocity = Vector3.new(0, JumpHeight * 1.5, 0)
-    bv.MaxForce = Vector3.new(0, 1000000, 0)
+    bv.Velocity = Vector3.new(0, JumpHeight * 2.5, 0)
+    bv.MaxForce = Vector3.new(0, 5000000, 0)
     bv.Parent = PrimaryPart
     
-    -- الطريقة 2: BodyForce
-    local bf = Instance.new("BodyForce")
-    bf.Force = Vector3.new(0, PrimaryPart:GetMass() * workspace.Gravity * 1.5 + JumpHeight * 100, 0)
-    bf.Parent = PrimaryPart
-    
-    -- الطريقة 3: VectorForce
-    local vf = Instance.new("VectorForce")
-    vf.Force = Vector3.new(0, JumpHeight * 200, 0)
-    vf.RelativeTo = Enum.ActuatorRelativeTo.World
-    vf.Parent = PrimaryPart
-    
-    -- إزالة القوى بعد 0.8 ثانية
-    task.wait(0.8)
+    task.wait(0.3)
     bv:Destroy()
-    bf:Destroy()
-    vf:Destroy()
     
-    showNotification("🚗 تم قفز السيارة!", CarFrame)
+    showNotification("🚀 قفزة فورية!", CarFrame)
 end
 
 -- حلقة الطيران
@@ -1704,7 +1669,7 @@ SpeedSlider.FocusLost:Connect(function()
 end)
 
 -- ============================================
--- تعليمات الاستخدام
+-- تعليمات الاستخدام الرئيسية
 -- ============================================
 
 local InstructionsBox = Instance.new("Frame")
@@ -1757,7 +1722,7 @@ local InstructionsText = Instance.new("TextLabel")
 InstructionsText.Size = UDim2.new(1, -15, 1, -40)
 InstructionsText.Position = UDim2.new(0, 7, 0, 35)
 InstructionsText.BackgroundTransparency = 1
-InstructionsText.Text = "🚗 اركب السيارة (مقعد السائق)\n\n✈️ اضغط 'تفعيل الطيران' لتطير بالسيارة\n\n▶️ اضغط 'تشغيل الحركة' للانطلاق للأمام\n\n🎯 تتحرك السيارة باتجاه نظرتك (الكاميرا)\n\n⚡ عدل السرعة من 1 إلى 10 حسب رغبتك"
+InstructionsText.Text = "🚗 اركب السيارة (مقعد السائق)\n\n✈️ اضغط 'تفعيل الطيران' لتطير بالسيارة\n\n▶️ اضغط 'تشغيل الحركة' للانطلاق للأمام\n\n⬆️ اضغط 'قفز فوري' للقفز (عدل الارتفاع)\n\n🎯 تتحرك السيارة باتجاه نظرتك (الكاميرا)\n\n⚡ عدل السرعة من 1 إلى 10 حسب رغبتك"
 InstructionsText.TextColor3 = Color3.fromRGB(200, 200, 230)
 InstructionsText.TextSize = 12
 InstructionsText.Font = Enum.Font.GothamMedium
@@ -1798,9 +1763,10 @@ HelpButton.MouseButton1Click:Connect(function()
 end)
 
 -- ============================================
--- زر قفز بسيارة (تحت مساعدة سريعة)
+-- زر قفز بسيارة + تعليمات
 -- ============================================
 
+-- حاوية زر القفز
 local JumpContainer = Instance.new("Frame")
 JumpContainer.Size = UDim2.new(0.8, 0, 0, 40)
 JumpContainer.Position = UDim2.new(0.1, 0, 0.76, 0)
@@ -1821,7 +1787,7 @@ JumpButton.BackgroundColor3 = Color3.fromRGB(255, 150, 0)
 JumpButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 JumpButton.TextSize = 14
 JumpButton.Font = Enum.Font.SourceSansBold
-JumpButton.Text = "🚗 قفز"
+JumpButton.Text = "🚀 قفز فوري"
 JumpButton.Parent = JumpContainer
 JumpButton.ZIndex = 8
 
@@ -1865,6 +1831,64 @@ JumpHeightBox.FocusLost:Connect(function()
 end)
 
 JumpButton.MouseButton1Click:Connect(JumpCar)
+
+-- ============================================
+-- تعليمات القفز (تحت زر القفز)
+-- ============================================
+
+local JumpInstructionsBox = Instance.new("Frame")
+JumpInstructionsBox.Size = UDim2.new(0.8, 0, 0, 45)
+JumpInstructionsBox.Position = UDim2.new(0.1, 0, 0.84, 0)
+JumpInstructionsBox.BackgroundColor3 = Color3.fromRGB(15, 15, 30)
+JumpInstructionsBox.BorderSizePixel = 0
+JumpInstructionsBox.Parent = CarFrame
+JumpInstructionsBox.ZIndex = 7
+
+local JumpInstructionsCorner = Instance.new("UICorner")
+JumpInstructionsCorner.CornerRadius = UDim.new(0, 8)
+JumpInstructionsCorner.Parent = JumpInstructionsBox
+
+-- إطار مضيء
+local JumpInstGlow = Instance.new("Frame")
+JumpInstGlow.Size = UDim2.new(1, 4, 1, 4)
+JumpInstGlow.Position = UDim2.new(0, -2, 0, -2)
+JumpInstGlow.BackgroundColor3 = Color3.fromRGB(255, 200, 100)
+JumpInstGlow.BackgroundTransparency = 0.2
+JumpInstGlow.BorderSizePixel = 0
+JumpInstGlow.Parent = JumpInstructionsBox
+JumpInstGlow.ZIndex = -1
+
+local JumpInstGlowCorner = Instance.new("UICorner")
+JumpInstGlowCorner.CornerRadius = UDim.new(0, 10)
+JumpInstGlowCorner.Parent = JumpInstGlow
+
+-- أيقونة
+local JumpInstIcon = Instance.new("TextLabel")
+JumpInstIcon.Size = UDim2.new(0, 30, 1, 0)
+JumpInstIcon.Position = UDim2.new(0, 5, 0, 0)
+JumpInstIcon.BackgroundTransparency = 1
+JumpInstIcon.Text = "📌"
+JumpInstIcon.TextColor3 = Color3.fromRGB(255, 200, 100)
+JumpInstIcon.TextSize = 16
+JumpInstIcon.Font = Enum.Font.GothamBold
+JumpInstIcon.TextXAlignment = Enum.TextXAlignment.Center
+JumpInstIcon.Parent = JumpInstructionsBox
+JumpInstIcon.ZIndex = 8
+
+-- نص التعليمات
+local JumpInstructionsText = Instance.new("TextLabel")
+JumpInstructionsText.Size = UDim2.new(1, -40, 1, 0)
+JumpInstructionsText.Position = UDim2.new(0, 40, 0, 0)
+JumpInstructionsText.BackgroundTransparency = 1
+JumpInstructionsText.Text = "⬆️ اضغط 'قفز فوري' لتطير السيارة للأعلى\n📝 عدل الرقم لتغيير ارتفاع القفزة (10-200)"
+JumpInstructionsText.TextColor3 = Color3.fromRGB(200, 200, 220)
+JumpInstructionsText.TextSize = 12
+JumpInstructionsText.Font = Enum.Font.GothamMedium
+JumpInstructionsText.TextXAlignment = Enum.TextXAlignment.Left
+JumpInstructionsText.TextYAlignment = Enum.TextYAlignment.Center
+JumpInstructionsText.TextWrapped = true
+JumpInstructionsText.Parent = JumpInstructionsBox
+JumpInstructionsText.ZIndex = 8
 
 -- ============================================
 -- محتوى الأخبار
@@ -2244,9 +2268,9 @@ end
 -- فتح الصفحة الافتراضية
 ShowTeleport()
 
-print("✅ LYNEX - النسخة النهائية (زر القفز تحت مساعدة سريعة - معدل)")
+print("✅ LYNEX - النسخة الكاملة (مع قفز فوري وتعليمات)")
 print("📌 الأزرار: انتقال الفوري | فلوس | صيد | لاعبين | أخبار | طيران ذكي")
 print("💰 تصميم جديد لصفحة الفلوس")
 print("🔍 إضافة بحث للاعبين")
-print("🚗 زر القفز تحت مساعدة سريعة مع تعديل الارتفاع (3 طرق للقفز)")
+print("🚀 زر القفز فوري مع تعليمات تحت الزر")
 print("🔗 رابط الديسكورد: https://discord.gg/fJTvyYW4A")
