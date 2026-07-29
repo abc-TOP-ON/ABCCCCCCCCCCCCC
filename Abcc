@@ -1,4 +1,4 @@
--- LYNEX - النسخة النهائية (مع نظام زيادة سرعة السيارة على الأرض)
+-- LYNEX - النسخة النهائية (مع نظام زيادة سرعة السيارة على الأرض تحت التعليمات)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -1398,7 +1398,7 @@ Players.PlayerAdded:Connect(function() UpdatePlayerList() end)
 Players.PlayerRemoving:Connect(function() UpdatePlayerList() end)
 
 -- ============================================
--- محتوى صفحة الطيران الذكي (مع نظام زيادة سرعة السيارة)
+-- محتوى صفحة الطيران الذكي (مع نظام زيادة سرعة السيارة تحت التعليمات)
 -- ============================================
 
 local CarFrame = Instance.new("Frame")
@@ -1702,12 +1702,134 @@ QuickFlyButton.MouseButton1Click:Connect(function()
 end)
 
 -- ============================================
--- 🆕 نظام زيادة سرعة السيارة على الأرض (برقم)
+-- شريط تعديل سرعة الطيران
+-- ============================================
+
+local SpeedSliderContainer = Instance.new("Frame")
+SpeedSliderContainer.Size = UDim2.new(0.8, 0, 0, 35)
+SpeedSliderContainer.Position = UDim2.new(0.1, 0, 0.32, 0)
+SpeedSliderContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+SpeedSliderContainer.BorderSizePixel = 0
+SpeedSliderContainer.Parent = CarFrame
+SpeedSliderContainer.ZIndex = 7
+
+local SpeedSliderCorner = Instance.new("UICorner")
+SpeedSliderCorner.CornerRadius = UDim.new(0, 6)
+SpeedSliderCorner.Parent = SpeedSliderContainer
+
+local SpeedLabel = Instance.new("TextLabel")
+SpeedLabel.Size = UDim2.new(0.4, 0, 1, 0)
+SpeedLabel.Position = UDim2.new(0, 5, 0, 0)
+SpeedLabel.BackgroundTransparency = 1
+SpeedLabel.Text = "✈️ سرعة الطيران: 2.5"
+SpeedLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
+SpeedLabel.TextSize = 13
+SpeedLabel.Font = Enum.Font.GothamBold
+SpeedLabel.TextXAlignment = Enum.TextXAlignment.Left
+SpeedLabel.Parent = SpeedSliderContainer
+SpeedLabel.ZIndex = 8
+
+local SpeedSlider = Instance.new("TextBox")
+SpeedSlider.Size = UDim2.new(0.5, 0, 1, -6)
+SpeedSlider.Position = UDim2.new(0.45, 0, 0, 3)
+SpeedSlider.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+SpeedSlider.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpeedSlider.TextSize = 13
+SpeedSlider.Font = Enum.Font.GothamBold
+SpeedSlider.Text = ""
+SpeedSlider.PlaceholderText = "أدخل السرعة (1-10)"
+SpeedSlider.Parent = SpeedSliderContainer
+SpeedSlider.ZIndex = 8
+
+local SpeedSliderCorner2 = Instance.new("UICorner")
+SpeedSliderCorner2.CornerRadius = UDim.new(0, 4)
+SpeedSliderCorner2.Parent = SpeedSlider
+
+SpeedSlider.FocusLost:Connect(function()
+    local val = tonumber(SpeedSlider.Text)
+    if val then
+        FlySpeed = math.clamp(val, 1, 10)
+        SpeedLabel.Text = "✈️ سرعة الطيران: " .. string.format("%.1f", FlySpeed)
+        SpeedSlider.Text = ""
+        showNotification("✅ سرعة الطيران = " .. string.format("%.1f", FlySpeed), CarFrame)
+    end
+end)
+
+-- ============================================
+-- 🆕 نظام زيادة سرعة السيارة على الأرض (تحت التعليمات)
+-- ============================================
+
+-- ============================================
+-- تعليمات الاستخدام
+-- ============================================
+
+local InstructionsBox = Instance.new("Frame")
+InstructionsBox.Size = UDim2.new(0.85, 0, 0, 150)
+InstructionsBox.Position = UDim2.new(0.075, 0, 0.40, 0)
+InstructionsBox.BackgroundColor3 = Color3.fromRGB(20, 20, 40)
+InstructionsBox.BorderSizePixel = 0
+InstructionsBox.Parent = CarFrame
+InstructionsBox.ZIndex = 7
+
+local InstructionsCorner = Instance.new("UICorner")
+InstructionsCorner.CornerRadius = UDim.new(0, 10)
+InstructionsCorner.Parent = InstructionsBox
+
+local InstructionsGlow = Instance.new("Frame")
+InstructionsGlow.Size = UDim2.new(1, 4, 1, 4)
+InstructionsGlow.Position = UDim2.new(0, -2, 0, -2)
+InstructionsGlow.BackgroundColor3 = Color3.fromRGB(255, 150, 0)
+InstructionsGlow.BackgroundTransparency = 0.2
+InstructionsGlow.BorderSizePixel = 0
+InstructionsGlow.Parent = InstructionsBox
+InstructionsGlow.ZIndex = -1
+
+local InstructionsGlowCorner = Instance.new("UICorner")
+InstructionsGlowCorner.CornerRadius = UDim.new(0, 12)
+InstructionsGlowCorner.Parent = InstructionsGlow
+
+local InstructionsTitle = Instance.new("TextLabel")
+InstructionsTitle.Size = UDim2.new(1, -10, 0, 25)
+InstructionsTitle.Position = UDim2.new(0, 5, 0, 4)
+InstructionsTitle.BackgroundTransparency = 1
+InstructionsTitle.Text = "📖 تعليمات الطيران الذكي"
+InstructionsTitle.TextColor3 = Color3.fromRGB(255, 200, 100)
+InstructionsTitle.TextSize = 14
+InstructionsTitle.Font = Enum.Font.GothamBold
+InstructionsTitle.TextXAlignment = Enum.TextXAlignment.Center
+InstructionsTitle.Parent = InstructionsBox
+InstructionsTitle.ZIndex = 8
+
+local InstDivider = Instance.new("Frame")
+InstDivider.Size = UDim2.new(0.8, 0, 0, 1)
+InstDivider.Position = UDim2.new(0.1, 0, 0, 32)
+InstDivider.BackgroundColor3 = Color3.fromRGB(255, 150, 0)
+InstDivider.BackgroundTransparency = 0.4
+InstDivider.BorderSizePixel = 0
+InstDivider.Parent = InstructionsBox
+InstDivider.ZIndex = 8
+
+local InstructionsText = Instance.new("TextLabel")
+InstructionsText.Size = UDim2.new(1, -15, 1, -40)
+InstructionsText.Position = UDim2.new(0, 7, 0, 35)
+InstructionsText.BackgroundTransparency = 1
+InstructionsText.Text = "🚗 اركب السيارة (مقعد السائق)\n\n✈️ اضغط 'تفعيل الطيران' لتطير بالسيارة\n\n▶️ اضغط 'تشغيل الحركة' للانطلاق للأمام\n\n🚀 زر 'قفز سريع' لدفع السيارة للأعلى\n\n⚡ عدل سرعة الطيران من 1 إلى 10\n\n🏎️ اكتب رقم في المربع أدناه واضغط 'تطبيق' لتزيد سرعة السيارة على الأرض\n\n🎯 تتحرك السيارة باتجاه نظرتك (الكاميرا)"
+InstructionsText.TextColor3 = Color3.fromRGB(200, 200, 230)
+InstructionsText.TextSize = 11
+InstructionsText.Font = Enum.Font.GothamMedium
+InstructionsText.TextXAlignment = Enum.TextXAlignment.Left
+InstructionsText.TextYAlignment = Enum.TextYAlignment.Top
+InstructionsText.TextWrapped = true
+InstructionsText.Parent = InstructionsBox
+InstructionsText.ZIndex = 8
+
+-- ============================================
+-- نظام زيادة سرعة السيارة (تحت التعليمات مباشرة)
 -- ============================================
 
 local CarSpeedFrame = Instance.new("Frame")
-CarSpeedFrame.Size = UDim2.new(0.8, 0, 0, 90)
-CarSpeedFrame.Position = UDim2.new(0.1, 0, 0.32, 0)
+CarSpeedFrame.Size = UDim2.new(0.85, 0, 0, 55)
+CarSpeedFrame.Position = UDim2.new(0.075, 0, 0.57, 0)
 CarSpeedFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 40)
 CarSpeedFrame.BorderSizePixel = 0
 CarSpeedFrame.Parent = CarFrame
@@ -1717,29 +1839,29 @@ local CarSpeedCorner = Instance.new("UICorner")
 CarSpeedCorner.CornerRadius = UDim.new(0, 8)
 CarSpeedCorner.Parent = CarSpeedFrame
 
--- عنوان القسم
-local CarSpeedTitle = Instance.new("TextLabel")
-CarSpeedTitle.Size = UDim2.new(1, -10, 0, 25)
-CarSpeedTitle.Position = UDim2.new(0, 5, 0, 2)
-CarSpeedTitle.BackgroundTransparency = 1
-CarSpeedTitle.Text = "🏎️ ضبط سرعة السيارة على الأرض"
-CarSpeedTitle.TextColor3 = Color3.fromRGB(255, 200, 100)
-CarSpeedTitle.TextSize = 14
-CarSpeedTitle.Font = Enum.Font.GothamBold
-CarSpeedTitle.TextXAlignment = Enum.TextXAlignment.Center
-CarSpeedTitle.Parent = CarSpeedFrame
-CarSpeedTitle.ZIndex = 8
+-- عنوان صغير
+local CarSpeedLabel = Instance.new("TextLabel")
+CarSpeedLabel.Size = UDim2.new(0.35, 0, 1, 0)
+CarSpeedLabel.Position = UDim2.new(0.02, 0, 0, 0)
+CarSpeedLabel.BackgroundTransparency = 1
+CarSpeedLabel.Text = "🏎️ سرعة الأرض:"
+CarSpeedLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
+CarSpeedLabel.TextSize = 13
+CarSpeedLabel.Font = Enum.Font.GothamBold
+CarSpeedLabel.TextXAlignment = Enum.TextXAlignment.Left
+CarSpeedLabel.Parent = CarSpeedFrame
+CarSpeedLabel.ZIndex = 8
 
 -- مربع إدخال السرعة
 local CarSpeedInput = Instance.new("TextBox")
-CarSpeedInput.Size = UDim2.new(0.5, 0, 0, 35)
-CarSpeedInput.Position = UDim2.new(0.02, 0, 0.35, 0)
+CarSpeedInput.Size = UDim2.new(0.25, 0, 1, -10)
+CarSpeedInput.Position = UDim2.new(0.38, 0, 0, 5)
 CarSpeedInput.BackgroundColor3 = Color3.fromRGB(15, 15, 30)
 CarSpeedInput.TextColor3 = Color3.fromRGB(255, 255, 255)
-CarSpeedInput.TextSize = 16
+CarSpeedInput.TextSize = 14
 CarSpeedInput.Font = Enum.Font.GothamBold
 CarSpeedInput.Text = ""
-CarSpeedInput.PlaceholderText = "أدخل السرعة (1-50)"
+CarSpeedInput.PlaceholderText = "1-50"
 CarSpeedInput.Parent = CarSpeedFrame
 CarSpeedInput.ZIndex = 8
 
@@ -1749,11 +1871,11 @@ CarSpeedInputCorner.Parent = CarSpeedInput
 
 -- زر تطبيق السرعة
 local ApplyCarSpeedBtn = Instance.new("TextButton")
-ApplyCarSpeedBtn.Size = UDim2.new(0.35, 0, 0, 35)
-ApplyCarSpeedBtn.Position = UDim2.new(0.55, 0, 0.35, 0)
+ApplyCarSpeedBtn.Size = UDim2.new(0.2, 0, 1, -10)
+ApplyCarSpeedBtn.Position = UDim2.new(0.65, 0, 0, 5)
 ApplyCarSpeedBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
 ApplyCarSpeedBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-ApplyCarSpeedBtn.TextSize = 14
+ApplyCarSpeedBtn.TextSize = 12
 ApplyCarSpeedBtn.Font = Enum.Font.SourceSansBold
 ApplyCarSpeedBtn.Text = "🏎️ تطبيق"
 ApplyCarSpeedBtn.Parent = CarSpeedFrame
@@ -1765,35 +1887,16 @@ ApplyCarCorner.Parent = ApplyCarSpeedBtn
 
 -- عرض السرعة الحالية
 local CurrentSpeedLabel = Instance.new("TextLabel")
-CurrentSpeedLabel.Size = UDim2.new(0.7, 0, 0, 25)
-CurrentSpeedLabel.Position = UDim2.new(0.02, 0, 0.7, 0)
-CurrentSpeedLabel.BackgroundColor3 = Color3.fromRGB(20, 20, 35)
+CurrentSpeedLabel.Size = UDim2.new(0.18, 0, 1, 0)
+CurrentSpeedLabel.Position = UDim2.new(0.86, 0, 0, 0)
+CurrentSpeedLabel.BackgroundTransparency = 1
+CurrentSpeedLabel.Text = "1x"
 CurrentSpeedLabel.TextColor3 = Color3.fromRGB(0, 255, 150)
-CurrentSpeedLabel.TextSize = 13
+CurrentSpeedLabel.TextSize = 14
 CurrentSpeedLabel.Font = Enum.Font.GothamBold
-CurrentSpeedLabel.Text = "⚡ السرعة: 1x"
+CurrentSpeedLabel.TextXAlignment = Enum.TextXAlignment.Center
 CurrentSpeedLabel.Parent = CarSpeedFrame
 CurrentSpeedLabel.ZIndex = 8
-
-local CurrentSpeedCorner = Instance.new("UICorner")
-CurrentSpeedCorner.CornerRadius = UDim.new(0, 6)
-CurrentSpeedCorner.Parent = CurrentSpeedLabel
-
--- زر إلغاء
-local CancelSpeedBtn = Instance.new("TextButton")
-CancelSpeedBtn.Size = UDim2.new(0.25, 0, 0, 25)
-CancelSpeedBtn.Position = UDim2.new(0.73, 0, 0.7, 0)
-CancelSpeedBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-CancelSpeedBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-CancelSpeedBtn.TextSize = 12
-CancelSpeedBtn.Font = Enum.Font.SourceSansBold
-CancelSpeedBtn.Text = "⛔ إلغاء"
-CancelSpeedBtn.Parent = CarSpeedFrame
-CancelSpeedBtn.ZIndex = 8
-
-local CancelSpeedCorner = Instance.new("UICorner")
-CancelSpeedCorner.CornerRadius = UDim.new(0, 6)
-CancelSpeedCorner.Parent = CancelSpeedBtn
 
 -- ============================================
 -- متغيرات سرعة السيارة
@@ -1845,13 +1948,29 @@ ApplyCarSpeedBtn.MouseButton1Click:Connect(function()
     carSpeedActive = true
     carSpeedValue = speedNum
     
-    CurrentSpeedLabel.Text = "⚡ السرعة: " .. speedNum .. "x"
+    CurrentSpeedLabel.Text = speedNum .. "x"
     ApplyCarSpeedBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 50)
-    ApplyCarSpeedBtn.Text = "✅ مفعل!"
+    ApplyCarSpeedBtn.Text = "✅ مفعل"
     CarSpeedInput.BackgroundColor3 = Color3.fromRGB(0, 50, 30)
     
-    showNotification("🏎️ تم ضبط السرعة = " .. speedNum .. "x", CarFrame)
+    showNotification("🏎️ سرعة الأرض = " .. speedNum .. "x", CarFrame)
 end)
+
+-- زر إلغاء
+local CancelSpeedBtn = Instance.new("TextButton")
+CancelSpeedBtn.Size = UDim2.new(0.12, 0, 0, 20)
+CancelSpeedBtn.Position = UDim2.new(0.86, 0, 0.45, 0)
+CancelSpeedBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+CancelSpeedBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+CancelSpeedBtn.TextSize = 10
+CancelSpeedBtn.Font = Enum.Font.SourceSansBold
+CancelSpeedBtn.Text = "إلغاء"
+CancelSpeedBtn.Parent = CarSpeedFrame
+CancelSpeedBtn.ZIndex = 8
+
+local CancelSpeedCorner = Instance.new("UICorner")
+CancelSpeedCorner.CornerRadius = UDim.new(0, 4)
+CancelSpeedCorner.Parent = CancelSpeedBtn
 
 CancelSpeedBtn.MouseButton1Click:Connect(function()
     carSpeedActive = false
@@ -1861,128 +1980,10 @@ CancelSpeedBtn.MouseButton1Click:Connect(function()
     ApplyCarSpeedBtn.Text = "🏎️ تطبيق"
     CarSpeedInput.BackgroundColor3 = Color3.fromRGB(15, 15, 30)
     CarSpeedInput.Text = ""
-    CurrentSpeedLabel.Text = "⚡ السرعة: 1x"
+    CurrentSpeedLabel.Text = "1x"
     
     showNotification("⛔ تم إلغاء السرعة", CarFrame)
 end)
-
--- ============================================
--- شريط تعديل سرعة الطيران
--- ============================================
-
-local SpeedSliderContainer = Instance.new("Frame")
-SpeedSliderContainer.Size = UDim2.new(0.8, 0, 0, 35)
-SpeedSliderContainer.Position = UDim2.new(0.1, 0, 0.44, 0)
-SpeedSliderContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
-SpeedSliderContainer.BorderSizePixel = 0
-SpeedSliderContainer.Parent = CarFrame
-SpeedSliderContainer.ZIndex = 7
-
-local SpeedSliderCorner = Instance.new("UICorner")
-SpeedSliderCorner.CornerRadius = UDim.new(0, 6)
-SpeedSliderCorner.Parent = SpeedSliderContainer
-
-local SpeedLabel = Instance.new("TextLabel")
-SpeedLabel.Size = UDim2.new(0.4, 0, 1, 0)
-SpeedLabel.Position = UDim2.new(0, 5, 0, 0)
-SpeedLabel.BackgroundTransparency = 1
-SpeedLabel.Text = "✈️ سرعة الطيران: 2.5"
-SpeedLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
-SpeedLabel.TextSize = 13
-SpeedLabel.Font = Enum.Font.GothamBold
-SpeedLabel.TextXAlignment = Enum.TextXAlignment.Left
-SpeedLabel.Parent = SpeedSliderContainer
-SpeedLabel.ZIndex = 8
-
-local SpeedSlider = Instance.new("TextBox")
-SpeedSlider.Size = UDim2.new(0.5, 0, 1, -6)
-SpeedSlider.Position = UDim2.new(0.45, 0, 0, 3)
-SpeedSlider.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
-SpeedSlider.TextColor3 = Color3.fromRGB(255, 255, 255)
-SpeedSlider.TextSize = 13
-SpeedSlider.Font = Enum.Font.GothamBold
-SpeedSlider.Text = ""
-SpeedSlider.PlaceholderText = "أدخل السرعة (1-10)"
-SpeedSlider.Parent = SpeedSliderContainer
-SpeedSlider.ZIndex = 8
-
-local SpeedSliderCorner2 = Instance.new("UICorner")
-SpeedSliderCorner2.CornerRadius = UDim.new(0, 4)
-SpeedSliderCorner2.Parent = SpeedSlider
-
-SpeedSlider.FocusLost:Connect(function()
-    local val = tonumber(SpeedSlider.Text)
-    if val then
-        FlySpeed = math.clamp(val, 1, 10)
-        SpeedLabel.Text = "✈️ سرعة الطيران: " .. string.format("%.1f", FlySpeed)
-        SpeedSlider.Text = ""
-        showNotification("✅ سرعة الطيران = " .. string.format("%.1f", FlySpeed), CarFrame)
-    end
-end)
-
--- ============================================
--- تعليمات الاستخدام
--- ============================================
-
-local InstructionsBox = Instance.new("Frame")
-InstructionsBox.Size = UDim2.new(0.85, 0, 0, 120)
-InstructionsBox.Position = UDim2.new(0.075, 0, 0.52, 0)
-InstructionsBox.BackgroundColor3 = Color3.fromRGB(20, 20, 40)
-InstructionsBox.BorderSizePixel = 0
-InstructionsBox.Parent = CarFrame
-InstructionsBox.ZIndex = 7
-
-local InstructionsCorner = Instance.new("UICorner")
-InstructionsCorner.CornerRadius = UDim.new(0, 10)
-InstructionsCorner.Parent = InstructionsBox
-
-local InstructionsGlow = Instance.new("Frame")
-InstructionsGlow.Size = UDim2.new(1, 4, 1, 4)
-InstructionsGlow.Position = UDim2.new(0, -2, 0, -2)
-InstructionsGlow.BackgroundColor3 = Color3.fromRGB(255, 150, 0)
-InstructionsGlow.BackgroundTransparency = 0.2
-InstructionsGlow.BorderSizePixel = 0
-InstructionsGlow.Parent = InstructionsBox
-InstructionsGlow.ZIndex = -1
-
-local InstructionsGlowCorner = Instance.new("UICorner")
-InstructionsGlowCorner.CornerRadius = UDim.new(0, 12)
-InstructionsGlowCorner.Parent = InstructionsGlow
-
-local InstructionsTitle = Instance.new("TextLabel")
-InstructionsTitle.Size = UDim2.new(1, -10, 0, 25)
-InstructionsTitle.Position = UDim2.new(0, 5, 0, 4)
-InstructionsTitle.BackgroundTransparency = 1
-InstructionsTitle.Text = "📖 تعليمات الطيران الذكي"
-InstructionsTitle.TextColor3 = Color3.fromRGB(255, 200, 100)
-InstructionsTitle.TextSize = 14
-InstructionsTitle.Font = Enum.Font.GothamBold
-InstructionsTitle.TextXAlignment = Enum.TextXAlignment.Center
-InstructionsTitle.Parent = InstructionsBox
-InstructionsTitle.ZIndex = 8
-
-local InstDivider = Instance.new("Frame")
-InstDivider.Size = UDim2.new(0.8, 0, 0, 1)
-InstDivider.Position = UDim2.new(0.1, 0, 0, 32)
-InstDivider.BackgroundColor3 = Color3.fromRGB(255, 150, 0)
-InstDivider.BackgroundTransparency = 0.4
-InstDivider.BorderSizePixel = 0
-InstDivider.Parent = InstructionsBox
-InstDivider.ZIndex = 8
-
-local InstructionsText = Instance.new("TextLabel")
-InstructionsText.Size = UDim2.new(1, -15, 1, -40)
-InstructionsText.Position = UDim2.new(0, 7, 0, 35)
-InstructionsText.BackgroundTransparency = 1
-InstructionsText.Text = "🚗 اركب السيارة (مقعد السائق)\n\n✈️ اضغط 'تفعيل الطيران' لتطير بالسيارة\n\n▶️ اضغط 'تشغيل الحركة' للانطلاق للأمام\n\n🚀 زر 'قفز سريع' لدفع السيارة للأعلى\n\n🏎️ أدخل رقم في 'ضبط سرعة السيارة' لتزيد سرعتها على الأرض\n\n🎯 تتحرك السيارة باتجاه نظرتك (الكاميرا)"
-InstructionsText.TextColor3 = Color3.fromRGB(200, 200, 230)
-InstructionsText.TextSize = 11
-InstructionsText.Font = Enum.Font.GothamMedium
-InstructionsText.TextXAlignment = Enum.TextXAlignment.Left
-InstructionsText.TextYAlignment = Enum.TextYAlignment.Top
-InstructionsText.TextWrapped = true
-InstructionsText.Parent = InstructionsBox
-InstructionsText.ZIndex = 8
 
 -- ============================================
 -- محتوى الأخبار
@@ -2166,8 +2167,7 @@ DiscordIcon.BackgroundTransparency = 1
 DiscordIcon.Text = "💬"
 DiscordIcon.TextColor3 = Color3.fromRGB(88, 101, 242)
 DiscordIcon.TextSize = 30
-DiscordIcon.Font = Enum.Font.GothamBold
-DiscordIcon.TextXAlignment = Enum.TextXAlignment.Center
+DiscordIcon.Font = Enum.Font.GothamBoldDiscordIcon.TextXAlignment = Enum.TextXAlignment.Center
 DiscordIcon.Parent = DiscordSection
 DiscordIcon.ZIndex = 8
 
@@ -2359,10 +2359,10 @@ end
 
 ShowTeleport()
 
-print("✅ LYNEX - النسخة النهائية (مع نظام زيادة سرعة السيارة على الأرض)")
+print("✅ LYNEX - النسخة النهائية (مع نظام زيادة سرعة السيارة تحت التعليمات)")
 print("📌 الأزرار: انتقال الفوري | فلوس | صيد | لاعبين | أخبار | طيران ذكي")
 print("💰 تصميم جديد لصفحة الفلوس")
 print("🔍 إضافة بحث للاعبين")
 print("🚀 إضافة زر القفز السريع للسيارة")
-print("🏎️ إضافة نظام زيادة سرعة السيارة على الأرض (1-50x)")
+print("🏎️ إضافة نظام زيادة سرعة السيارة تحت التعليمات (1-50x)")
 print("🔗 رابط الديسكورد: https://discord.gg/fJTvyYW4A")
