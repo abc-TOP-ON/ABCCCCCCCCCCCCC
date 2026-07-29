@@ -1,4 +1,4 @@
--- LYNEX - النسخة النهائية (مع زر قفز سريع للسيارة)
+-- LYNEX - النسخة النهائية (مع زر قفز سريع للسيارة - مُصلح)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -1328,7 +1328,6 @@ local function UpdatePlayerList()
         local displayName = player.DisplayName:lower()
         local username = player.Name:lower()
         
-        -- فلترة حسب البحث
         if searchText == "" or displayName:find(searchText) or username:find(searchText) then
             local isLocal = (player == LocalPlayer)
             shownCount = shownCount + 1
@@ -1389,7 +1388,6 @@ local function UpdatePlayerList()
     PlayerScroll.CanvasSize = UDim2.new(0, 0, 0, yOffset + 10)
 end
 
--- تحديث عند تغيير البحث
 SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
     UpdatePlayerList()
 end)
@@ -1400,7 +1398,7 @@ Players.PlayerAdded:Connect(function() UpdatePlayerList() end)
 Players.PlayerRemoving:Connect(function() UpdatePlayerList() end)
 
 -- ============================================
--- محتوى صفحة الطيران الذكي (مع زر القفز السريع)
+-- محتوى صفحة الطيران الذكي (مع زر القفز السريع المُصلح)
 -- ============================================
 
 local CarFrame = Instance.new("Frame")
@@ -1532,7 +1530,7 @@ local function StartFlyLoop()
 end
 
 -- ============================================
--- الأزرار مرتبة عمودياً (مع زر القفز السريع)
+-- الأزرار مرتبة عمودياً (مع زر القفز السريع المُصلح)
 -- ============================================
 
 -- زر تفعيل الطيران (الأول)
@@ -1612,7 +1610,10 @@ MoveCarButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- زر القفز السريع للسيارة (الثالث - الجديد!)
+-- ============================================
+-- زر القفز السريع للسيارة (النسخة المُصلحة)
+-- ============================================
+
 local QuickFlyButton = Instance.new("TextButton")
 QuickFlyButton.Size = UDim2.new(0.8, 0, 0, 40)
 QuickFlyButton.Position = UDim2.new(0.1, 0, 0.24, 0)
@@ -1637,32 +1638,80 @@ QuickFlyButton.MouseLeave:Connect(function()
     QuickFlyButton.BackgroundColor3 = Color3.fromRGB(200, 100, 0)
 end)
 
--- وظيفة القفز العمودي للسيارة
+-- وظيفة القفز العمودي للسيارة (النسخة المحسنة)
 QuickFlyButton.MouseButton1Click:Connect(function()
     QuickFlyButton.BackgroundColor3 = Color3.fromRGB(200, 100, 0)
     
-    local car = GetVehicle()
-    if not car then
+    -- جلب اللاعب والشخصية
+    local player = game.Players.LocalPlayer
+    local character = player.Character
+    
+    if not character or not character:FindFirstChild("Humanoid") then
+        showNotification("⚠️ ما لقيت شخصيتك!", CarFrame)
+        return
+    end
+    
+    -- جلب المقعد اللي راكبه
+    local seat = character.Humanoid.SeatPart
+    
+    if not seat then
         showNotification("⚠️ لازم تركب سيارة أولاً!", CarFrame)
         return
     end
     
-    local PrimaryPart = car.PrimaryPart or car:FindFirstChildWhichIsA("BasePart")
+    -- جلب السيارة (الأب الأعلى للمقعد)
+    local vehicle = seat.Parent
+    
+    if not vehicle or not vehicle:IsA("Model") then
+        showNotification("⚠️ ما لقيت السيارة!", CarFrame)
+        return
+    end
+    
+    -- جلب الجزء الأساسي للسيارة
+    local PrimaryPart = vehicle.PrimaryPart
+    
+    -- إذا ما فيه PrimaryPart، دور على أي جزء من نوع BasePart
+    if not PrimaryPart then
+        for _, child in pairs(vehicle:GetDescendants()) do
+            if child:IsA("BasePart") and child.Name ~= "Seat" and child.Name ~= "DriveSeat" then
+                PrimaryPart = child
+                break
+            end
+        end
+    end
+    
+    -- إذا لسا ما لقيت، خذ المقعد نفسه
+    if not PrimaryPart then
+        PrimaryPart = seat
+    end
+    
     if not PrimaryPart then
         showNotification("⚠️ ما لقيت جزء أساسي للسيارة!", CarFrame)
         return
     end
     
-    -- تطبيق قوة دفع للأعلى
+    -- ===== الطريقة الأولى: BodyVelocity =====
     local bodyVelocity = Instance.new("BodyVelocity")
-    bodyVelocity.Velocity = Vector3.new(0, 150, 0)  -- قوة القفز
-    bodyVelocity.MaxForce = Vector3.new(0, 500000, 0)
+    bodyVelocity.Velocity = Vector3.new(0, 200, 0)  -- قوة القفز (زودتها من 150 إلى 200)
+    bodyVelocity.MaxForce = Vector3.new(0, 1000000, 0)  -- زودت القوة القصوى
     bodyVelocity.Parent = PrimaryPart
     
-    -- إزالة القوة بعد ثانية واحدة
-    task.wait(1)
-    bodyVelocity:Destroy()
+    -- ===== الطريقة الثانية: BodyForce (مساعد) =====
+    local bodyForce = Instance.new("BodyForce")
+    bodyForce.Force = Vector3.new(0, PrimaryPart:GetMass() * 196.2, 0)  -- قوة الجاذبية × 20
+    bodyForce.Parent = PrimaryPart
     
+    -- ===== الطريقة الثالثة: تغيير الـ CFrame مباشرة (خيار احتياطي) =====
+    -- نطبق قفزة فورية كإجراء احتياطي
+    local currentPos = PrimaryPart.Position
+    PrimaryPart.CFrame = CFrame.new(currentPos + Vector3.new(0, 15, 0))
+    
+    -- إزالة القوى بعد 1.5 ثانية
+    task.wait(1.5)
+    bodyVelocity:Destroy()
+    bodyForce:Destroy()
+    
+    -- إشعار نجاح
     showNotification("🚀 تم قفز السيارة للأعلى!", CarFrame)
 end)
 
@@ -2167,9 +2216,9 @@ end
 -- فتح الصفحة الافتراضية (انتقال الفوري)
 ShowTeleport()
 
-print("✅ LYNEX - النسخة النهائية (مع زر قفز سريع للسيارة)")
+print("✅ LYNEX - النسخة النهائية (مع زر قفز سريع مُصلح للسيارة)")
 print("📌 الأزرار: انتقال الفوري | فلوس | صيد | لاعبين | أخبار | طيران ذكي")
 print("💰 تصميم جديد لصفحة الفلوس")
 print("🔍 إضافة بحث للاعبين")
-print("🚀 إضافة زر القفز السريع للسيارة")
+print("🚀 إضافة زر القفز السريع للسيارة (يعمل بثلاث طرق مختلفة)")
 print("🔗 رابط الديسكورد: https://discord.gg/fJTvyYW4A")
