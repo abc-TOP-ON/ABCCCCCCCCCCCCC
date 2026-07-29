@@ -1,4 +1,4 @@
--- LYNEX - النسخة النهائية (مع نظام زيادة سرعة السيارة تحت التعليمات)
+-- LYNEX - النسخة النهائية (مع نظام زيادة سرعة السيارة تحت التعليمات - سرعة 200)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -1398,7 +1398,7 @@ Players.PlayerAdded:Connect(function() UpdatePlayerList() end)
 Players.PlayerRemoving:Connect(function() UpdatePlayerList() end)
 
 -- ============================================
--- محتوى صفحة الطيران الذكي (مع نظام زيادة سرعة السيارة تحت التعليمات)
+-- محتوى صفحة الطيران الذكي (مع نظام زيادة سرعة السيارة تحت التعليمات - سرعة 200)
 -- ============================================
 
 local CarFrame = Instance.new("Frame")
@@ -1809,7 +1809,7 @@ local InstructionsText = Instance.new("TextLabel")
 InstructionsText.Size = UDim2.new(1, -15, 1, -40)
 InstructionsText.Position = UDim2.new(0, 7, 0, 35)
 InstructionsText.BackgroundTransparency = 1
-InstructionsText.Text = "🚗 اركب السيارة (مقعد السائق)\n\n✈️ اضغط 'تفعيل الطيران' لتطير بالسيارة\n\n▶️ اضغط 'تشغيل الحركة' للانطلاق للأمام\n\n🚀 زر 'قفز سريع' لدفع السيارة للأعلى\n\n⚡ عدل سرعة الطيران من 1 إلى 10\n\n🏎️ اكتب رقم في المربع أدناه واضغط 'تطبيق' لتزيد سرعة السيارة على الأرض\n\n🎯 تتحرك السيارة باتجاه نظرتك (الكاميرا)"
+InstructionsText.Text = "🚗 اركب السيارة (مقعد السائق)\n\n✈️ اضغط 'تفعيل الطيران' لتطير بالسيارة\n\n▶️ اضغط 'تشغيل الحركة' للانطلاق للأمام\n\n🚀 زر 'قفز سريع' لدفع السيارة للأعلى\n\n⚡ عدل سرعة الطيران من 1 إلى 10\n\n🏎️ اكتب رقم في المربع أدناه واضغط 'تطبيق' لتزيد سرعة السيارة على الأرض (1-200)\n\n🎯 تتحرك السيارة باتجاه نظرتك (الكاميرا)"
 InstructionsText.TextColor3 = Color3.fromRGB(200, 200, 230)
 InstructionsText.TextSize = 11
 InstructionsText.Font = Enum.Font.GothamMedium
@@ -1820,12 +1820,12 @@ InstructionsText.Parent = InstructionsBox
 InstructionsText.ZIndex = 8
 
 -- ============================================
--- 🆕 نظام زيادة سرعة السيارة على الأرض (تحت التعليمات مباشرة)
+-- 🆕 نظام زيادة سرعة السيارة على الأرض (تحت التعليمات - سرعة تصل إلى 200)
 -- ============================================
 
 local CarSpeedFrame = Instance.new("Frame")
-CarSpeedFrame.Size = UDim2.new(0.85, 0, 0, 55)
-CarSpeedFrame.Position = UDim2.new(0.075, 0, 0.57, 0)
+CarSpeedFrame.Size = UDim2.new(0.85, 0, 0, 65)
+CarSpeedFrame.Position = UDim2.new(0.075, 0, 0.59, 0)
 CarSpeedFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 40)
 CarSpeedFrame.BorderSizePixel = 0
 CarSpeedFrame.Parent = CarFrame
@@ -1837,7 +1837,7 @@ CarSpeedCorner.Parent = CarSpeedFrame
 
 -- عنوان صغير
 local CarSpeedLabel = Instance.new("TextLabel")
-CarSpeedLabel.Size = UDim2.new(0.35, 0, 1, 0)
+CarSpeedLabel.Size = UDim2.new(0.35, 0, 0.5, 0)
 CarSpeedLabel.Position = UDim2.new(0.02, 0, 0, 0)
 CarSpeedLabel.BackgroundTransparency = 1
 CarSpeedLabel.Text = "🏎️ سرعة الأرض:"
@@ -1850,14 +1850,14 @@ CarSpeedLabel.ZIndex = 8
 
 -- مربع إدخال السرعة
 local CarSpeedInput = Instance.new("TextBox")
-CarSpeedInput.Size = UDim2.new(0.25, 0, 1, -10)
-CarSpeedInput.Position = UDim2.new(0.38, 0, 0, 5)
+CarSpeedInput.Size = UDim2.new(0.3, 0, 0.5, 0)
+CarSpeedInput.Position = UDim2.new(0.38, 0, 0, 0)
 CarSpeedInput.BackgroundColor3 = Color3.fromRGB(15, 15, 30)
 CarSpeedInput.TextColor3 = Color3.fromRGB(255, 255, 255)
 CarSpeedInput.TextSize = 14
 CarSpeedInput.Font = Enum.Font.GothamBold
 CarSpeedInput.Text = ""
-CarSpeedInput.PlaceholderText = "1-50"
+CarSpeedInput.PlaceholderText = "1-200"
 CarSpeedInput.Parent = CarSpeedFrame
 CarSpeedInput.ZIndex = 8
 
@@ -1867,8 +1867,8 @@ CarSpeedInputCorner.Parent = CarSpeedInput
 
 -- زر تطبيق السرعة
 local ApplyCarSpeedBtn = Instance.new("TextButton")
-ApplyCarSpeedBtn.Size = UDim2.new(0.2, 0, 1, -10)
-ApplyCarSpeedBtn.Position = UDim2.new(0.65, 0, 0, 5)
+ApplyCarSpeedBtn.Size = UDim2.new(0.2, 0, 0.5, 0)
+ApplyCarSpeedBtn.Position = UDim2.new(0.70, 0, 0, 0)
 ApplyCarSpeedBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
 ApplyCarSpeedBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 ApplyCarSpeedBtn.TextSize = 12
@@ -1883,24 +1883,24 @@ ApplyCarCorner.Parent = ApplyCarSpeedBtn
 
 -- عرض السرعة الحالية
 local CurrentSpeedLabel = Instance.new("TextLabel")
-CurrentSpeedLabel.Size = UDim2.new(0.18, 0, 1, 0)
-CurrentSpeedLabel.Position = UDim2.new(0.86, 0, 0, 0)
+CurrentSpeedLabel.Size = UDim2.new(0.25, 0, 0.5, 0)
+CurrentSpeedLabel.Position = UDim2.new(0.02, 0, 0.55, 0)
 CurrentSpeedLabel.BackgroundTransparency = 1
-CurrentSpeedLabel.Text = "1x"
+CurrentSpeedLabel.Text = "⚡ 1x"
 CurrentSpeedLabel.TextColor3 = Color3.fromRGB(0, 255, 150)
 CurrentSpeedLabel.TextSize = 14
 CurrentSpeedLabel.Font = Enum.Font.GothamBold
-CurrentSpeedLabel.TextXAlignment = Enum.TextXAlignment.Center
+CurrentSpeedLabel.TextXAlignment = Enum.TextXAlignment.Left
 CurrentSpeedLabel.Parent = CarSpeedFrame
 CurrentSpeedLabel.ZIndex = 8
 
 -- زر إلغاء
 local CancelSpeedBtn = Instance.new("TextButton")
-CancelSpeedBtn.Size = UDim2.new(0.12, 0, 0, 20)
-CancelSpeedBtn.Position = UDim2.new(0.86, 0, 0.45, 0)
+CancelSpeedBtn.Size = UDim2.new(0.15, 0, 0.5, 0)
+CancelSpeedBtn.Position = UDim2.new(0.40, 0, 0.55, 0)
 CancelSpeedBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
 CancelSpeedBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-CancelSpeedBtn.TextSize = 10
+CancelSpeedBtn.TextSize = 11
 CancelSpeedBtn.Font = Enum.Font.SourceSansBold
 CancelSpeedBtn.Text = "إلغاء"
 CancelSpeedBtn.Parent = CarSpeedFrame
@@ -1909,6 +1909,35 @@ CancelSpeedBtn.ZIndex = 8
 local CancelSpeedCorner = Instance.new("UICorner")
 CancelSpeedCorner.CornerRadius = UDim.new(0, 4)
 CancelSpeedCorner.Parent = CancelSpeedBtn
+
+-- زر ضبط السرعة القصوى 200
+local MaxSpeedBtn = Instance.new("TextButton")
+MaxSpeedBtn.Size = UDim2.new(0.3, 0, 0.5, 0)
+MaxSpeedBtn.Position = UDim2.new(0.57, 0, 0.55, 0)
+MaxSpeedBtn.BackgroundColor3 = Color3.fromRGB(255, 150, 0)
+MaxSpeedBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+MaxSpeedBtn.TextSize = 11
+MaxSpeedBtn.Font = Enum.Font.SourceSansBold
+MaxSpeedBtn.Text = "🔥 200x"
+MaxSpeedBtn.Parent = CarSpeedFrame
+MaxSpeedBtn.ZIndex = 8
+
+local MaxSpeedCorner = Instance.new("UICorner")
+MaxSpeedCorner.CornerRadius = UDim.new(0, 4)
+MaxSpeedCorner.Parent = MaxSpeedBtn
+
+MaxSpeedBtn.MouseButton1Click:Connect(function()
+    carSpeedActive = true
+    carSpeedValue = 200
+    
+    CurrentSpeedLabel.Text = "⚡ 200x"
+    ApplyCarSpeedBtn.BackgroundColor3 = Color3.fromRGB(255, 200, 0)
+    ApplyCarSpeedBtn.Text = "🔥 مفعل"
+    CarSpeedInput.BackgroundColor3 = Color3.fromRGB(100, 50, 0)
+    CarSpeedInput.Text = "200"
+    
+    showNotification("🔥 تم ضبط السرعة القصوى = 200x", CarFrame)
+end)
 
 -- ============================================
 -- متغيرات سرعة السيارة
@@ -1952,15 +1981,15 @@ ApplyCarSpeedBtn.MouseButton1Click:Connect(function()
         return
     end
     
-    if speedNum < 1 or speedNum > 50 then
-        showNotification("⚠️ السرعة بين 1 و 50!", CarFrame)
+    if speedNum < 1 or speedNum > 200 then
+        showNotification("⚠️ السرعة بين 1 و 200!", CarFrame)
         return
     end
     
     carSpeedActive = true
     carSpeedValue = speedNum
     
-    CurrentSpeedLabel.Text = speedNum .. "x"
+    CurrentSpeedLabel.Text = "⚡ " .. speedNum .. "x"
     ApplyCarSpeedBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 50)
     ApplyCarSpeedBtn.Text = "✅ مفعل"
     CarSpeedInput.BackgroundColor3 = Color3.fromRGB(0, 50, 30)
@@ -1976,7 +2005,7 @@ CancelSpeedBtn.MouseButton1Click:Connect(function()
     ApplyCarSpeedBtn.Text = "🏎️ تطبيق"
     CarSpeedInput.BackgroundColor3 = Color3.fromRGB(15, 15, 30)
     CarSpeedInput.Text = ""
-    CurrentSpeedLabel.Text = "1x"
+    CurrentSpeedLabel.Text = "⚡ 1x"
     
     showNotification("⛔ تم إلغاء السرعة", CarFrame)
 end)
@@ -2124,8 +2153,12 @@ createNewsCard("🚗", "تم إضافة نظام الطيران الذكي لل�
     Color3.fromRGB(255, 150, 0), false)
 
 createNewsCard("🏎️", "تم إضافة نظام زيادة سرعة السيارة على الأرض!",
-    "أدخل رقم من 1 إلى 50 لتزيد سرعة سيارتك على الأرض!",
+    "أدخل رقم من 1 إلى 200 لتزيد سرعة سيارتك على الأرض!",
     Color3.fromRGB(0, 255, 200), false)
+
+createNewsCard("🔥", "إضافة زر السرعة القصوى 200x!",
+    "اضغط على زر '200x' لتصل للسرعة القصوى فوراً!",
+    Color3.fromRGB(255, 100, 0), false)
 
 createNewsCard("📱", "دعم كامل للهاتف والكمبيوتر!",
     "السكربت الآن يدعم جميع الأجهزة مع واجهة متجاوبة.",
@@ -2356,10 +2389,11 @@ end
 
 ShowTeleport()
 
-print("✅ LYNEX - النسخة النهائية (مع نظام زيادة سرعة السيارة تحت التعليمات)")
+print("✅ LYNEX - النسخة النهائية (مع نظام زيادة سرعة السيارة تحت التعليمات - سرعة 200)")
 print("📌 الأزرار: انتقال الفوري | فلوس | صيد | لاعبين | أخبار | طيران ذكي")
 print("💰 تصميم جديد لصفحة الفلوس")
 print("🔍 إضافة بحث للاعبين")
 print("🚀 إضافة زر القفز السريع للسيارة")
-print("🏎️ إضافة نظام زيادة سرعة السيارة تحت التعليمات (1-50x)")
+print("🏎️ إضافة نظام زيادة سرعة السيارة تحت التعليمات (1-200x)")
+print("🔥 إضافة زر السرعة القصوى 200x")
 print("🔗 رابط الديسكورد: https://discord.gg/fJTvyYW4A")
