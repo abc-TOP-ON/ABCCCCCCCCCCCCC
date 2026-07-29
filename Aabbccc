@@ -1,0 +1,97 @@
+-- إنشاء واجهة المستخدم (ScreenGui)
+local ScreenGui = Instance.new("ScreenGui")
+local CarButton = Instance.new("ImageButton")
+local UICorner = Instance.new("UICorner")
+
+-- إعدادات الواجهة الرئيسية
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+ScreenGui.ResetOnSpawn = false
+
+-- إعدادات الزر وتثبيته على الجهة اليمنى من الشاشة
+CarButton.Name = "CarFlyButton"
+CarButton.Parent = ScreenGui
+CarButton.BackgroundColor3 = Color3.fromRGB(35, 30, 25)
+CarButton.BackgroundTransparency = 0.3
+CarButton.Size = UDim2.new(0, 50, 0, 50) 
+CarButton.Position = UDim2.new(1, -75, 0.7, -110) 
+
+CarButton.Image = "rbxassetid://6031243533" -- أيقونة السيارة
+CarButton.ImageColor3 = Color3.fromRGB(255, 255, 255)
+
+-- جعل الزر دائرياً متناسقاً
+UICorner.CornerRadius = UDim.new(1, 0)
+UICorner.Parent = CarButton
+
+-- نظام التحذير في أعلى الشاشة تماماً (يمكث 3 ثوانٍ)
+local function showWarning(text)
+    -- إزالة أي رسالة سابقة لعدم تداخل النصوص
+    if ScreenGui:FindFirstChild("WarningLabel") then
+        ScreenGui.WarningLabel:Destroy()
+    end
+    
+    local WarningLabel = Instance.new("TextLabel")
+    WarningLabel.Name = "WarningLabel"
+    WarningLabel.Parent = ScreenGui
+    WarningLabel.Size = UDim2.new(0, 280, 0, 45)
+    
+    -- [التعديل الجديد]: تم رفع الرسالة لأقصى حد في أعلى منتصف الشاشة كإشعار علوي
+    WarningLabel.Position = UDim2.new(0.5, -140, 0.10, 0) 
+    
+    WarningLabel.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+    WarningLabel.BackgroundTransparency = 0.15
+    WarningLabel.TextColor3 = Color3.fromRGB(255, 60, 60) -- لون أحمر ناري واضح
+    WarningLabel.Text = text
+    WarningLabel.Font = Enum.Font.SourceSansBold
+    WarningLabel.TextSize = 22
+    
+    -- زوايا دائرية ناعمة لخلفية الرسالة
+    local LabelCorner = Instance.new("UICorner")
+    LabelCorner.CornerRadius = UDim.new(0, 10)
+    LabelCorner.Parent = WarningLabel
+    
+    -- جعل الرسالة تختفي تلقائياً بعد 3 ثوانٍ تماماً
+    game:GetService("Debris"):AddItem(WarningLabel, 3)
+end
+
+-- تغيير لون الزر للأحمر عند بدء اللمس
+CarButton.MouseButton1Down:Connect(function()
+    CarButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+    CarButton.BackgroundTransparency = 0.1
+end)
+
+-- وظيفة طيران المركبة أو إطلاق التحذير عند الإفلات
+CarButton.MouseButton1Click:Connect(function()
+    -- إرجاع لون الزر الأصلي
+    CarButton.BackgroundColor3 = Color3.fromRGB(35, 30, 25)
+    CarButton.BackgroundTransparency = 0.3
+
+    local player = game.Players.LocalPlayer
+    local character = player.Character
+    
+    if character and character:FindFirstChild("Humanoid") then
+        local seat = character.Humanoid.SeatPart
+        local vehicle = seat and seat.Parent
+        
+        if vehicle and vehicle:IsA("Model") then
+            local mainPart = vehicle:FindFirstChild("DriveSeat") or vehicle.PrimaryPart or vehicle:FindFirstChildWhichIsA("BasePart")
+            if mainPart then
+                local bodyVelocity = Instance.new("BodyVelocity")
+                bodyVelocity.Velocity = Vector3.new(0, 150, 0)
+                bodyVelocity.MaxForce = Vector3.new(0, 500000, 0) 
+                bodyVelocity.Parent = mainPart
+                
+                game:GetService("Debris"):AddItem(bodyVelocity, 1)
+            end
+        else
+            showWarning("اركب سيارة أولاً!")
+        end
+    else
+        showWarning("اركب سيارة أولاً!")
+    end
+end)
+
+-- إرجاع اللون للوضع الطبيعي إذا تم سحب الإصبع خارج النطاق
+CarButton.MouseLeave:Connect(function()
+    CarButton.BackgroundColor3 = Color3.fromRGB(35, 30, 25)
+    CarButton.BackgroundTransparency = 0.3
+end)
