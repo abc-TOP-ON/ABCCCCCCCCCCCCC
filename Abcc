@@ -1,4 +1,4 @@
--- LYNEX - النسخة النهائية (زر القفز تحت مساعدة سريعة)
+-- LYNEX - النسخة النهائية (زر القفز تحت مساعدة سريعة - معدل)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -615,7 +615,7 @@ TeleportFooter.Parent = TeleportFrame
 TeleportFooter.ZIndex = 6
 
 -- ============================================
--- محتوى صفحة الفلوس (تصميم جديد ومحسن)
+-- محتوى صفحة الفلوس
 -- ============================================
 
 local MoneyFrame = Instance.new("Frame")
@@ -657,7 +657,6 @@ local MoneyHeaderCorner = Instance.new("UICorner")
 MoneyHeaderCorner.CornerRadius = UDim.new(0, 12)
 MoneyHeaderCorner.Parent = MoneyHeader
 
--- أيقونة الفلوس
 local MoneyIcon = Instance.new("TextLabel")
 MoneyIcon.Size = UDim2.new(0, 50, 1, 0)
 MoneyIcon.Position = UDim2.new(0, 10, 0, 0)
@@ -682,7 +681,7 @@ MoneyTitle.TextXAlignment = Enum.TextXAlignment.Center
 MoneyTitle.Parent = MoneyHeader
 MoneyTitle.ZIndex = 7
 
--- الإحصائيات الرئيسية (كروت)
+-- الإحصائيات
 local StatsContainer = Instance.new("Frame")
 StatsContainer.Size = UDim2.new(0.92, 0, 0, 80)
 StatsContainer.Position = UDim2.new(0.04, 0, 0.12, 0)
@@ -703,7 +702,6 @@ local Card1Corner = Instance.new("UICorner")
 Card1Corner.CornerRadius = UDim.new(0, 10)
 Card1Corner.Parent = Card1
 
--- إطار ذهبي للكارت
 local Card1Glow = Instance.new("Frame")
 Card1Glow.Size = UDim2.new(1, 4, 1, 4)
 Card1Glow.Position = UDim2.new(0, -2, 0, -2)
@@ -815,7 +813,7 @@ StatusLabel.TextXAlignment = Enum.TextXAlignment.Left
 StatusLabel.Parent = Card2
 StatusLabel.ZIndex = 9
 
--- زر التشغيل الكبير
+-- زر التشغيل
 local ToggleButtonMoney = Instance.new("TextButton")
 ToggleButtonMoney.Size = UDim2.new(0.7, 0, 0, 55)
 ToggleButtonMoney.Position = UDim2.new(0.15, 0, 0.35, 0)
@@ -831,7 +829,6 @@ local ToggleCornerMoney = Instance.new("UICorner")
 ToggleCornerMoney.CornerRadius = UDim.new(0, 12)
 ToggleCornerMoney.Parent = ToggleButtonMoney
 
--- تأثير hover للزر
 ToggleButtonMoney.MouseEnter:Connect(function()
     if ToggleButtonMoney.Text == "▶️ تشغيل" then
         ToggleButtonMoney.BackgroundColor3 = Color3.fromRGB(50, 220, 50)
@@ -851,7 +848,6 @@ BtnContainer.BackgroundTransparency = 1
 BtnContainer.Parent = MoneyFrame
 BtnContainer.ZIndex = 10
 
--- زر إعادة تعيين
 local ResetBtn = Instance.new("TextButton")
 ResetBtn.Size = UDim2.new(0.45, -5, 1, 0)
 ResetBtn.Position = UDim2.new(0, 0, 0, 0)
@@ -880,7 +876,6 @@ ResetBtn.MouseButton1Click:Connect(function()
     showNotification("🔄 تم إعادة تعيين العداد", MoneyFrame)
 end)
 
--- زر مساعدة
 local HelpBtn = Instance.new("TextButton")
 HelpBtn.Size = UDim2.new(0.45, -5, 1, 0)
 HelpBtn.Position = UDim2.new(0.55, 0, 0, 0)
@@ -907,7 +902,6 @@ HelpBtn.MouseButton1Click:Connect(function()
     showNotification("📌 اضغط تشغيل لجمع الفلوس تلقائياً!", MoneyFrame)
 end)
 
--- مربع معلومات أسفل
 local InfoBoxMoney = Instance.new("Frame")
 InfoBoxMoney.Size = UDim2.new(0.85, 0, 0, 55)
 InfoBoxMoney.Position = UDim2.new(0.075, 0, 0.58, 0)
@@ -1035,12 +1029,11 @@ ToggleButtonMoney.MouseButton1Click:Connect(function()
     end
 end)
 
--- تعيين الحالة الابتدائية
 ToggleButtonMoney.Text = "▶️ تشغيل"
 ToggleButtonMoney.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
 
 -- ============================================
--- محتوى صفحة الصيد (Fishing)
+-- محتوى صفحة الصيد
 -- ============================================
 
 local FishingFrame = Instance.new("Frame")
@@ -1224,7 +1217,7 @@ PlayerDivider.BorderSizePixel = 0
 PlayerDivider.Parent = PlayerFrame
 PlayerDivider.ZIndex = 6
 
--- ========== مربع البحث ==========
+-- مربع البحث
 local SearchContainer = Instance.new("Frame")
 SearchContainer.Size = UDim2.new(0.92, 0, 0, 40)
 SearchContainer.Position = UDim2.new(0.04, 0, 0.1, 0)
@@ -1237,7 +1230,6 @@ local SearchCorner = Instance.new("UICorner")
 SearchCorner.CornerRadius = UDim.new(0, 8)
 SearchCorner.Parent = SearchContainer
 
--- أيقونة البحث
 local SearchIcon = Instance.new("TextLabel")
 SearchIcon.Size = UDim2.new(0, 35, 1, 0)
 SearchIcon.Position = UDim2.new(0, 5, 0, 0)
@@ -1250,7 +1242,6 @@ SearchIcon.TextXAlignment = Enum.TextXAlignment.Center
 SearchIcon.Parent = SearchContainer
 SearchIcon.ZIndex = 8
 
--- مربع إدخال البحث
 local SearchBox = Instance.new("TextBox")
 SearchBox.Size = UDim2.new(0.7, 0, 1, -10)
 SearchBox.Position = UDim2.new(0.08, 0, 0, 5)
@@ -1267,7 +1258,6 @@ local SearchBoxCorner = Instance.new("UICorner")
 SearchBoxCorner.CornerRadius = UDim.new(0, 6)
 SearchBoxCorner.Parent = SearchBox
 
--- زر مسح البحث
 local ClearSearchBtn = Instance.new("TextButton")
 ClearSearchBtn.Size = UDim2.new(0, 30, 1, -10)
 ClearSearchBtn.Position = UDim2.new(0.82, 0, 0, 5)
@@ -1288,7 +1278,6 @@ ClearSearchBtn.MouseButton1Click:Connect(function()
     UpdatePlayerList()
 end)
 
--- قائمة اللاعبين
 local PlayerScroll = Instance.new("ScrollingFrame")
 PlayerScroll.Size = UDim2.new(1, -10, 1, -110)
 PlayerScroll.Position = UDim2.new(0, 5, 0, 95)
@@ -1328,7 +1317,6 @@ local function UpdatePlayerList()
         local displayName = player.DisplayName:lower()
         local username = player.Name:lower()
         
-        -- فلترة حسب البحث
         if searchText == "" or displayName:find(searchText) or username:find(searchText) then
             local isLocal = (player == LocalPlayer)
             shownCount = shownCount + 1
@@ -1389,7 +1377,6 @@ local function UpdatePlayerList()
     PlayerScroll.CanvasSize = UDim2.new(0, 0, 0, yOffset + 10)
 end
 
--- تحديث عند تغيير البحث
 SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
     UpdatePlayerList()
 end)
@@ -1400,7 +1387,7 @@ Players.PlayerAdded:Connect(function() UpdatePlayerList() end)
 Players.PlayerRemoving:Connect(function() UpdatePlayerList() end)
 
 -- ============================================
--- محتوى صفحة الطيران الذكي (زر القفز تحت مساعدة سريعة)
+-- محتوى صفحة الطيران الذكي (مع زر القفز تحت مساعدة سريعة)
 -- ============================================
 
 local CarFrame = Instance.new("Frame")
@@ -1491,7 +1478,9 @@ function showNotification(text, parent)
     notif:Destroy()
 end
 
--- دالة قفز السيارة
+-- ============================================
+-- دالة قفز السيارة (معدلة - 3 طرق)
+-- ============================================
 local function JumpCar()
     local car = GetVehicle()
     if not car then
@@ -1499,18 +1488,46 @@ local function JumpCar()
         return
     end
     
-    local PrimaryPart = car.PrimaryPart or car:FindFirstChildWhichIsA("BasePart")
-    if PrimaryPart then
-        local bodyVelocity = Instance.new("BodyVelocity")
-        bodyVelocity.Velocity = Vector3.new(0, JumpHeight * 1.5, 0)
-        bodyVelocity.MaxForce = Vector3.new(0, 1000000, 0)
-        bodyVelocity.Parent = PrimaryPart
-        
-        task.wait(0.5)
-        bodyVelocity:Destroy()
-        
-        showNotification("🚗 تم قفز السيارة!", CarFrame)
+    -- البحث عن الجزء الرئيسي
+    local PrimaryPart = car.PrimaryPart
+    if not PrimaryPart then
+        for _, part in pairs(car:GetDescendants()) do
+            if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+                PrimaryPart = part
+                break
+            end
+        end
     end
+    
+    if not PrimaryPart then
+        showNotification("⚠️ ما لقيت جزء مناسب!", CarFrame)
+        return
+    end
+    
+    -- الطريقة 1: BodyVelocity
+    local bv = Instance.new("BodyVelocity")
+    bv.Velocity = Vector3.new(0, JumpHeight * 1.5, 0)
+    bv.MaxForce = Vector3.new(0, 1000000, 0)
+    bv.Parent = PrimaryPart
+    
+    -- الطريقة 2: BodyForce
+    local bf = Instance.new("BodyForce")
+    bf.Force = Vector3.new(0, PrimaryPart:GetMass() * workspace.Gravity * 1.5 + JumpHeight * 100, 0)
+    bf.Parent = PrimaryPart
+    
+    -- الطريقة 3: VectorForce
+    local vf = Instance.new("VectorForce")
+    vf.Force = Vector3.new(0, JumpHeight * 200, 0)
+    vf.RelativeTo = Enum.ActuatorRelativeTo.World
+    vf.Parent = PrimaryPart
+    
+    -- إزالة القوى بعد 0.8 ثانية
+    task.wait(0.8)
+    bv:Destroy()
+    bf:Destroy()
+    vf:Destroy()
+    
+    showNotification("🚗 تم قفز السيارة!", CarFrame)
 end
 
 -- حلقة الطيران
@@ -1979,7 +1996,6 @@ local function createNewsCard(icon, title, desc, color, isImportant)
     return card
 end
 
--- إضافة الأخبار
 createNewsCard("✅", "تم إضافة نظام سرقة الفلوس التلقائي V7!",
     "الآن يمكنك تجميع الفلوس من الأرض تلقائياً وبسرعة فائقة!",
     Color3.fromRGB(0, 255, 100), true)
@@ -2225,12 +2241,12 @@ for _, child in pairs(Sidebar:GetChildren()) do
     end
 end
 
--- فتح الصفحة الافتراضية (انتقال الفوري)
+-- فتح الصفحة الافتراضية
 ShowTeleport()
 
-print("✅ LYNEX - النسخة النهائية (زر القفز تحت مساعدة سريعة)")
+print("✅ LYNEX - النسخة النهائية (زر القفز تحت مساعدة سريعة - معدل)")
 print("📌 الأزرار: انتقال الفوري | فلوس | صيد | لاعبين | أخبار | طيران ذكي")
 print("💰 تصميم جديد لصفحة الفلوس")
 print("🔍 إضافة بحث للاعبين")
-print("🚗 زر القفز تحت مساعدة سريعة مع تعديل الارتفاع")
+print("🚗 زر القفز تحت مساعدة سريعة مع تعديل الارتفاع (3 طرق للقفز)")
 print("🔗 رابط الديسكورد: https://discord.gg/fJTvyYW4A")
