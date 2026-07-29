@@ -1,4 +1,4 @@
--- LYNEX - النسخة النهائية (مع نظام سرعة السيارة المتقدم - مرتب تحت التعليمات)
+-- LYNEX - النسخة النهائية (مع نظام سرعة السيارة المتقدم + كلبشه تلقائي)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -356,7 +356,10 @@ task.spawn(function()
     end
 end)
 
--- أزرار القائمة الجانبية
+-- ============================================
+-- دالة إنشاء الأزرار العادية
+-- ============================================
+
 local function createSidebarButton(text, posIndex, isActive)
     local Btn = Instance.new("TextButton")
     Btn.Size = UDim2.new(1, -20, 0, 40)
@@ -401,15 +404,204 @@ local function createSidebarButton(text, posIndex, isActive)
         Indicator.Parent = Btn
         Indicator.ZIndex = 18
     end
+    return Btn
 end
 
--- الأزرار
+-- ============================================
+-- دالة إنشاء زر مع Dropdown
+-- ============================================
+
+local function createDropdownButton(text, posIndex, dropdownItems)
+    local dropdownState = false
+    local dropdownFrame = nil
+    
+    -- الزر الرئيسي
+    local MainBtn = Instance.new("TextButton")
+    MainBtn.Size = UDim2.new(1, -20, 0, 40)
+    MainBtn.Position = UDim2.new(0, 10, 0, 60 + ((posIndex - 1) * 48))
+    MainBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
+    MainBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    MainBtn.BorderSizePixel = 0
+    MainBtn.Text = text
+    MainBtn.TextSize = 14
+    MainBtn.Font = Enum.Font.GothamBold
+    MainBtn.Parent = Sidebar
+    MainBtn.ZIndex = 17
+
+    local MainBtnCorner = Instance.new("UICorner")
+    MainBtnCorner.CornerRadius = UDim.new(0, 8)
+    MainBtnCorner.Parent = MainBtn
+
+    -- السهم
+    local arrow = Instance.new("TextLabel")
+    arrow.Size = UDim2.new(0, 30, 1, 0)
+    arrow.Position = UDim2.new(1, -35, 0, 0)
+    arrow.BackgroundTransparency = 1
+    arrow.Text = "▼"
+    arrow.TextColor3 = Color3.fromRGB(200, 200, 200)
+    arrow.TextSize = 16
+    arrow.Font = Enum.Font.GothamBold
+    arrow.TextXAlignment = Enum.TextXAlignment.Center
+    arrow.Parent = MainBtn
+    arrow.ZIndex = 18
+
+    MainBtn.MouseEnter:Connect(function()
+        if not dropdownState then
+            MainBtn.BackgroundColor3 = Color3.fromRGB(70, 70, 95)
+        end
+    end)
+    MainBtn.MouseLeave:Connect(function()
+        if not dropdownState then
+            MainBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
+        end
+    end)
+
+    -- دالة فتح/إغلاق القائمة
+    local function ToggleDropdown()
+        if dropdownFrame then
+            dropdownFrame:Destroy()
+            dropdownFrame = nil
+            dropdownState = false
+            MainBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
+            arrow.Text = "▼"
+            return
+        end
+
+        dropdownState = true
+        MainBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 200)
+        arrow.Text = "▲"
+
+        dropdownFrame = Instance.new("Frame")
+        dropdownFrame.Size = UDim2.new(1, -20, 0, 50)
+        dropdownFrame.Position = UDim2.new(0, 10, 0, 60 + (posIndex * 48))
+        dropdownFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+        dropdownFrame.BorderSizePixel = 0
+        dropdownFrame.Parent = Sidebar
+        dropdownFrame.ZIndex = 19
+        dropdownFrame.ClipsDescendants = true
+
+        local dropdownCorner = Instance.new("UICorner")
+        dropdownCorner.CornerRadius = UDim.new(0, 8)
+        dropdownCorner.Parent = dropdownFrame
+
+        -- إطار مضيء
+        local dropGlow = Instance.new("Frame")
+        dropGlow.Size = UDim2.new(1, 4, 1, 4)
+        dropGlow.Position = UDim2.new(0, -2, 0, -2)
+        dropGlow.BackgroundColor3 = Color3.fromRGB(255, 150, 0)
+        dropGlow.BackgroundTransparency = 0.2
+        dropGlow.BorderSizePixel = 0
+        dropGlow.Parent = dropdownFrame
+        dropGlow.ZIndex = -1
+
+        local dropGlowCorner = Instance.new("UICorner")
+        dropGlowCorner.CornerRadius = UDim.new(0, 10)
+        dropGlowCorner.Parent = dropGlow
+
+        -- عناصر القائمة
+        local yOffset = 3
+        for i, item in ipairs(dropdownItems) do
+            local btn = Instance.new("TextButton")
+            btn.Size = UDim2.new(1, -10, 0, 40)
+            btn.Position = UDim2.new(0, 5, 0, yOffset)
+            btn.BackgroundColor3 = Color3.fromRGB(60, 40, 20)
+            btn.TextColor3 = Color3.fromRGB(255, 200, 100)
+            btn.BorderSizePixel = 0
+            btn.Text = item.text
+            btn.TextSize = 13
+            btn.Font = Enum.Font.GothamBold
+            btn.Parent = dropdownFrame
+            btn.ZIndex = 20
+
+            local btnCorner = Instance.new("UICorner")
+            btnCorner.CornerRadius = UDim.new(0, 6)
+            btnCorner.Parent = btn
+
+            -- تأثير وميض لكل عنصر
+            task.spawn(function()
+                local count = 0
+                while btn and btn.Parent do
+                    count = count + 0.05
+                    local brightness = 0.5 + math.sin((count + i * 2) * 2) * 0.3
+                    btn.BackgroundColor3 = Color3.new(
+                        0.2 + brightness * 0.3,
+                        0.1 + brightness * 0.2,
+                        0.05 + brightness * 0.1
+                    )
+                    btn.TextColor3 = Color3.new(
+                        0.8 + brightness * 0.2,
+                        0.6 + brightness * 0.3,
+                        0.2 + brightness * 0.3
+                    )
+                    task.wait(0.05)
+                end
+            end)
+
+            btn.MouseButton1Click:Connect(function()
+                if item.action then
+                    item.action()
+                else
+                    showNotification("⏳ " .. item.text .. " - قريباً!", MainFrame)
+                end
+                ToggleDropdown() -- يغلق القائمة بعد الضغط
+            end)
+
+            yOffset = yOffset + 44
+        end
+
+        -- تغيير حجم الإطار حسب عدد العناصر
+        dropdownFrame.Size = UDim2.new(1, -20, 0, yOffset + 6)
+    end
+
+    MainBtn.MouseButton1Click:Connect(ToggleDropdown)
+
+    -- دالة لإغلاق القائمة من الخارج
+    local function CloseDropdown()
+        if dropdownFrame then
+            dropdownFrame:Destroy()
+            dropdownFrame = nil
+            dropdownState = false
+            MainBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
+            arrow.Text = "▼"
+        end
+    end
+
+    return MainBtn, CloseDropdown
+end
+
+-- ============================================
+-- إنشاء الأزرار العادية
+-- ============================================
+
 createSidebarButton("⚡ انتقال الفوري", 1, true)
 createSidebarButton("💰 فلوس", 2, false)
 createSidebarButton("🎣 الصيد", 3, false)
 createSidebarButton("👥 لاعبين", 4, false)
 createSidebarButton("📰 الأخبار", 5, false)
-createSidebarButton("🚗 الطيران الذكي", 6, false)
+
+-- ============================================
+-- إنشاء أزرار Dropdown
+-- ============================================
+
+-- زر الطيران الذكي
+local carBtn, closeCarDropdown = createDropdownButton("🚗 الطيران الذكي", 6, {
+    {text = "⏳ قريباً..."}
+})
+
+-- زر الكلبشه التلقائي (جديد)
+local clapBtn, closeClapDropdown = createDropdownButton("🔗 كلبشه تلقائي", 7, {
+    {text = "⏳ قريباً..."},
+    {text = "⚙️ إعدادات قادمة"}
+})
+
+-- ============================================
+-- وظائف إغلاق القوائم المنسدلة
+-- ============================================
+
+local function CloseAllDropdowns()
+    closeCarDropdown()
+    closeClapDropdown()
+end
 
 -- ============================================
 -- الحاويات
@@ -1398,7 +1590,7 @@ Players.PlayerAdded:Connect(function() UpdatePlayerList() end)
 Players.PlayerRemoving:Connect(function() UpdatePlayerList() end)
 
 -- ============================================
--- محتوى صفحة الطيران الذكي (مع نظام سرعة السيارة المتقدم - مرتب تحت التعليمات)
+-- محتوى صفحة الطيران الذكي (مع نظام سرعة السيارة المتقدم)
 -- ============================================
 
 local CarFrame = Instance.new("Frame")
@@ -2157,6 +2349,7 @@ NewsScroll.CanvasSize = UDim2.new(0, 0, 0, newsY + 30)
 -- ============================================
 
 local function ShowTeleport()
+    CloseAllDropdowns()
     TeleportContainer.Visible = true
     MoneyContainer.Visible = false
     FishingContainer.Visible = false
@@ -2169,7 +2362,7 @@ local function ShowTeleport()
             if child.Text == "⚡ انتقال الفوري" then
                 child.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
                 child.TextColor3 = Color3.fromRGB(255, 255, 255)
-            else
+            elseif child.Text ~= "🚗 الطيران الذكي" and child.Text ~= "🔗 كلبشه تلقائي" then
                 child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
                 child.TextColor3 = Color3.fromRGB(255, 255, 255)
             end
@@ -2178,6 +2371,7 @@ local function ShowTeleport()
 end
 
 local function ShowMoney()
+    CloseAllDropdowns()
     TeleportContainer.Visible = false
     MoneyContainer.Visible = true
     FishingContainer.Visible = false
@@ -2190,7 +2384,7 @@ local function ShowMoney()
             if child.Text == "💰 فلوس" then
                 child.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
                 child.TextColor3 = Color3.fromRGB(255, 255, 255)
-            else
+            elseif child.Text ~= "🚗 الطيران الذكي" and child.Text ~= "🔗 كلبشه تلقائي" then
                 child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
                 child.TextColor3 = Color3.fromRGB(255, 255, 255)
             end
@@ -2199,6 +2393,7 @@ local function ShowMoney()
 end
 
 local function ShowFishing()
+    CloseAllDropdowns()
     TeleportContainer.Visible = false
     MoneyContainer.Visible = false
     FishingContainer.Visible = true
@@ -2211,7 +2406,7 @@ local function ShowFishing()
             if child.Text == "🎣 الصيد" then
                 child.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
                 child.TextColor3 = Color3.fromRGB(255, 255, 255)
-            else
+            elseif child.Text ~= "🚗 الطيران الذكي" and child.Text ~= "🔗 كلبشه تلقائي" then
                 child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
                 child.TextColor3 = Color3.fromRGB(255, 255, 255)
             end
@@ -2220,6 +2415,7 @@ local function ShowFishing()
 end
 
 local function ShowPlayers()
+    CloseAllDropdowns()
     TeleportContainer.Visible = false
     MoneyContainer.Visible = false
     FishingContainer.Visible = false
@@ -2233,7 +2429,7 @@ local function ShowPlayers()
             if child.Text == "👥 لاعبين" then
                 child.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
                 child.TextColor3 = Color3.fromRGB(255, 255, 255)
-            else
+            elseif child.Text ~= "🚗 الطيران الذكي" and child.Text ~= "🔗 كلبشه تلقائي" then
                 child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
                 child.TextColor3 = Color3.fromRGB(255, 255, 255)
             end
@@ -2242,6 +2438,7 @@ local function ShowPlayers()
 end
 
 local function ShowNews()
+    CloseAllDropdowns()
     TeleportContainer.Visible = false
     MoneyContainer.Visible = false
     FishingContainer.Visible = false
@@ -2254,7 +2451,7 @@ local function ShowNews()
             if child.Text == "📰 الأخبار" then
                 child.BackgroundColor3 = Color3.fromRGB(255, 200, 0)
                 child.TextColor3 = Color3.fromRGB(0, 0, 0)
-            else
+            elseif child.Text ~= "🚗 الطيران الذكي" and child.Text ~= "🔗 كلبشه تلقائي" then
                 child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
                 child.TextColor3 = Color3.fromRGB(255, 255, 255)
             end
@@ -2263,6 +2460,7 @@ local function ShowNews()
 end
 
 local function ShowCars()
+    CloseAllDropdowns()
     TeleportContainer.Visible = false
     MoneyContainer.Visible = false
     FishingContainer.Visible = false
@@ -2275,13 +2473,17 @@ local function ShowCars()
             if child.Text == "🚗 الطيران الذكي" then
                 child.BackgroundColor3 = Color3.fromRGB(255, 150, 0)
                 child.TextColor3 = Color3.fromRGB(0, 0, 0)
-            else
+            elseif child.Text ~= "🔗 كلبشه تلقائي" then
                 child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
                 child.TextColor3 = Color3.fromRGB(255, 255, 255)
             end
         end
     end
 end
+
+-- ============================================
+-- ربط الأزرار
+-- ============================================
 
 for _, child in pairs(Sidebar:GetChildren()) do
     if child:IsA("TextButton") then
@@ -2296,17 +2498,20 @@ for _, child in pairs(Sidebar:GetChildren()) do
         elseif child.Text == "📰 الأخبار" then
             child.MouseButton1Click:Connect(ShowNews)
         elseif child.Text == "🚗 الطيران الذكي" then
-            child.MouseButton1Click:Connect(ShowCars)
+            -- الربط موجود داخل دالة createDropdownButton
+        elseif child.Text == "🔗 كلبشه تلقائي" then
+            -- الربط موجود داخل دالة createDropdownButton
         end
     end
 end
 
 ShowTeleport()
 
-print("✅ LYNEX - النسخة النهائية (مع نظام سرعة السيارة المتقدم - مرتب تحت التعليمات)")
+print("✅ LYNEX - النسخة النهائية (مع كلبشه تلقائي وقوائم منسدلة)")
 print("📌 الأزرار: انتقال الفوري | فلوس | صيد | لاعبين | أخبار | سرعة السيارة")
 print("💰 تصميم جديد لصفحة الفلوس")
 print("🔍 إضافة بحث للاعبين")
 print("🚀 إضافة زر القفز السريع للسيارة")
-print("🏎️ إضافة نظام سرعة السيارة المتقدم تحت التعليمات (مرتب)")
+print("🏎️ إضافة نظام سرعة السيارة المتقدم")
+print("🔗 إضافة زر كلبشه تلقائي مع قائمة منسدلة 'قريباً'")
 print("🔗 رابط الديسكورد: https://discord.gg/fJTvyYW4A")
