@@ -1,4 +1,4 @@
--- LYNEX - النسخة الكاملة (مع قفز فوري وتعليمات)
+-- LYNEX - النسخة الكاملة (مع زر السيارة الخارجي + قفز فوري)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -12,12 +12,133 @@ if game:GetService("CoreGui"):FindFirstChild("LYNEX") then
     game:GetService("CoreGui"):FindFirstChild("LYNEX"):Destroy()
 end
 
+-- منع تكرار زر السيارة الخارجي
+local playerGui = game.Players.LocalPlayer:FindFirstChild("PlayerGui")
+if playerGui then
+    for _, gui in pairs(playerGui:GetChildren()) do
+        if gui:IsA("ScreenGui") then
+            for _, child in pairs(gui:GetChildren()) do
+                if child.Name == "CarFlyButton" then
+                    child:Destroy()
+                end
+            end
+        end
+    end
+end
+
 -- المتغيرات العامة
 local isOpen = false
 local buttonSize = 60
 
 -- ============================================
--- زر الدخول والخروج الدائري
+-- زر السيارة الخارجي (القفز)
+-- ============================================
+
+local function CreateCarButton()
+    -- إنشاء واجهة المستخدم (ScreenGui)
+    local CarScreenGui = Instance.new("ScreenGui")
+    CarScreenGui.Name = "CarFlyGUI"
+    CarScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+    CarScreenGui.ResetOnSpawn = false
+
+    local CarButton = Instance.new("ImageButton")
+    local UICorner = Instance.new("UICorner")
+
+    -- إعدادات الزر وتثبيته على الجهة اليمنى من الشاشة
+    CarButton.Name = "CarFlyButton"
+    CarButton.Parent = CarScreenGui
+    CarButton.BackgroundColor3 = Color3.fromRGB(35, 30, 25)
+    CarButton.BackgroundTransparency = 0.3
+    CarButton.Size = UDim2.new(0, 55, 0, 55) 
+    CarButton.Position = UDim2.new(1, -75, 0.7, -110) 
+    CarButton.Image = "rbxassetid://6031243533"
+    CarButton.ImageColor3 = Color3.fromRGB(255, 255, 255)
+
+    UICorner.CornerRadius = UDim.new(1, 0)
+    UICorner.Parent = CarButton
+
+    -- نظام التحذير
+    local function showWarning(text)
+        if CarScreenGui:FindFirstChild("WarningLabel") then
+            CarScreenGui.WarningLabel:Destroy()
+        end
+        
+        local WarningLabel = Instance.new("TextLabel")
+        WarningLabel.Name = "WarningLabel"
+        WarningLabel.Parent = CarScreenGui
+        WarningLabel.Size = UDim2.new(0, 300, 0, 50)
+        WarningLabel.Position = UDim2.new(0.5, -150, 0.10, 0) 
+        WarningLabel.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+        WarningLabel.BackgroundTransparency = 0.15
+        WarningLabel.TextColor3 = Color3.fromRGB(255, 60, 60)
+        WarningLabel.Text = text
+        WarningLabel.Font = Enum.Font.SourceSansBold
+        WarningLabel.TextSize = 22
+        
+        local LabelCorner = Instance.new("UICorner")
+        LabelCorner.CornerRadius = UDim.new(0, 10)
+        LabelCorner.Parent = WarningLabel
+        
+        game:GetService("Debris"):AddItem(WarningLabel, 3)
+    end
+
+    -- تغيير لون الزر للأحمر عند بدء اللمس
+    CarButton.MouseButton1Down:Connect(function()
+        CarButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+        CarButton.BackgroundTransparency = 0.1
+    end)
+
+    -- وظيفة القفز الفوري
+    CarButton.MouseButton1Click:Connect(function()
+        CarButton.BackgroundColor3 = Color3.fromRGB(35, 30, 25)
+        CarButton.BackgroundTransparency = 0.3
+
+        local player = game.Players.LocalPlayer
+        local character = player.Character
+        
+        if character and character:FindFirstChild("Humanoid") then
+            local seat = character.Humanoid.SeatPart
+            local vehicle = seat and seat.Parent
+            
+            if vehicle and vehicle:IsA("Model") then
+                local mainPart = vehicle:FindFirstChild("DriveSeat") or vehicle.PrimaryPart or vehicle:FindFirstChildWhichIsA("BasePart")
+                if mainPart then
+                    -- قفزة فورية بقوة عالية
+                    local bodyVelocity = Instance.new("BodyVelocity")
+                    bodyVelocity.Velocity = Vector3.new(0, 150, 0)
+                    bodyVelocity.MaxForce = Vector3.new(0, 1000000, 0) 
+                    bodyVelocity.Parent = mainPart
+                    
+                    -- BodyForce دعم إضافي
+                    local bf = Instance.new("BodyForce")
+                    bf.Force = Vector3.new(0, mainPart:GetMass() * workspace.Gravity * 1.5 + 5000, 0)
+                    bf.Parent = mainPart
+                    
+                    game:GetService("Debris"):AddItem(bodyVelocity, 0.5)
+                    game:GetService("Debris"):AddItem(bf, 0.5)
+                end
+            else
+                showWarning("🚗 اركب سيارة أولاً!")
+            end
+        else
+            showWarning("🚗 اركب سيارة أولاً!")
+        end
+    end)
+
+    -- إرجاع اللون للوضع الطبيعي
+    CarButton.MouseLeave:Connect(function()
+        CarButton.BackgroundColor3 = Color3.fromRGB(35, 30, 25)
+        CarButton.BackgroundTransparency = 0.3
+    end)
+
+    return CarButton
+end
+
+-- إنشاء زر السيارة
+local CarButton = CreateCarButton()
+
+-- ============================================
+-- زر الدخول والخروج الدائري (الرئيسي)
 -- ============================================
 
 local ScreenGui = Instance.new("ScreenGui")
@@ -679,7 +800,6 @@ MoneyTitle.TextXAlignment = Enum.TextXAlignment.Center
 MoneyTitle.Parent = MoneyHeader
 MoneyTitle.ZIndex = 7
 
--- الإحصائيات
 local StatsContainer = Instance.new("Frame")
 StatsContainer.Size = UDim2.new(0.92, 0, 0, 80)
 StatsContainer.Position = UDim2.new(0.04, 0, 0.12, 0)
@@ -1367,7 +1487,7 @@ Players.PlayerAdded:Connect(function() UpdatePlayerList() end)
 Players.PlayerRemoving:Connect(function() UpdatePlayerList() end)
 
 -- ============================================
--- محتوى صفحة الطيران الذكي (مع قفز فوري وتعليمات)
+-- محتوى صفحة الطيران الذكي (مع زر التحكم بزر السيارة)
 -- ============================================
 
 local CarFrame = Instance.new("Frame")
@@ -1417,6 +1537,91 @@ CarDivider.Parent = CarFrame
 CarDivider.ZIndex = 6
 
 -- ============================================
+-- زر إخفاء/إظهار زر السيارة الخارجي
+-- ============================================
+
+local HideButtonContainer = Instance.new("Frame")
+HideButtonContainer.Size = UDim2.new(0.8, 0, 0, 40)
+HideButtonContainer.Position = UDim2.new(0.1, 0, 0.08, 0)
+HideButtonContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
+HideButtonContainer.BorderSizePixel = 0
+HideButtonContainer.Parent = CarFrame
+HideButtonContainer.ZIndex = 7
+
+local HideButtonCorner = Instance.new("UICorner")
+HideButtonCorner.CornerRadius = UDim.new(0, 8)
+HideButtonCorner.Parent = HideButtonContainer
+
+local HideIcon = Instance.new("TextLabel")
+HideIcon.Size = UDim2.new(0, 35, 1, 0)
+HideIcon.Position = UDim2.new(0, 5, 0, 0)
+HideIcon.BackgroundTransparency = 1
+HideIcon.Text = "👁️"
+HideIcon.TextColor3 = Color3.fromRGB(255, 200, 100)
+HideIcon.TextSize = 20
+HideIcon.Font = Enum.Font.GothamBold
+HideIcon.TextXAlignment = Enum.TextXAlignment.Center
+HideIcon.Parent = HideButtonContainer
+HideIcon.ZIndex = 8
+
+local HideToggleButton = Instance.new("TextButton")
+HideToggleButton.Size = UDim2.new(0.7, 0, 1, -6)
+HideToggleButton.Position = UDim2.new(0.12, 0, 0, 3)
+HideToggleButton.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
+HideToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+HideToggleButton.TextSize = 14
+HideToggleButton.Font = Enum.Font.GothamBold
+HideToggleButton.Text = "✅ زر السيارة: ظاهر"
+HideToggleButton.Parent = HideButtonContainer
+HideToggleButton.ZIndex = 8
+
+local HideButtonCorner2 = Instance.new("UICorner")
+HideButtonCorner2.CornerRadius = UDim.new(0, 6)
+HideButtonCorner2.Parent = HideToggleButton
+
+local carButtonVisible = true
+
+local function findExternalCarButton()
+    local playerGui = game.Players.LocalPlayer:FindFirstChild("PlayerGui")
+    if playerGui then
+        for _, gui in pairs(playerGui:GetChildren()) do
+            if gui:IsA("ScreenGui") then
+                for _, child in pairs(gui:GetChildren()) do
+                    if child.Name == "CarFlyButton" then
+                        return child
+                    end
+                end
+            end
+        end
+    end
+    return nil
+end
+
+local function toggleCarButton()
+    carButtonVisible = not carButtonVisible
+    local btn = findExternalCarButton()
+    
+    if btn then
+        btn.Visible = carButtonVisible
+        if carButtonVisible then
+            HideToggleButton.Text = "✅ زر السيارة: ظاهر"
+            HideToggleButton.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
+            HideIcon.Text = "👁️"
+            showNotification("👁️ زر السيارة ظاهر الآن!", CarFrame)
+        else
+            HideToggleButton.Text = "❌ زر السيارة: مخفي"
+            HideToggleButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+            HideIcon.Text = "🚫"
+            showNotification("🚫 تم إخفاء زر السيارة!", CarFrame)
+        end
+    else
+        showNotification("⚠️ لم يتم العثور على زر السيارة!", CarFrame)
+    end
+end
+
+HideToggleButton.MouseButton1Click:Connect(toggleCarButton)
+
+-- ============================================
 -- نظام الطيران الذكي
 -- ============================================
 
@@ -1458,9 +1663,7 @@ function showNotification(text, parent)
     notif:Destroy()
 end
 
--- ============================================
 -- دالة قفز السيارة (فورية)
--- ============================================
 local function JumpCar()
     local car = GetVehicle()
     if not car then
@@ -1489,8 +1692,14 @@ local function JumpCar()
     bv.MaxForce = Vector3.new(0, 5000000, 0)
     bv.Parent = PrimaryPart
     
+    -- دعم إضافي
+    local bf = Instance.new("BodyForce")
+    bf.Force = Vector3.new(0, PrimaryPart:GetMass() * workspace.Gravity * 1.5 + JumpHeight * 200, 0)
+    bf.Parent = PrimaryPart
+    
     task.wait(0.3)
     bv:Destroy()
+    bf:Destroy()
     
     showNotification("🚀 قفزة فورية!", CarFrame)
 end
@@ -1543,7 +1752,7 @@ end
 -- زر تفعيل الطيران
 local FlyToggleButton = Instance.new("TextButton")
 FlyToggleButton.Size = UDim2.new(0.8, 0, 0, 45)
-FlyToggleButton.Position = UDim2.new(0.1, 0, 0.08, 0)
+FlyToggleButton.Position = UDim2.new(0.1, 0, 0.18, 0)
 FlyToggleButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
 FlyToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 FlyToggleButton.TextSize = 15
@@ -1586,7 +1795,7 @@ end)
 -- زر تحريك السيارة
 local MoveCarButton = Instance.new("TextButton")
 MoveCarButton.Size = UDim2.new(0.8, 0, 0, 45)
-MoveCarButton.Position = UDim2.new(0.1, 0, 0.18, 0)
+MoveCarButton.Position = UDim2.new(0.1, 0, 0.28, 0)
 MoveCarButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
 MoveCarButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 MoveCarButton.TextSize = 15
@@ -1620,7 +1829,7 @@ end)
 -- شريط تعديل السرعة
 local SpeedSliderContainer = Instance.new("Frame")
 SpeedSliderContainer.Size = UDim2.new(0.8, 0, 0, 35)
-SpeedSliderContainer.Position = UDim2.new(0.1, 0, 0.28, 0)
+SpeedSliderContainer.Position = UDim2.new(0.1, 0, 0.38, 0)
 SpeedSliderContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
 SpeedSliderContainer.BorderSizePixel = 0
 SpeedSliderContainer.Parent = CarFrame
@@ -1669,12 +1878,12 @@ SpeedSlider.FocusLost:Connect(function()
 end)
 
 -- ============================================
--- تعليمات الاستخدام الرئيسية
+-- تعليمات الاستخدام
 -- ============================================
 
 local InstructionsBox = Instance.new("Frame")
 InstructionsBox.Size = UDim2.new(0.85, 0, 0, 110)
-InstructionsBox.Position = UDim2.new(0.075, 0, 0.36, 0)
+InstructionsBox.Position = UDim2.new(0.075, 0, 0.46, 0)
 InstructionsBox.BackgroundColor3 = Color3.fromRGB(20, 20, 40)
 InstructionsBox.BorderSizePixel = 0
 InstructionsBox.Parent = CarFrame
@@ -1722,7 +1931,7 @@ local InstructionsText = Instance.new("TextLabel")
 InstructionsText.Size = UDim2.new(1, -15, 1, -40)
 InstructionsText.Position = UDim2.new(0, 7, 0, 35)
 InstructionsText.BackgroundTransparency = 1
-InstructionsText.Text = "🚗 اركب السيارة (مقعد السائق)\n\n✈️ اضغط 'تفعيل الطيران' لتطير بالسيارة\n\n▶️ اضغط 'تشغيل الحركة' للانطلاق للأمام\n\n⬆️ اضغط 'قفز فوري' للقفز (عدل الارتفاع)\n\n🎯 تتحرك السيارة باتجاه نظرتك (الكاميرا)\n\n⚡ عدل السرعة من 1 إلى 10 حسب رغبتك"
+InstructionsText.Text = "🚗 اركب السيارة (مقعد السائق)\n\n✈️ اضغط 'تفعيل الطيران' لتطير بالسيارة\n\n▶️ اضغط 'تشغيل الحركة' للانطلاق للأمام\n\n🎯 تتحرك السيارة باتجاه نظرتك (الكاميرا)\n\n⚡ عدل السرعة من 1 إلى 10 حسب رغبتك\n\n👁️ زر 'إخفاء/إظهار' للتحكم بزر السيارة الخارجي"
 InstructionsText.TextColor3 = Color3.fromRGB(200, 200, 230)
 InstructionsText.TextSize = 12
 InstructionsText.Font = Enum.Font.GothamMedium
@@ -1738,7 +1947,7 @@ InstructionsText.ZIndex = 8
 
 local HelpButton = Instance.new("TextButton")
 HelpButton.Size = UDim2.new(0.3, 0, 0, 30)
-HelpButton.Position = UDim2.new(0.35, 0, 0.68, 0)
+HelpButton.Position = UDim2.new(0.35, 0, 0.78, 0)
 HelpButton.BackgroundColor3 = Color3.fromRGB(40, 40, 70)
 HelpButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 HelpButton.TextSize = 13
@@ -1766,10 +1975,9 @@ end)
 -- زر قفز بسيارة + تعليمات
 -- ============================================
 
--- حاوية زر القفز
 local JumpContainer = Instance.new("Frame")
 JumpContainer.Size = UDim2.new(0.8, 0, 0, 40)
-JumpContainer.Position = UDim2.new(0.1, 0, 0.76, 0)
+JumpContainer.Position = UDim2.new(0.1, 0, 0.86, 0)
 JumpContainer.BackgroundColor3 = Color3.fromRGB(35, 25, 15)
 JumpContainer.BorderSizePixel = 0
 JumpContainer.Parent = CarFrame
@@ -1833,12 +2041,12 @@ end)
 JumpButton.MouseButton1Click:Connect(JumpCar)
 
 -- ============================================
--- تعليمات القفز (تحت زر القفز)
+-- تعليمات القفز
 -- ============================================
 
 local JumpInstructionsBox = Instance.new("Frame")
-JumpInstructionsBox.Size = UDim2.new(0.8, 0, 0, 45)
-JumpInstructionsBox.Position = UDim2.new(0.1, 0, 0.84, 0)
+JumpInstructionsBox.Size = UDim2.new(0.8, 0, 0, 35)
+JumpInstructionsBox.Position = UDim2.new(0.1, 0, 0.93, 0)
 JumpInstructionsBox.BackgroundColor3 = Color3.fromRGB(15, 15, 30)
 JumpInstructionsBox.BorderSizePixel = 0
 JumpInstructionsBox.Parent = CarFrame
@@ -1848,7 +2056,6 @@ local JumpInstructionsCorner = Instance.new("UICorner")
 JumpInstructionsCorner.CornerRadius = UDim.new(0, 8)
 JumpInstructionsCorner.Parent = JumpInstructionsBox
 
--- إطار مضيء
 local JumpInstGlow = Instance.new("Frame")
 JumpInstGlow.Size = UDim2.new(1, 4, 1, 4)
 JumpInstGlow.Position = UDim2.new(0, -2, 0, -2)
@@ -1862,31 +2069,28 @@ local JumpInstGlowCorner = Instance.new("UICorner")
 JumpInstGlowCorner.CornerRadius = UDim.new(0, 10)
 JumpInstGlowCorner.Parent = JumpInstGlow
 
--- أيقونة
 local JumpInstIcon = Instance.new("TextLabel")
 JumpInstIcon.Size = UDim2.new(0, 30, 1, 0)
 JumpInstIcon.Position = UDim2.new(0, 5, 0, 0)
 JumpInstIcon.BackgroundTransparency = 1
 JumpInstIcon.Text = "📌"
 JumpInstIcon.TextColor3 = Color3.fromRGB(255, 200, 100)
-JumpInstIcon.TextSize = 16
+JumpInstIcon.TextSize = 14
 JumpInstIcon.Font = Enum.Font.GothamBold
 JumpInstIcon.TextXAlignment = Enum.TextXAlignment.Center
 JumpInstIcon.Parent = JumpInstructionsBox
 JumpInstIcon.ZIndex = 8
 
--- نص التعليمات
 local JumpInstructionsText = Instance.new("TextLabel")
 JumpInstructionsText.Size = UDim2.new(1, -40, 1, 0)
 JumpInstructionsText.Position = UDim2.new(0, 40, 0, 0)
 JumpInstructionsText.BackgroundTransparency = 1
-JumpInstructionsText.Text = "⬆️ اضغط 'قفز فوري' لتطير السيارة للأعلى\n📝 عدل الرقم لتغيير ارتفاع القفزة (10-200)"
+JumpInstructionsText.Text = "⬆️ قفزة فورية - عدل الرقم لتغيير الارتفاع"
 JumpInstructionsText.TextColor3 = Color3.fromRGB(200, 200, 220)
 JumpInstructionsText.TextSize = 12
 JumpInstructionsText.Font = Enum.Font.GothamMedium
 JumpInstructionsText.TextXAlignment = Enum.TextXAlignment.Left
 JumpInstructionsText.TextYAlignment = Enum.TextYAlignment.Center
-JumpInstructionsText.TextWrapped = true
 JumpInstructionsText.Parent = JumpInstructionsBox
 JumpInstructionsText.ZIndex = 8
 
@@ -2268,9 +2472,10 @@ end
 -- فتح الصفحة الافتراضية
 ShowTeleport()
 
-print("✅ LYNEX - النسخة الكاملة (مع قفز فوري وتعليمات)")
+print("✅ LYNEX - النسخة الكاملة (مع زر السيارة الخارجي + قفز فوري)")
 print("📌 الأزرار: انتقال الفوري | فلوس | صيد | لاعبين | أخبار | طيران ذكي")
 print("💰 تصميم جديد لصفحة الفلوس")
 print("🔍 إضافة بحث للاعبين")
-print("🚀 زر القفز فوري مع تعليمات تحت الزر")
+print("🚗 زر السيارة الخارجي للقفز الفوري")
+print("👁️ زر إخفاء/إظهار زر السيارة")
 print("🔗 رابط الديسكورد: https://discord.gg/fJTvyYW4A")
