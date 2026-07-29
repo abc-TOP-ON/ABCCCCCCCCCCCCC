@@ -1,4 +1,4 @@
--- LYNEX - النسخة النهائية (مع زر قفز سريع للسيارة + أزرار تحكم بالسرعة)
+-- LYNEX - النسخة النهائية (مع نظام زيادة سرعة السيارة على الأرض)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -1398,7 +1398,7 @@ Players.PlayerAdded:Connect(function() UpdatePlayerList() end)
 Players.PlayerRemoving:Connect(function() UpdatePlayerList() end)
 
 -- ============================================
--- محتوى صفحة الطيران الذكي (مع زر القفز السريع المُصلح + أزرار التحكم بالسرعة)
+-- محتوى صفحة الطيران الذكي (مع نظام زيادة سرعة السيارة)
 -- ============================================
 
 local CarFrame = Instance.new("Frame")
@@ -1530,7 +1530,7 @@ local function StartFlyLoop()
 end
 
 -- ============================================
--- الأزرار مرتبة عمودياً (مع زر القفز السريع المُصلح)
+-- الأزرار مرتبة عمودياً
 -- ============================================
 
 -- زر تفعيل الطيران (الأول)
@@ -1611,7 +1611,7 @@ MoveCarButton.MouseButton1Click:Connect(function()
 end)
 
 -- ============================================
--- زر القفز السريع للسيارة (النسخة المُصلحة)
+-- زر القفز السريع للسيارة
 -- ============================================
 
 local QuickFlyButton = Instance.new("TextButton")
@@ -1629,7 +1629,6 @@ local QuickFlyCorner = Instance.new("UICorner")
 QuickFlyCorner.CornerRadius = UDim.new(0, 8)
 QuickFlyCorner.Parent = QuickFlyButton
 
--- تأثير الضغط
 QuickFlyButton.MouseButton1Down:Connect(function()
     QuickFlyButton.BackgroundColor3 = Color3.fromRGB(255, 50, 0)
 end)
@@ -1638,11 +1637,9 @@ QuickFlyButton.MouseLeave:Connect(function()
     QuickFlyButton.BackgroundColor3 = Color3.fromRGB(200, 100, 0)
 end)
 
--- وظيفة القفز العمودي للسيارة (النسخة المحسنة)
 QuickFlyButton.MouseButton1Click:Connect(function()
     QuickFlyButton.BackgroundColor3 = Color3.fromRGB(200, 100, 0)
     
-    -- جلب اللاعب والشخصية
     local player = game.Players.LocalPlayer
     local character = player.Character
     
@@ -1651,7 +1648,6 @@ QuickFlyButton.MouseButton1Click:Connect(function()
         return
     end
     
-    -- جلب المقعد اللي راكبه
     local seat = character.Humanoid.SeatPart
     
     if not seat then
@@ -1659,7 +1655,6 @@ QuickFlyButton.MouseButton1Click:Connect(function()
         return
     end
     
-    -- جلب السيارة (الأب الأعلى للمقعد)
     local vehicle = seat.Parent
     
     if not vehicle or not vehicle:IsA("Model") then
@@ -1667,10 +1662,8 @@ QuickFlyButton.MouseButton1Click:Connect(function()
         return
     end
     
-    -- جلب الجزء الأساسي للسيارة
     local PrimaryPart = vehicle.PrimaryPart
     
-    -- إذا ما فيه PrimaryPart، دور على أي جزء من نوع BasePart
     if not PrimaryPart then
         for _, child in pairs(vehicle:GetDescendants()) do
             if child:IsA("BasePart") and child.Name ~= "Seat" and child.Name ~= "DriveSeat" then
@@ -1680,7 +1673,6 @@ QuickFlyButton.MouseButton1Click:Connect(function()
         end
     end
     
-    -- إذا لسا ما لقيت، خذ المقعد نفسه
     if not PrimaryPart then
         PrimaryPart = seat
     end
@@ -1690,86 +1682,197 @@ QuickFlyButton.MouseButton1Click:Connect(function()
         return
     end
     
-    -- ===== الطريقة الأولى: BodyVelocity =====
     local bodyVelocity = Instance.new("BodyVelocity")
-    bodyVelocity.Velocity = Vector3.new(0, 200, 0)  -- قوة القفز (زودتها من 150 إلى 200)
-    bodyVelocity.MaxForce = Vector3.new(0, 1000000, 0)  -- زودت القوة القصوى
+    bodyVelocity.Velocity = Vector3.new(0, 200, 0)
+    bodyVelocity.MaxForce = Vector3.new(0, 1000000, 0)
     bodyVelocity.Parent = PrimaryPart
     
-    -- ===== الطريقة الثانية: BodyForce (مساعد) =====
     local bodyForce = Instance.new("BodyForce")
-    bodyForce.Force = Vector3.new(0, PrimaryPart:GetMass() * 196.2, 0)  -- قوة الجاذبية × 20
+    bodyForce.Force = Vector3.new(0, PrimaryPart:GetMass() * 196.2, 0)
     bodyForce.Parent = PrimaryPart
     
-    -- ===== الطريقة الثالثة: تغيير الـ CFrame مباشرة (خيار احتياطي) =====
-    -- نطبق قفزة فورية كإجراء احتياطي
     local currentPos = PrimaryPart.Position
     PrimaryPart.CFrame = CFrame.new(currentPos + Vector3.new(0, 15, 0))
     
-    -- إزالة القوى بعد 1.5 ثانية
     task.wait(1.5)
     bodyVelocity:Destroy()
     bodyForce:Destroy()
     
-    -- إشعار نجاح
     showNotification("🚀 تم قفز السيارة للأعلى!", CarFrame)
 end)
 
 -- ============================================
--- 🆕 أزرار التحكم بالسرعة (جديدة)
+-- 🆕 نظام زيادة سرعة السيارة على الأرض (برقم)
 -- ============================================
 
--- زر زيادة السرعة
-local SpeedUpBtn = Instance.new("TextButton")
-SpeedUpBtn.Size = UDim2.new(0.38, 0, 0, 35)
-SpeedUpBtn.Position = UDim2.new(0.1, 0, 0.32, 0)
-SpeedUpBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
-SpeedUpBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-SpeedUpBtn.TextSize = 14
-SpeedUpBtn.Font = Enum.Font.SourceSansBold
-SpeedUpBtn.Text = "⬆️ زيادة السرعة +1"
-SpeedUpBtn.Parent = CarFrame
-SpeedUpBtn.ZIndex = 7
+local CarSpeedFrame = Instance.new("Frame")
+CarSpeedFrame.Size = UDim2.new(0.8, 0, 0, 90)
+CarSpeedFrame.Position = UDim2.new(0.1, 0, 0.32, 0)
+CarSpeedFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 40)
+CarSpeedFrame.BorderSizePixel = 0
+CarSpeedFrame.Parent = CarFrame
+CarSpeedFrame.ZIndex = 7
 
-local SpeedUpCorner = Instance.new("UICorner")
-SpeedUpCorner.CornerRadius = UDim.new(0, 8)
-SpeedUpCorner.Parent = SpeedUpBtn
+local CarSpeedCorner = Instance.new("UICorner")
+CarSpeedCorner.CornerRadius = UDim.new(0, 8)
+CarSpeedCorner.Parent = CarSpeedFrame
 
-SpeedUpBtn.MouseButton1Click:Connect(function()
-    FlySpeed = math.min(FlySpeed + 1, 10)
-    SpeedLabel.Text = "🚀 السرعة: " .. string.format("%.1f", FlySpeed)
-    showNotification("⬆️ السرعة = " .. string.format("%.1f", FlySpeed), CarFrame)
+-- عنوان القسم
+local CarSpeedTitle = Instance.new("TextLabel")
+CarSpeedTitle.Size = UDim2.new(1, -10, 0, 25)
+CarSpeedTitle.Position = UDim2.new(0, 5, 0, 2)
+CarSpeedTitle.BackgroundTransparency = 1
+CarSpeedTitle.Text = "🏎️ ضبط سرعة السيارة على الأرض"
+CarSpeedTitle.TextColor3 = Color3.fromRGB(255, 200, 100)
+CarSpeedTitle.TextSize = 14
+CarSpeedTitle.Font = Enum.Font.GothamBold
+CarSpeedTitle.TextXAlignment = Enum.TextXAlignment.Center
+CarSpeedTitle.Parent = CarSpeedFrame
+CarSpeedTitle.ZIndex = 8
+
+-- مربع إدخال السرعة
+local CarSpeedInput = Instance.new("TextBox")
+CarSpeedInput.Size = UDim2.new(0.5, 0, 0, 35)
+CarSpeedInput.Position = UDim2.new(0.02, 0, 0.35, 0)
+CarSpeedInput.BackgroundColor3 = Color3.fromRGB(15, 15, 30)
+CarSpeedInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+CarSpeedInput.TextSize = 16
+CarSpeedInput.Font = Enum.Font.GothamBold
+CarSpeedInput.Text = ""
+CarSpeedInput.PlaceholderText = "أدخل السرعة (1-50)"
+CarSpeedInput.Parent = CarSpeedFrame
+CarSpeedInput.ZIndex = 8
+
+local CarSpeedInputCorner = Instance.new("UICorner")
+CarSpeedInputCorner.CornerRadius = UDim.new(0, 6)
+CarSpeedInputCorner.Parent = CarSpeedInput
+
+-- زر تطبيق السرعة
+local ApplyCarSpeedBtn = Instance.new("TextButton")
+ApplyCarSpeedBtn.Size = UDim2.new(0.35, 0, 0, 35)
+ApplyCarSpeedBtn.Position = UDim2.new(0.55, 0, 0.35, 0)
+ApplyCarSpeedBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
+ApplyCarSpeedBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+ApplyCarSpeedBtn.TextSize = 14
+ApplyCarSpeedBtn.Font = Enum.Font.SourceSansBold
+ApplyCarSpeedBtn.Text = "🏎️ تطبيق"
+ApplyCarSpeedBtn.Parent = CarSpeedFrame
+ApplyCarSpeedBtn.ZIndex = 8
+
+local ApplyCarCorner = Instance.new("UICorner")
+ApplyCarCorner.CornerRadius = UDim.new(0, 6)
+ApplyCarCorner.Parent = ApplyCarSpeedBtn
+
+-- عرض السرعة الحالية
+local CurrentSpeedLabel = Instance.new("TextLabel")
+CurrentSpeedLabel.Size = UDim2.new(0.7, 0, 0, 25)
+CurrentSpeedLabel.Position = UDim2.new(0.02, 0, 0.7, 0)
+CurrentSpeedLabel.BackgroundColor3 = Color3.fromRGB(20, 20, 35)
+CurrentSpeedLabel.TextColor3 = Color3.fromRGB(0, 255, 150)
+CurrentSpeedLabel.TextSize = 13
+CurrentSpeedLabel.Font = Enum.Font.GothamBold
+CurrentSpeedLabel.Text = "⚡ السرعة: 1x"
+CurrentSpeedLabel.Parent = CarSpeedFrame
+CurrentSpeedLabel.ZIndex = 8
+
+local CurrentSpeedCorner = Instance.new("UICorner")
+CurrentSpeedCorner.CornerRadius = UDim.new(0, 6)
+CurrentSpeedCorner.Parent = CurrentSpeedLabel
+
+-- زر إلغاء
+local CancelSpeedBtn = Instance.new("TextButton")
+CancelSpeedBtn.Size = UDim2.new(0.25, 0, 0, 25)
+CancelSpeedBtn.Position = UDim2.new(0.73, 0, 0.7, 0)
+CancelSpeedBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+CancelSpeedBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+CancelSpeedBtn.TextSize = 12
+CancelSpeedBtn.Font = Enum.Font.SourceSansBold
+CancelSpeedBtn.Text = "⛔ إلغاء"
+CancelSpeedBtn.Parent = CarSpeedFrame
+CancelSpeedBtn.ZIndex = 8
+
+local CancelSpeedCorner = Instance.new("UICorner")
+CancelSpeedCorner.CornerRadius = UDim.new(0, 6)
+CancelSpeedCorner.Parent = CancelSpeedBtn
+
+-- ============================================
+-- متغيرات سرعة السيارة
+-- ============================================
+
+local carSpeedActive = false
+local carSpeedValue = 1
+
+-- ============================================
+-- نظام زيادة سرعة السيارة
+-- ============================================
+
+local function StartCarSpeedBoost()
+    RunService.Heartbeat:Connect(function()
+        if carSpeedActive then
+            local car = GetVehicle()
+            if car then
+                local PrimaryPart = car.PrimaryPart or car:FindFirstChildWhichIsA("BasePart")
+                if PrimaryPart then
+                    local currentVel = PrimaryPart.Velocity
+                    if currentVel.Magnitude > 0.5 then
+                        PrimaryPart.Velocity = currentVel * carSpeedValue
+                    end
+                end
+            end
+        end
+    end)
+end
+
+StartCarSpeedBoost()
+
+-- ============================================
+-- أزرار التحكم
+-- ============================================
+
+ApplyCarSpeedBtn.MouseButton1Click:Connect(function()
+    local speedNum = tonumber(CarSpeedInput.Text)
+    
+    if not speedNum then
+        showNotification("⚠️ أدخل رقم صحيح!", CarFrame)
+        return
+    end
+    
+    if speedNum < 1 or speedNum > 50 then
+        showNotification("⚠️ السرعة بين 1 و 50!", CarFrame)
+        return
+    end
+    
+    carSpeedActive = true
+    carSpeedValue = speedNum
+    
+    CurrentSpeedLabel.Text = "⚡ السرعة: " .. speedNum .. "x"
+    ApplyCarSpeedBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 50)
+    ApplyCarSpeedBtn.Text = "✅ مفعل!"
+    CarSpeedInput.BackgroundColor3 = Color3.fromRGB(0, 50, 30)
+    
+    showNotification("🏎️ تم ضبط السرعة = " .. speedNum .. "x", CarFrame)
 end)
 
--- زر تقليل السرعة
-local SpeedDownBtn = Instance.new("TextButton")
-SpeedDownBtn.Size = UDim2.new(0.38, 0, 0, 35)
-SpeedDownBtn.Position = UDim2.new(0.52, 0, 0.32, 0)
-SpeedDownBtn.BackgroundColor3 = Color3.fromRGB(200, 80, 50)
-SpeedDownBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-SpeedDownBtn.TextSize = 14
-SpeedDownBtn.Font = Enum.Font.SourceSansBold
-SpeedDownBtn.Text = "⬇️ تقليل السرعة -1"
-SpeedDownBtn.Parent = CarFrame
-SpeedDownBtn.ZIndex = 7
-
-local SpeedDownCorner = Instance.new("UICorner")
-SpeedDownCorner.CornerRadius = UDim.new(0, 8)
-SpeedDownCorner.Parent = SpeedDownBtn
-
-SpeedDownBtn.MouseButton1Click:Connect(function()
-    FlySpeed = math.max(FlySpeed - 1, 1)
-    SpeedLabel.Text = "🚀 السرعة: " .. string.format("%.1f", FlySpeed)
-    showNotification("⬇️ السرعة = " .. string.format("%.1f", FlySpeed), CarFrame)
+CancelSpeedBtn.MouseButton1Click:Connect(function()
+    carSpeedActive = false
+    carSpeedValue = 1
+    
+    ApplyCarSpeedBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
+    ApplyCarSpeedBtn.Text = "🏎️ تطبيق"
+    CarSpeedInput.BackgroundColor3 = Color3.fromRGB(15, 15, 30)
+    CarSpeedInput.Text = ""
+    CurrentSpeedLabel.Text = "⚡ السرعة: 1x"
+    
+    showNotification("⛔ تم إلغاء السرعة", CarFrame)
 end)
 
 -- ============================================
--- شريط تعديل السرعة
+-- شريط تعديل سرعة الطيران
 -- ============================================
 
 local SpeedSliderContainer = Instance.new("Frame")
 SpeedSliderContainer.Size = UDim2.new(0.8, 0, 0, 35)
-SpeedSliderContainer.Position = UDim2.new(0.1, 0, 0.38, 0)
+SpeedSliderContainer.Position = UDim2.new(0.1, 0, 0.44, 0)
 SpeedSliderContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
 SpeedSliderContainer.BorderSizePixel = 0
 SpeedSliderContainer.Parent = CarFrame
@@ -1783,7 +1886,7 @@ local SpeedLabel = Instance.new("TextLabel")
 SpeedLabel.Size = UDim2.new(0.4, 0, 1, 0)
 SpeedLabel.Position = UDim2.new(0, 5, 0, 0)
 SpeedLabel.BackgroundTransparency = 1
-SpeedLabel.Text = "🚀 السرعة: 2.5"
+SpeedLabel.Text = "✈️ سرعة الطيران: 2.5"
 SpeedLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
 SpeedLabel.TextSize = 13
 SpeedLabel.Font = Enum.Font.GothamBold
@@ -1811,19 +1914,19 @@ SpeedSlider.FocusLost:Connect(function()
     local val = tonumber(SpeedSlider.Text)
     if val then
         FlySpeed = math.clamp(val, 1, 10)
-        SpeedLabel.Text = "🚀 السرعة: " .. string.format("%.1f", FlySpeed)
+        SpeedLabel.Text = "✈️ سرعة الطيران: " .. string.format("%.1f", FlySpeed)
         SpeedSlider.Text = ""
-        showNotification("✅ السرعة = " .. string.format("%.1f", FlySpeed), CarFrame)
+        showNotification("✅ سرعة الطيران = " .. string.format("%.1f", FlySpeed), CarFrame)
     end
 end)
 
 -- ============================================
--- تعليمات الاستخدام (محدثة)
+-- تعليمات الاستخدام
 -- ============================================
 
 local InstructionsBox = Instance.new("Frame")
 InstructionsBox.Size = UDim2.new(0.85, 0, 0, 120)
-InstructionsBox.Position = UDim2.new(0.075, 0, 0.45, 0)
+InstructionsBox.Position = UDim2.new(0.075, 0, 0.52, 0)
 InstructionsBox.BackgroundColor3 = Color3.fromRGB(20, 20, 40)
 InstructionsBox.BorderSizePixel = 0
 InstructionsBox.Parent = CarFrame
@@ -1833,7 +1936,6 @@ local InstructionsCorner = Instance.new("UICorner")
 InstructionsCorner.CornerRadius = UDim.new(0, 10)
 InstructionsCorner.Parent = InstructionsBox
 
--- إطار مضيء للتعليمات
 local InstructionsGlow = Instance.new("Frame")
 InstructionsGlow.Size = UDim2.new(1, 4, 1, 4)
 InstructionsGlow.Position = UDim2.new(0, -2, 0, -2)
@@ -1847,7 +1949,6 @@ local InstructionsGlowCorner = Instance.new("UICorner")
 InstructionsGlowCorner.CornerRadius = UDim.new(0, 12)
 InstructionsGlowCorner.Parent = InstructionsGlow
 
--- عنوان التعليمات
 local InstructionsTitle = Instance.new("TextLabel")
 InstructionsTitle.Size = UDim2.new(1, -10, 0, 25)
 InstructionsTitle.Position = UDim2.new(0, 5, 0, 4)
@@ -1860,7 +1961,6 @@ InstructionsTitle.TextXAlignment = Enum.TextXAlignment.Center
 InstructionsTitle.Parent = InstructionsBox
 InstructionsTitle.ZIndex = 8
 
--- خط فاصل
 local InstDivider = Instance.new("Frame")
 InstDivider.Size = UDim2.new(0.8, 0, 0, 1)
 InstDivider.Position = UDim2.new(0.1, 0, 0, 32)
@@ -1870,12 +1970,11 @@ InstDivider.BorderSizePixel = 0
 InstDivider.Parent = InstructionsBox
 InstDivider.ZIndex = 8
 
--- نص التعليمات (محدث)
 local InstructionsText = Instance.new("TextLabel")
 InstructionsText.Size = UDim2.new(1, -15, 1, -40)
 InstructionsText.Position = UDim2.new(0, 7, 0, 35)
 InstructionsText.BackgroundTransparency = 1
-InstructionsText.Text = "🚗 اركب السيارة (مقعد السائق)\n\n✈️ اضغط 'تفعيل الطيران' لتطير بالسيارة\n\n▶️ اضغط 'تشغيل الحركة' للانطلاق للأمام\n\n🚀 زر 'قفز سريع' لدفع السيارة للأعلى\n\n⬆️⬇️ أزرار زيادة/تقليل السرعة\n\n🎯 تتحرك السيارة باتجاه نظرتك (الكاميرا)\n\n⚡ عدل السرعة من 1 إلى 10 حسب رغبتك"
+InstructionsText.Text = "🚗 اركب السيارة (مقعد السائق)\n\n✈️ اضغط 'تفعيل الطيران' لتطير بالسيارة\n\n▶️ اضغط 'تشغيل الحركة' للانطلاق للأمام\n\n🚀 زر 'قفز سريع' لدفع السيارة للأعلى\n\n🏎️ أدخل رقم في 'ضبط سرعة السيارة' لتزيد سرعتها على الأرض\n\n🎯 تتحرك السيارة باتجاه نظرتك (الكاميرا)"
 InstructionsText.TextColor3 = Color3.fromRGB(200, 200, 230)
 InstructionsText.TextSize = 11
 InstructionsText.Font = Enum.Font.GothamMedium
@@ -1886,7 +1985,7 @@ InstructionsText.Parent = InstructionsBox
 InstructionsText.ZIndex = 8
 
 -- ============================================
--- محتوى الأخبار (محدث)
+-- محتوى الأخبار
 -- ============================================
 
 local NewsFrame = Instance.new("Frame")
@@ -2015,7 +2114,6 @@ local function createNewsCard(icon, title, desc, color, isImportant)
     return card
 end
 
--- إضافة الأخبار (محدثة)
 createNewsCard("✅", "تم إضافة نظام سرقة الفلوس التلقائي V7!",
     "الآن يمكنك تجميع الفلوس من الأرض تلقائياً وبسرعة فائقة!",
     Color3.fromRGB(0, 255, 100), true)
@@ -2028,19 +2126,14 @@ createNewsCard("🚗", "تم إضافة نظام الطيران الذكي لل�
     "اركب سيارة وافعل وضع الطيران لتطير بها وتتحكم باتجاه الكاميرا!",
     Color3.fromRGB(255, 150, 0), false)
 
-createNewsCard("🚀", "إضافة زر القفز السريع للسيارة!",
-    "الآن يمكنك قفز السيارة للأعلى بضغطة زر واحدة!",
-    Color3.fromRGB(255, 100, 50), false)
-
-createNewsCard("⬆️⬇️", "إضافة أزرار التحكم بالسرعة!",
-    "يمكنك زيادة أو تقليل سرعة السيارة بضغطة زر!",
+createNewsCard("🏎️", "تم إضافة نظام زيادة سرعة السيارة على الأرض!",
+    "أدخل رقم من 1 إلى 50 لتزيد سرعة سيارتك على الأرض!",
     Color3.fromRGB(0, 255, 200), false)
 
 createNewsCard("📱", "دعم كامل للهاتف والكمبيوتر!",
     "السكربت الآن يدعم جميع الأجهزة مع واجهة متجاوبة.",
     Color3.fromRGB(100, 255, 200), false)
 
--- قسم الديسكورد
 local DiscordSection = Instance.new("Frame")
 DiscordSection.Size = UDim2.new(0.94, 0, 0, 75)
 DiscordSection.Position = UDim2.new(0.03, 0, 0, newsY + 5)
@@ -2246,7 +2339,6 @@ local function ShowCars()
     end
 end
 
--- ربط أزرار القائمة الجانبية
 for _, child in pairs(Sidebar:GetChildren()) do
     if child:IsA("TextButton") then
         if child.Text == "⚡ انتقال الفوري" then
@@ -2265,13 +2357,12 @@ for _, child in pairs(Sidebar:GetChildren()) do
     end
 end
 
--- فتح الصفحة الافتراضية (انتقال الفوري)
 ShowTeleport()
 
-print("✅ LYNEX - النسخة النهائية (مع زر قفز سريع مُصلح للسيارة + أزرار تحكم بالسرعة)")
+print("✅ LYNEX - النسخة النهائية (مع نظام زيادة سرعة السيارة على الأرض)")
 print("📌 الأزرار: انتقال الفوري | فلوس | صيد | لاعبين | أخبار | طيران ذكي")
 print("💰 تصميم جديد لصفحة الفلوس")
 print("🔍 إضافة بحث للاعبين")
-print("🚀 إضافة زر القفز السريع للسيارة (يعمل بثلاث طرق مختلفة)")
-print("⬆️⬇️ إضافة أزرار زيادة وتقليل السرعة")
+print("🚀 إضافة زر القفز السريع للسيارة")
+print("🏎️ إضافة نظام زيادة سرعة السيارة على الأرض (1-50x)")
 print("🔗 رابط الديسكورد: https://discord.gg/fJTvyYW4A")
