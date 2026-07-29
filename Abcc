@@ -1430,7 +1430,7 @@ local CarTitle = Instance.new("TextLabel")
 CarTitle.Size = UDim2.new(1, -40, 0, 40)
 CarTitle.Position = UDim2.new(0, 20, 0, 8)
 CarTitle.BackgroundTransparency = 1
-CarTitle.Text = "🚗 نظام سرعة السيارة المتقدم 🚗"
+CarTitle.Text = "🚗 نظام الطيران والسرعة المتقدم 🚗"
 CarTitle.TextColor3 = Color3.fromRGB(255, 150, 0)
 CarTitle.TextSize = 18
 CarTitle.Font = Enum.Font.GothamBold
@@ -1448,7 +1448,7 @@ CarDivider.Parent = CarFrame
 CarDivider.ZIndex = 6
 
 -- ============================================
--- نظام الطيران الذكي (للتوافق)
+-- نظام الطيران الذكي
 -- ============================================
 
 local Flying = false
@@ -1530,15 +1530,7 @@ local function StartFlyLoop()
 end
 
 -- ============================================
--- نظام سرعة السيارة المتقدم
--- ============================================
-
--- المتغيرات
-local targetSpeed = 100
-local speedHackEnabled = false
-
--- ============================================
--- الأزرار (للتوافق مع السكربت القديم)
+-- أزرار الطيران (الصف الأول)
 -- ============================================
 
 local FlyToggleButton = Instance.new("TextButton")
@@ -1708,7 +1700,7 @@ end)
 -- ============================================
 
 local InstructionsBox = Instance.new("Frame")
-InstructionsBox.Size = UDim2.new(0.85, 0, 0, 140)
+InstructionsBox.Size = UDim2.new(0.85, 0, 0, 100)
 InstructionsBox.Position = UDim2.new(0.075, 0, 0.38, 0)
 InstructionsBox.BackgroundColor3 = Color3.fromRGB(20, 20, 40)
 InstructionsBox.BorderSizePixel = 0
@@ -1733,10 +1725,10 @@ InstructionsGlowCorner.CornerRadius = UDim.new(0, 12)
 InstructionsGlowCorner.Parent = InstructionsGlow
 
 local InstructionsTitle = Instance.new("TextLabel")
-InstructionsTitle.Size = UDim2.new(1, -10, 0, 25)
-InstructionsTitle.Position = UDim2.new(0, 5, 0, 4)
+InstructionsTitle.Size = UDim2.new(1, -10, 0, 22)
+InstructionsTitle.Position = UDim2.new(0, 5, 0, 3)
 InstructionsTitle.BackgroundTransparency = 1
-InstructionsTitle.Text = "📖 تعليمات نظام السرعة"
+InstructionsTitle.Text = "📖 تعليمات نظام الطيران والسرعة"
 InstructionsTitle.TextColor3 = Color3.fromRGB(255, 200, 100)
 InstructionsTitle.TextSize = 14
 InstructionsTitle.Font = Enum.Font.GothamBold
@@ -1746,7 +1738,7 @@ InstructionsTitle.ZIndex = 8
 
 local InstDivider = Instance.new("Frame")
 InstDivider.Size = UDim2.new(0.8, 0, 0, 1)
-InstDivider.Position = UDim2.new(0.1, 0, 0, 32)
+InstDivider.Position = UDim2.new(0.1, 0, 0, 28)
 InstDivider.BackgroundColor3 = Color3.fromRGB(255, 150, 0)
 InstDivider.BackgroundTransparency = 0.4
 InstDivider.BorderSizePixel = 0
@@ -1754,10 +1746,10 @@ InstDivider.Parent = InstructionsBox
 InstDivider.ZIndex = 8
 
 local InstructionsText = Instance.new("TextLabel")
-InstructionsText.Size = UDim2.new(1, -15, 1, -40)
-InstructionsText.Position = UDim2.new(0, 7, 0, 35)
+InstructionsText.Size = UDim2.new(1, -15, 1, -35)
+InstructionsText.Position = UDim2.new(0, 7, 0, 30)
 InstructionsText.BackgroundTransparency = 1
-InstructionsText.Text = "🚗 اركب السيارة (مقعد السائق)\n\n🏎️ أدخل قيمة السرعة في المربع أدناه\n\n🟢 اضغط 'ON' لتفعيل السرعة\n\n🔴 اضغط 'OFF' لإيقاف السرعة\n\n📌 السرعة تعمل عند الضغط على W أو أعلى"
+InstructionsText.Text = "🚗 اركب السيارة (مقعد السائق)\n✈️ اضغط 'الطيران' لتفعيل الطيران\n▶️ اضغط 'الحركة' لدفع السيارة للأمام\n🚀 اضغط 'القفز' لرفع السيارة للأعلى\n🏎️ استخدم نظام السرعة أدناه"
 InstructionsText.TextColor3 = Color3.fromRGB(200, 200, 230)
 InstructionsText.TextSize = 11
 InstructionsText.Font = Enum.Font.GothamMedium
@@ -1768,12 +1760,25 @@ InstructionsText.Parent = InstructionsBox
 InstructionsText.ZIndex = 8
 
 -- ============================================
--- نظام السرعة (مرتب ومنزل للأسفل)
+-- نظام السرعة (مرتب تحت التعليمات مباشرة)
 -- ============================================
 
+-- عنوان نظام السرعة
+local SpeedTitle = Instance.new("TextLabel")
+SpeedTitle.Size = UDim2.new(0.85, 0, 0, 25)
+SpeedTitle.Position = UDim2.new(0.075, 0, 0.54, 0)
+SpeedTitle.BackgroundTransparency = 1
+SpeedTitle.Text = "🏎️ نظام سرعة السيارة"
+SpeedTitle.TextColor3 = Color3.fromRGB(255, 180, 50)
+SpeedTitle.TextSize = 16
+SpeedTitle.Font = Enum.Font.GothamBold
+SpeedTitle.TextXAlignment = Enum.TextXAlignment.Center
+SpeedTitle.Parent = CarFrame
+SpeedTitle.ZIndex = 7
+
 local SpeedFrame = Instance.new("Frame")
-SpeedFrame.Size = UDim2.new(0.85, 0, 0, 80)
-SpeedFrame.Position = UDim2.new(0.075, 0, 0.63, 0)  -- نزلناه أكثر عشان يكون مرتب تحت التعليمات
+SpeedFrame.Size = UDim2.new(0.85, 0, 0, 65)
+SpeedFrame.Position = UDim2.new(0.075, 0, 0.59, 0)
 SpeedFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 40)
 SpeedFrame.BorderSizePixel = 0
 SpeedFrame.Parent = CarFrame
@@ -1783,16 +1788,30 @@ local SpeedCorner = Instance.new("UICorner")
 SpeedCorner.CornerRadius = UDim.new(0, 8)
 SpeedCorner.Parent = SpeedFrame
 
+-- إطار مضيء
+local SpeedGlow = Instance.new("Frame")
+SpeedGlow.Size = UDim2.new(1, 4, 1, 4)
+SpeedGlow.Position = UDim2.new(0, -2, 0, -2)
+SpeedGlow.BackgroundColor3 = Color3.fromRGB(255, 150, 0)
+SpeedGlow.BackgroundTransparency = 0.2
+SpeedGlow.BorderSizePixel = 0
+SpeedGlow.Parent = SpeedFrame
+SpeedGlow.ZIndex = -1
+
+local SpeedGlowCorner = Instance.new("UICorner")
+SpeedGlowCorner.CornerRadius = UDim.new(0, 10)
+SpeedGlowCorner.Parent = SpeedGlow
+
 -- مربع إدخال السرعة
 local SpeedInput = Instance.new("TextBox")
-SpeedInput.Size = UDim2.new(0.4, 0, 0.45, 0)
-SpeedInput.Position = UDim2.new(0.02, 0, 0, 5)
+SpeedInput.Size = UDim2.new(0.28, 0, 0.5, 0)
+SpeedInput.Position = UDim2.new(0.02, 0, 0.1, 0)
 SpeedInput.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
 SpeedInput.Text = "100"
 SpeedInput.TextColor3 = Color3.fromRGB(255, 255, 255)
 SpeedInput.TextSize = 18
 SpeedInput.Font = Enum.Font.Gotham
-SpeedInput.PlaceholderText = "أدخل السرعة"
+SpeedInput.PlaceholderText = "السرعة"
 SpeedInput.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
 SpeedInput.ClearTextOnFocus = false
 SpeedInput.Parent = SpeedFrame
@@ -1802,14 +1821,14 @@ local InputCorner = Instance.new("UICorner")
 InputCorner.CornerRadius = UDim.new(0, 6)
 InputCorner.Parent = SpeedInput
 
--- زر التفعيل
+-- زر التفعيل ON/OFF
 local ToggleSpeedButton = Instance.new("TextButton")
-ToggleSpeedButton.Size = UDim2.new(0.25, 0, 0.45, 0)
-ToggleSpeedButton.Position = UDim2.new(0.44, 0, 0, 5)
+ToggleSpeedButton.Size = UDim2.new(0.2, 0, 0.5, 0)
+ToggleSpeedButton.Position = UDim2.new(0.32, 0, 0.1, 0)
 ToggleSpeedButton.BackgroundColor3 = Color3.fromRGB(230, 50, 50)
-ToggleSpeedButton.Text = "OFF"
+ToggleSpeedButton.Text = "OFF ❌"
 ToggleSpeedButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleSpeedButton.TextSize = 16
+ToggleSpeedButton.TextSize = 15
 ToggleSpeedButton.Font = Enum.Font.GothamBold
 ToggleSpeedButton.Parent = SpeedFrame
 ToggleSpeedButton.ZIndex = 10
@@ -1820,8 +1839,8 @@ ButtonCorner.Parent = ToggleSpeedButton
 
 -- عرض السرعة الحالية
 local CurrentSpeedDisplay = Instance.new("TextLabel")
-CurrentSpeedDisplay.Size = UDim2.new(0.25, 0, 0.45, 0)
-CurrentSpeedDisplay.Position = UDim2.new(0.72, 0, 0, 5)
+CurrentSpeedDisplay.Size = UDim2.new(0.2, 0, 0.5, 0)
+CurrentSpeedDisplay.Position = UDim2.new(0.54, 0, 0.1, 0)
 CurrentSpeedDisplay.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
 CurrentSpeedDisplay.Text = "100"
 CurrentSpeedDisplay.TextColor3 = Color3.fromRGB(0, 255, 150)
@@ -1835,14 +1854,14 @@ local DisplayCorner = Instance.new("UICorner")
 DisplayCorner.CornerRadius = UDim.new(0, 6)
 DisplayCorner.Parent = CurrentSpeedDisplay
 
--- الحالة (ON/OFF)
+-- حالة النظام
 local StatusDisplay = Instance.new("TextLabel")
-StatusDisplay.Size = UDim2.new(0.45, 0, 0.35, 0)
-StatusDisplay.Position = UDim2.new(0.02, 0, 0.55, 0)
+StatusDisplay.Size = UDim2.new(0.2, 0, 0.5, 0)
+StatusDisplay.Position = UDim2.new(0.76, 0, 0.1, 0)
 StatusDisplay.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
-StatusDisplay.Text = "⏸️ متوقف"
+StatusDisplay.Text = "⏸️"
 StatusDisplay.TextColor3 = Color3.fromRGB(255, 100, 100)
-StatusDisplay.TextSize = 14
+StatusDisplay.TextSize = 18
 StatusDisplay.Font = Enum.Font.GothamBold
 StatusDisplay.TextXAlignment = Enum.TextXAlignment.Center
 StatusDisplay.Parent = SpeedFrame
@@ -1856,14 +1875,18 @@ StatusCorner.Parent = StatusDisplay
 -- أحداث نظام السرعة
 -- ============================================
 
+local targetSpeed = 100
+local speedHackEnabled = false
+
 -- تسجيل قيمة السرعة
 SpeedInput.FocusLost:Connect(function()
     local inputNum = tonumber(SpeedInput.Text)
-    if inputNum then
+    if inputNum and inputNum > 0 then
         targetSpeed = inputNum
         CurrentSpeedDisplay.Text = tostring(targetSpeed)
     else
         SpeedInput.Text = tostring(targetSpeed)
+        showNotification("⚠️ أدخل رقم صحيح!", CarFrame)
     end
 end)
 
@@ -1874,13 +1897,13 @@ ToggleSpeedButton.MouseButton1Click:Connect(function()
     if speedHackEnabled then
         ToggleSpeedButton.Text = "ON ✅"
         ToggleSpeedButton.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
-        StatusDisplay.Text = "🟢 يعمل"
+        StatusDisplay.Text = "🟢"
         StatusDisplay.TextColor3 = Color3.fromRGB(0, 255, 100)
         showNotification("🏎️ تم تفعيل السرعة: " .. targetSpeed, CarFrame)
     else
         ToggleSpeedButton.Text = "OFF ❌"
         ToggleSpeedButton.BackgroundColor3 = Color3.fromRGB(230, 50, 50)
-        StatusDisplay.Text = "⏸️ متوقف"
+        StatusDisplay.Text = "⏸️"
         StatusDisplay.TextColor3 = Color3.fromRGB(255, 100, 100)
         showNotification("⛔ تم إيقاف السرعة", CarFrame)
     end
