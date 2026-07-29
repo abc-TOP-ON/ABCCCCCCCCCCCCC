@@ -1,4 +1,4 @@
--- LYNEX - النسخة النهائية (بدون زر قفز بسيارة)
+-- LYNEX - النسخة النهائية (مع زر قفز بسيارة وارتفاع قابل للتعديل)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -1400,7 +1400,7 @@ Players.PlayerAdded:Connect(function() UpdatePlayerList() end)
 Players.PlayerRemoving:Connect(function() UpdatePlayerList() end)
 
 -- ============================================
--- محتوى صفحة الطيران الذكي (بدون زر القفز)
+-- محتوى صفحة الطيران الذكي (مع زر قفز بسيارة)
 -- ============================================
 
 local CarFrame = Instance.new("Frame")
@@ -1450,13 +1450,14 @@ CarDivider.Parent = CarFrame
 CarDivider.ZIndex = 6
 
 -- ============================================
--- نظام الطيران الذكي (بدون قفز)
+-- نظام الطيران الذكي + قفز بسيارة مع ارتفاع قابل للتعديل
 -- ============================================
 
 local Flying = false
 local MovingForward = false
 local FlySpeed = 2.5
 local flyConnection = nil
+local JumpHeight = 50 -- الارتفاع الافتراضي للقفز
 
 -- دالة جلب السيارة
 local function GetVehicle()
@@ -1488,6 +1489,30 @@ function showNotification(text, parent)
     
     task.wait(1.5)
     notif:Destroy()
+end
+
+-- دالة قفز السيارة
+local function JumpCar()
+    local car = GetVehicle()
+    if not car then
+        showNotification("⚠️ لازم تركب سيارة أولاً!", CarFrame)
+        return
+    end
+    
+    local PrimaryPart = car.PrimaryPart or car:FindFirstChildWhichIsA("BasePart")
+    if PrimaryPart then
+        -- إضافة قوة دفع للأعلى حسب الارتفاع المحدد
+        local bodyVelocity = Instance.new("BodyVelocity")
+        bodyVelocity.Velocity = Vector3.new(0, JumpHeight * 1.5, 0) -- ضرب 1.5 عشان القفزة تكون أقوى
+        bodyVelocity.MaxForce = Vector3.new(0, 1000000, 0)
+        bodyVelocity.Parent = PrimaryPart
+        
+        -- إزالة القوة بعد 0.5 ثانية
+        task.wait(0.5)
+        bodyVelocity:Destroy()
+        
+        showNotification("🚗 تم قفز السيارة بارتفاع " .. JumpHeight .. "!", CarFrame)
+    end
 end
 
 -- حلقة الطيران
@@ -1532,7 +1557,7 @@ local function StartFlyLoop()
 end
 
 -- ============================================
--- الأزرار مرتبة عمودياً (بدون زر القفز)
+-- الأزرار مرتبة عمودياً
 -- ============================================
 
 -- زر تفعيل الطيران (الأول)
@@ -1578,10 +1603,79 @@ FlyToggleButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- زر تحريك السيارة (الثاني)
+-- زر قفز بسيارة مع مربع إدخال (الثاني)
+-- الحاوية
+local JumpContainer = Instance.new("Frame")
+JumpContainer.Size = UDim2.new(0.8, 0, 0, 45)
+JumpContainer.Position = UDim2.new(0.1, 0, 0.18, 0)
+JumpContainer.BackgroundColor3 = Color3.fromRGB(35, 25, 15)
+JumpContainer.BorderSizePixel = 0
+JumpContainer.Parent = CarFrame
+JumpContainer.ZIndex = 7
+
+local JumpContainerCorner = Instance.new("UICorner")
+JumpContainerCorner.CornerRadius = UDim.new(0, 8)
+JumpContainerCorner.Parent = JumpContainer
+
+-- زر القفز
+local JumpButton = Instance.new("TextButton")
+JumpButton.Size = UDim2.new(0.55, 0, 1, -4)
+JumpButton.Position = UDim2.new(0.02, 0, 0, 2)
+JumpButton.BackgroundColor3 = Color3.fromRGB(255, 150, 0)
+JumpButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+JumpButton.TextSize = 14
+JumpButton.Font = Enum.Font.SourceSansBold
+JumpButton.Text = "🚗 قفز"
+JumpButton.Parent = JumpContainer
+JumpButton.ZIndex = 8
+
+local JumpCorner = Instance.new("UICorner")
+JumpCorner.CornerRadius = UDim.new(0, 6)
+JumpCorner.Parent = JumpButton
+
+-- مربع إدخال الارتفاع
+local JumpHeightBox = Instance.new("TextBox")
+JumpHeightBox.Size = UDim2.new(0.4, 0, 1, -4)
+JumpHeightBox.Position = UDim2.new(0.58, 0, 0, 2)
+JumpHeightBox.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+JumpHeightBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+JumpHeightBox.TextSize = 14
+JumpHeightBox.Font = Enum.Font.GothamBold
+JumpHeightBox.Text = "50"
+JumpHeightBox.PlaceholderText = "الارتفاع"
+JumpHeightBox.Parent = JumpContainer
+JumpHeightBox.ZIndex = 8
+
+local JumpHeightCorner = Instance.new("UICorner")
+JumpHeightCorner.CornerRadius = UDim.new(0, 6)
+JumpHeightCorner.Parent = JumpHeightBox
+
+-- تأثير hover للزر
+JumpButton.MouseEnter:Connect(function()
+    JumpButton.BackgroundColor3 = Color3.fromRGB(255, 180, 50)
+end)
+JumpButton.MouseLeave:Connect(function()
+    JumpButton.BackgroundColor3 = Color3.fromRGB(255, 150, 0)
+end)
+
+-- تحديث الارتفاع عند تغيير النص
+JumpHeightBox.FocusLost:Connect(function()
+    local val = tonumber(JumpHeightBox.Text)
+    if val then
+        JumpHeight = math.clamp(val, 10, 200)
+        JumpHeightBox.Text = tostring(JumpHeight)
+        showNotification("✅ ارتفاع القفز = " .. JumpHeight, CarFrame)
+    else
+        JumpHeightBox.Text = tostring(JumpHeight)
+    end
+end)
+
+JumpButton.MouseButton1Click:Connect(JumpCar)
+
+-- زر تحريك السيارة (الثالث)
 local MoveCarButton = Instance.new("TextButton")
 MoveCarButton.Size = UDim2.new(0.8, 0, 0, 45)
-MoveCarButton.Position = UDim2.new(0.1, 0, 0.18, 0)
+MoveCarButton.Position = UDim2.new(0.1, 0, 0.28, 0)
 MoveCarButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
 MoveCarButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 MoveCarButton.TextSize = 15
@@ -1613,12 +1707,12 @@ MoveCarButton.MouseButton1Click:Connect(function()
 end)
 
 -- ============================================
--- شريط تعديل السرعة (الثالث)
+-- شريط تعديل السرعة (الرابع)
 -- ============================================
 
 local SpeedSliderContainer = Instance.new("Frame")
 SpeedSliderContainer.Size = UDim2.new(0.8, 0, 0, 35)
-SpeedSliderContainer.Position = UDim2.new(0.1, 0, 0.28, 0)
+SpeedSliderContainer.Position = UDim2.new(0.1, 0, 0.38, 0)
 SpeedSliderContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
 SpeedSliderContainer.BorderSizePixel = 0
 SpeedSliderContainer.Parent = CarFrame
@@ -1671,8 +1765,8 @@ end)
 -- ============================================
 
 local InstructionsBox = Instance.new("Frame")
-InstructionsBox.Size = UDim2.new(0.85, 0, 0, 110)
-InstructionsBox.Position = UDim2.new(0.075, 0, 0.36, 0)
+InstructionsBox.Size = UDim2.new(0.85, 0, 0, 130)
+InstructionsBox.Position = UDim2.new(0.075, 0, 0.46, 0)
 InstructionsBox.BackgroundColor3 = Color3.fromRGB(20, 20, 40)
 InstructionsBox.BorderSizePixel = 0
 InstructionsBox.Parent = CarFrame
@@ -1724,7 +1818,7 @@ local InstructionsText = Instance.new("TextLabel")
 InstructionsText.Size = UDim2.new(1, -15, 1, -40)
 InstructionsText.Position = UDim2.new(0, 7, 0, 35)
 InstructionsText.BackgroundTransparency = 1
-InstructionsText.Text = "🚗 اركب السيارة (مقعد السائق)\n\n✈️ اضغط 'تفعيل الطيران' لتطير بالسيارة\n\n▶️ اضغط 'تشغيل الحركة' للانطلاق للأمام\n\n🎯 تتحرك السيارة باتجاه نظرتك (الكاميرا)\n\n⚡ عدل السرعة من 1 إلى 10 حسب رغبتك"
+InstructionsText.Text = "🚗 اركب السيارة (مقعد السائق)\n\n✈️ اضغط 'تفعيل الطيران' لتطير بالسيارة\n\n⬆️ اضغط 'قفز' للقفز بالسيارة (عدل الارتفاع)\n\n▶️ اضغط 'تشغيل الحركة' للانطلاق للأمام\n\n🎯 تتحرك السيارة باتجاه نظرتك (الكاميرا)\n\n⚡ عدل السرعة من 1 إلى 10 حسب رغبتك"
 InstructionsText.TextColor3 = Color3.fromRGB(200, 200, 230)
 InstructionsText.TextSize = 12
 InstructionsText.Font = Enum.Font.GothamMedium
@@ -2143,8 +2237,9 @@ end
 -- فتح الصفحة الافتراضية (انتقال الفوري)
 ShowTeleport()
 
-print("✅ LYNEX - النسخة النهائية (بدون زر قفز بسيارة)")
+print("✅ LYNEX - النسخة النهائية (مع زر قفز بسيارة وارتفاع قابل للتعديل)")
 print("📌 الأزرار: انتقال الفوري | فلوس | صيد | لاعبين | أخبار | طيران ذكي")
 print("💰 تصميم جديد لصفحة الفلوس")
 print("🔍 إضافة بحث للاعبين")
+print("🚗 إضافة زر قفز بسيارة مع إمكانية تعديل الارتفاع")
 print("🔗 رابط الديسكورد: https://discord.gg/fJTvyYW4A")
