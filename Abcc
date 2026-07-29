@@ -1,4 +1,4 @@
--- LYNEX - النسخة النهائية (مع نظام سرعة السيارة المتقدم)
+-- LYNEX - النسخة النهائية (مع نظام سرعة السيارة المتقدم تحت التعليمات)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -1398,7 +1398,7 @@ Players.PlayerAdded:Connect(function() UpdatePlayerList() end)
 Players.PlayerRemoving:Connect(function() UpdatePlayerList() end)
 
 -- ============================================
--- محتوى صفحة الطيران الذكي (مع نظام سرعة السيارة المتقدم)
+-- محتوى صفحة الطيران الذكي (مع نظام سرعة السيارة المتقدم تحت التعليمات)
 -- ============================================
 
 local CarFrame = Instance.new("Frame")
@@ -1448,7 +1448,7 @@ CarDivider.Parent = CarFrame
 CarDivider.ZIndex = 6
 
 -- ============================================
--- نظام الطيران الذكي (للتوافق مع السكربت القديم)
+-- نظام الطيران الذكي (للتوافق)
 -- ============================================
 
 local Flying = false
@@ -1530,7 +1530,7 @@ local function StartFlyLoop()
 end
 
 -- ============================================
--- نظام سرعة السيارة المتقدم (مثل اللي طلبته)
+-- نظام سرعة السيارة المتقدم
 -- ============================================
 
 -- المتغيرات
@@ -1538,45 +1538,9 @@ local targetSpeed = 100
 local speedHackEnabled = false
 
 -- ============================================
--- واجهة التحكم بالسرعة (داخل الصفحة)
+-- الأزرار (للتوافق مع السكربت القديم)
 -- ============================================
 
--- مربع إدخال السرعة
-local SpeedInput = Instance.new("TextBox")
-SpeedInput.Size = UDim2.new(0, 200, 0, 40)
-SpeedInput.Position = UDim2.new(0.5, -100, 0, 65)
-SpeedInput.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
-SpeedInput.Text = "100"
-SpeedInput.TextColor3 = Color3.fromRGB(255, 255, 255)
-SpeedInput.TextSize = 18
-SpeedInput.Font = Enum.Font.Gotham
-SpeedInput.PlaceholderText = "أدخل قيمة السرعة"
-SpeedInput.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
-SpeedInput.ClearTextOnFocus = false
-SpeedInput.Parent = CarFrame
-SpeedInput.ZIndex = 10
-
-local InputCorner = Instance.new("UICorner")
-InputCorner.CornerRadius = UDim.new(0, 6)
-InputCorner.Parent = SpeedInput
-
--- زر التفعيل
-local ToggleSpeedButton = Instance.new("TextButton")
-ToggleSpeedButton.Size = UDim2.new(0, 200, 0, 45)
-ToggleSpeedButton.Position = UDim2.new(0.5, -100, 0, 120)
-ToggleSpeedButton.BackgroundColor3 = Color3.fromRGB(230, 50, 50)
-ToggleSpeedButton.Text = "الحالة: OFF"
-ToggleSpeedButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleSpeedButton.TextSize = 16
-ToggleSpeedButton.Font = Enum.Font.GothamBold
-ToggleSpeedButton.Parent = CarFrame
-ToggleSpeedButton.ZIndex = 10
-
-local ButtonCorner = Instance.new("UICorner")
-ButtonCorner.CornerRadius = UDim.new(0, 6)
-ButtonCorner.Parent = ToggleSpeedButton
-
--- زر الطيران (للتوافق)
 local FlyToggleButton = Instance.new("TextButton")
 FlyToggleButton.Size = UDim2.new(0.8, 0, 0, 40)
 FlyToggleButton.Position = UDim2.new(0.1, 0, 0.08, 0)
@@ -1619,7 +1583,6 @@ FlyToggleButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- زر تحريك السيارة (للتوافق)
 local MoveCarButton = Instance.new("TextButton")
 MoveCarButton.Size = UDim2.new(0.8, 0, 0, 40)
 MoveCarButton.Position = UDim2.new(0.1, 0, 0.16, 0)
@@ -1653,7 +1616,6 @@ MoveCarButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- زر القفز السريع (للتوافق)
 local QuickFlyButton = Instance.new("TextButton")
 QuickFlyButton.Size = UDim2.new(0.8, 0, 0, 40)
 QuickFlyButton.Position = UDim2.new(0.1, 0, 0.24, 0)
@@ -1742,61 +1704,13 @@ QuickFlyButton.MouseButton1Click:Connect(function()
 end)
 
 -- ============================================
--- أحداث GUI
+-- واجهة نظام السرعة (تحت التعليمات)
 -- ============================================
 
--- تسجيل قيمة السرعة من المستخدم
-SpeedInput.FocusLost:Connect(function()
-    local inputNum = tonumber(SpeedInput.Text)
-    if inputNum then
-        targetSpeed = inputNum
-    else
-        SpeedInput.Text = tostring(targetSpeed)
-    end
-end)
-
--- زر التفعيل
-ToggleSpeedButton.MouseButton1Click:Connect(function()
-    speedHackEnabled = not speedHackEnabled
-    
-    if speedHackEnabled then
-        ToggleSpeedButton.Text = "الحالة: ON ✅"
-        ToggleSpeedButton.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
-        showNotification("🏎️ تم تفعيل سرعة السيارة!", CarFrame)
-    else
-        ToggleSpeedButton.Text = "الحالة: OFF ❌"
-        ToggleSpeedButton.BackgroundColor3 = Color3.fromRGB(230, 50, 50)
-        showNotification("⛔ تم إيقاف سرعة السيارة", CarFrame)
-    end
-end)
-
--- ============================================
--- نظام السرعة الرئيسي (مثل اللي طلبته)
--- ============================================
-
-RunService.Heartbeat:Connect(function()
-    if not speedHackEnabled then return end
-    
-    local character = LocalPlayer.Character
-    if not character then return end
-    
-    local humanoid = character:FindFirstChildOfClass("Humanoid")
-    if humanoid and humanoid.SeatPart and humanoid.SeatPart:IsA("VehicleSeat") then
-        local vehicleSeat = humanoid.SeatPart
-        
-        if vehicleSeat.Throttle ~= 0 then
-            vehicleSeat.AssemblyLinearVelocity = vehicleSeat.CFrame.LookVector * (vehicleSeat.Throttle * targetSpeed)
-        end
-    end
-end)
-
--- ============================================
 -- تعليمات الاستخدام
--- ============================================
-
 local InstructionsBox = Instance.new("Frame")
-InstructionsBox.Size = UDim2.new(0.85, 0, 0, 100)
-InstructionsBox.Position = UDim2.new(0.075, 0, 0.44, 0)
+InstructionsBox.Size = UDim2.new(0.85, 0, 0, 130)
+InstructionsBox.Position = UDim2.new(0.075, 0, 0.40, 0)
 InstructionsBox.BackgroundColor3 = Color3.fromRGB(20, 20, 40)
 InstructionsBox.BorderSizePixel = 0
 InstructionsBox.Parent = CarFrame
@@ -1844,7 +1758,7 @@ local InstructionsText = Instance.new("TextLabel")
 InstructionsText.Size = UDim2.new(1, -15, 1, -40)
 InstructionsText.Position = UDim2.new(0, 7, 0, 35)
 InstructionsText.BackgroundTransparency = 1
-InstructionsText.Text = "🚗 اركب السيارة (مقعد السائق)\n\n🏎️ أدخل قيمة السرعة في المربع (مثال: 100)\n\n🟢 اضغط 'ON' لتفعيل السرعة\n\n🔴 اضغط 'OFF' لإيقاف السرعة\n\n📌 السرعة تعمل عند الضغط على زر الوقود (W/أعلى)"
+InstructionsText.Text = "🚗 اركب السيارة (مقعد السائق)\n\n🏎️ أدخل قيمة السرعة في المربع أدناه\n\n🟢 اضغط 'ON' لتفعيل السرعة\n\n🔴 اضغط 'OFF' لإيقاف السرعة\n\n📌 السرعة تعمل عند الضغط على W أو أعلى"
 InstructionsText.TextColor3 = Color3.fromRGB(200, 200, 230)
 InstructionsText.TextSize = 11
 InstructionsText.Font = Enum.Font.GothamMedium
@@ -1853,6 +1767,145 @@ InstructionsText.TextYAlignment = Enum.TextYAlignment.Top
 InstructionsText.TextWrapped = true
 InstructionsText.Parent = InstructionsBox
 InstructionsText.ZIndex = 8
+
+-- ============================================
+-- نظام السرعة (تحت التعليمات مباشرة)
+-- ============================================
+
+local SpeedFrame = Instance.new("Frame")
+SpeedFrame.Size = UDim2.new(0.85, 0, 0, 75)
+SpeedFrame.Position = UDim2.new(0.075, 0, 0.58, 0)
+SpeedFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 40)
+SpeedFrame.BorderSizePixel = 0
+SpeedFrame.Parent = CarFrame
+SpeedFrame.ZIndex = 7
+
+local SpeedCorner = Instance.new("UICorner")
+SpeedCorner.CornerRadius = UDim.new(0, 8)
+SpeedCorner.Parent = SpeedFrame
+
+-- مربع إدخال السرعة
+local SpeedInput = Instance.new("TextBox")
+SpeedInput.Size = UDim2.new(0.4, 0, 0.45, 0)
+SpeedInput.Position = UDim2.new(0.02, 0, 0, 5)
+SpeedInput.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+SpeedInput.Text = "100"
+SpeedInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpeedInput.TextSize = 18
+SpeedInput.Font = Enum.Font.Gotham
+SpeedInput.PlaceholderText = "أدخل السرعة"
+SpeedInput.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
+SpeedInput.ClearTextOnFocus = false
+SpeedInput.Parent = SpeedFrame
+SpeedInput.ZIndex = 10
+
+local InputCorner = Instance.new("UICorner")
+InputCorner.CornerRadius = UDim.new(0, 6)
+InputCorner.Parent = SpeedInput
+
+-- زر التفعيل
+local ToggleSpeedButton = Instance.new("TextButton")
+ToggleSpeedButton.Size = UDim2.new(0.25, 0, 0.45, 0)
+ToggleSpeedButton.Position = UDim2.new(0.44, 0, 0, 5)
+ToggleSpeedButton.BackgroundColor3 = Color3.fromRGB(230, 50, 50)
+ToggleSpeedButton.Text = "OFF"
+ToggleSpeedButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleSpeedButton.TextSize = 16
+ToggleSpeedButton.Font = Enum.Font.GothamBold
+ToggleSpeedButton.Parent = SpeedFrame
+ToggleSpeedButton.ZIndex = 10
+
+local ButtonCorner = Instance.new("UICorner")
+ButtonCorner.CornerRadius = UDim.new(0, 6)
+ButtonCorner.Parent = ToggleSpeedButton
+
+-- عرض السرعة الحالية
+local CurrentSpeedDisplay = Instance.new("TextLabel")
+CurrentSpeedDisplay.Size = UDim2.new(0.25, 0, 0.45, 0)
+CurrentSpeedDisplay.Position = UDim2.new(0.72, 0, 0, 5)
+CurrentSpeedDisplay.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+CurrentSpeedDisplay.Text = "100"
+CurrentSpeedDisplay.TextColor3 = Color3.fromRGB(0, 255, 150)
+CurrentSpeedDisplay.TextSize = 18
+CurrentSpeedDisplay.Font = Enum.Font.GothamBold
+CurrentSpeedDisplay.TextXAlignment = Enum.TextXAlignment.Center
+CurrentSpeedDisplay.Parent = SpeedFrame
+CurrentSpeedDisplay.ZIndex = 10
+
+local DisplayCorner = Instance.new("UICorner")
+DisplayCorner.CornerRadius = UDim.new(0, 6)
+DisplayCorner.Parent = CurrentSpeedDisplay
+
+-- الحالة (ON/OFF)
+local StatusDisplay = Instance.new("TextLabel")
+StatusDisplay.Size = UDim2.new(0.45, 0, 0.35, 0)
+StatusDisplay.Position = UDim2.new(0.02, 0, 0.55, 0)
+StatusDisplay.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+StatusDisplay.Text = "⏸️ متوقف"
+StatusDisplay.TextColor3 = Color3.fromRGB(255, 100, 100)
+StatusDisplay.TextSize = 14
+StatusDisplay.Font = Enum.Font.GothamBold
+StatusDisplay.TextXAlignment = Enum.TextXAlignment.Center
+StatusDisplay.Parent = SpeedFrame
+StatusDisplay.ZIndex = 10
+
+local StatusCorner = Instance.new("UICorner")
+StatusCorner.CornerRadius = UDim.new(0, 6)
+StatusCorner.Parent = StatusDisplay
+
+-- ============================================
+-- أحداث نظام السرعة
+-- ============================================
+
+-- تسجيل قيمة السرعة
+SpeedInput.FocusLost:Connect(function()
+    local inputNum = tonumber(SpeedInput.Text)
+    if inputNum then
+        targetSpeed = inputNum
+        CurrentSpeedDisplay.Text = tostring(targetSpeed)
+    else
+        SpeedInput.Text = tostring(targetSpeed)
+    end
+end)
+
+-- زر التفعيل
+ToggleSpeedButton.MouseButton1Click:Connect(function()
+    speedHackEnabled = not speedHackEnabled
+    
+    if speedHackEnabled then
+        ToggleSpeedButton.Text = "ON ✅"
+        ToggleSpeedButton.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
+        StatusDisplay.Text = "🟢 يعمل"
+        StatusDisplay.TextColor3 = Color3.fromRGB(0, 255, 100)
+        showNotification("🏎️ تم تفعيل السرعة: " .. targetSpeed, CarFrame)
+    else
+        ToggleSpeedButton.Text = "OFF ❌"
+        ToggleSpeedButton.BackgroundColor3 = Color3.fromRGB(230, 50, 50)
+        StatusDisplay.Text = "⏸️ متوقف"
+        StatusDisplay.TextColor3 = Color3.fromRGB(255, 100, 100)
+        showNotification("⛔ تم إيقاف السرعة", CarFrame)
+    end
+end)
+
+-- ============================================
+-- نظام السرعة الرئيسي
+-- ============================================
+
+RunService.Heartbeat:Connect(function()
+    if not speedHackEnabled then return end
+    
+    local character = LocalPlayer.Character
+    if not character then return end
+    
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    if humanoid and humanoid.SeatPart and humanoid.SeatPart:IsA("VehicleSeat") then
+        local vehicleSeat = humanoid.SeatPart
+        
+        if vehicleSeat.Throttle ~= 0 then
+            vehicleSeat.AssemblyLinearVelocity = vehicleSeat.CFrame.LookVector * (vehicleSeat.Throttle * targetSpeed)
+        end
+    end
+end)
 
 -- ============================================
 -- محتوى الأخبار
@@ -2225,10 +2278,10 @@ end
 
 ShowTeleport()
 
-print("✅ LYNEX - النسخة النهائية (مع نظام سرعة السيارة المتقدم)")
+print("✅ LYNEX - النسخة النهائية (مع نظام سرعة السيارة المتقدم تحت التعليمات)")
 print("📌 الأزرار: انتقال الفوري | فلوس | صيد | لاعبين | أخبار | سرعة السيارة")
 print("💰 تصميم جديد لصفحة الفلوس")
 print("🔍 إضافة بحث للاعبين")
 print("🚀 إضافة زر القفز السريع للسيارة")
-print("🏎️ إضافة نظام سرعة السيارة المتقدم (مثل اللي طلبته)")
+print("🏎️ إضافة نظام سرعة السيارة المتقدم تحت التعليمات")
 print("🔗 رابط الديسكورد: https://discord.gg/fJTvyYW4A")
