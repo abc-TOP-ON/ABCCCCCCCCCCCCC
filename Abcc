@@ -1,4 +1,4 @@
--- LYNEX - النسخة النهائية (مع زر قفز سريع للسيارة - مُصلح)
+-- LYNEX - النسخة النهائية (مع زر قفز سريع للسيارة + أزرار تحكم بالسرعة)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -1398,7 +1398,7 @@ Players.PlayerAdded:Connect(function() UpdatePlayerList() end)
 Players.PlayerRemoving:Connect(function() UpdatePlayerList() end)
 
 -- ============================================
--- محتوى صفحة الطيران الذكي (مع زر القفز السريع المُصلح)
+-- محتوى صفحة الطيران الذكي (مع زر القفز السريع المُصلح + أزرار التحكم بالسرعة)
 -- ============================================
 
 local CarFrame = Instance.new("Frame")
@@ -1716,12 +1716,60 @@ QuickFlyButton.MouseButton1Click:Connect(function()
 end)
 
 -- ============================================
--- شريط تعديل السرعة (الرابع)
+-- 🆕 أزرار التحكم بالسرعة (جديدة)
+-- ============================================
+
+-- زر زيادة السرعة
+local SpeedUpBtn = Instance.new("TextButton")
+SpeedUpBtn.Size = UDim2.new(0.38, 0, 0, 35)
+SpeedUpBtn.Position = UDim2.new(0.1, 0, 0.32, 0)
+SpeedUpBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
+SpeedUpBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpeedUpBtn.TextSize = 14
+SpeedUpBtn.Font = Enum.Font.SourceSansBold
+SpeedUpBtn.Text = "⬆️ زيادة السرعة +1"
+SpeedUpBtn.Parent = CarFrame
+SpeedUpBtn.ZIndex = 7
+
+local SpeedUpCorner = Instance.new("UICorner")
+SpeedUpCorner.CornerRadius = UDim.new(0, 8)
+SpeedUpCorner.Parent = SpeedUpBtn
+
+SpeedUpBtn.MouseButton1Click:Connect(function()
+    FlySpeed = math.min(FlySpeed + 1, 10)
+    SpeedLabel.Text = "🚀 السرعة: " .. string.format("%.1f", FlySpeed)
+    showNotification("⬆️ السرعة = " .. string.format("%.1f", FlySpeed), CarFrame)
+end)
+
+-- زر تقليل السرعة
+local SpeedDownBtn = Instance.new("TextButton")
+SpeedDownBtn.Size = UDim2.new(0.38, 0, 0, 35)
+SpeedDownBtn.Position = UDim2.new(0.52, 0, 0.32, 0)
+SpeedDownBtn.BackgroundColor3 = Color3.fromRGB(200, 80, 50)
+SpeedDownBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpeedDownBtn.TextSize = 14
+SpeedDownBtn.Font = Enum.Font.SourceSansBold
+SpeedDownBtn.Text = "⬇️ تقليل السرعة -1"
+SpeedDownBtn.Parent = CarFrame
+SpeedDownBtn.ZIndex = 7
+
+local SpeedDownCorner = Instance.new("UICorner")
+SpeedDownCorner.CornerRadius = UDim.new(0, 8)
+SpeedDownCorner.Parent = SpeedDownBtn
+
+SpeedDownBtn.MouseButton1Click:Connect(function()
+    FlySpeed = math.max(FlySpeed - 1, 1)
+    SpeedLabel.Text = "🚀 السرعة: " .. string.format("%.1f", FlySpeed)
+    showNotification("⬇️ السرعة = " .. string.format("%.1f", FlySpeed), CarFrame)
+end)
+
+-- ============================================
+-- شريط تعديل السرعة
 -- ============================================
 
 local SpeedSliderContainer = Instance.new("Frame")
 SpeedSliderContainer.Size = UDim2.new(0.8, 0, 0, 35)
-SpeedSliderContainer.Position = UDim2.new(0.1, 0, 0.32, 0)
+SpeedSliderContainer.Position = UDim2.new(0.1, 0, 0.38, 0)
 SpeedSliderContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
 SpeedSliderContainer.BorderSizePixel = 0
 SpeedSliderContainer.Parent = CarFrame
@@ -1775,7 +1823,7 @@ end)
 
 local InstructionsBox = Instance.new("Frame")
 InstructionsBox.Size = UDim2.new(0.85, 0, 0, 120)
-InstructionsBox.Position = UDim2.new(0.075, 0, 0.40, 0)
+InstructionsBox.Position = UDim2.new(0.075, 0, 0.45, 0)
 InstructionsBox.BackgroundColor3 = Color3.fromRGB(20, 20, 40)
 InstructionsBox.BorderSizePixel = 0
 InstructionsBox.Parent = CarFrame
@@ -1827,7 +1875,7 @@ local InstructionsText = Instance.new("TextLabel")
 InstructionsText.Size = UDim2.new(1, -15, 1, -40)
 InstructionsText.Position = UDim2.new(0, 7, 0, 35)
 InstructionsText.BackgroundTransparency = 1
-InstructionsText.Text = "🚗 اركب السيارة (مقعد السائق)\n\n✈️ اضغط 'تفعيل الطيران' لتطير بالسيارة\n\n▶️ اضغط 'تشغيل الحركة' للانطلاق للأمام\n\n🚀 زر 'قفز سريع' لدفع السيارة للأعلى\n\n🎯 تتحرك السيارة باتجاه نظرتك (الكاميرا)\n\n⚡ عدل السرعة من 1 إلى 10 حسب رغبتك"
+InstructionsText.Text = "🚗 اركب السيارة (مقعد السائق)\n\n✈️ اضغط 'تفعيل الطيران' لتطير بالسيارة\n\n▶️ اضغط 'تشغيل الحركة' للانطلاق للأمام\n\n🚀 زر 'قفز سريع' لدفع السيارة للأعلى\n\n⬆️⬇️ أزرار زيادة/تقليل السرعة\n\n🎯 تتحرك السيارة باتجاه نظرتك (الكاميرا)\n\n⚡ عدل السرعة من 1 إلى 10 حسب رغبتك"
 InstructionsText.TextColor3 = Color3.fromRGB(200, 200, 230)
 InstructionsText.TextSize = 11
 InstructionsText.Font = Enum.Font.GothamMedium
@@ -1983,6 +2031,10 @@ createNewsCard("🚗", "تم إضافة نظام الطيران الذكي لل�
 createNewsCard("🚀", "إضافة زر القفز السريع للسيارة!",
     "الآن يمكنك قفز السيارة للأعلى بضغطة زر واحدة!",
     Color3.fromRGB(255, 100, 50), false)
+
+createNewsCard("⬆️⬇️", "إضافة أزرار التحكم بالسرعة!",
+    "يمكنك زيادة أو تقليل سرعة السيارة بضغطة زر!",
+    Color3.fromRGB(0, 255, 200), false)
 
 createNewsCard("📱", "دعم كامل للهاتف والكمبيوتر!",
     "السكربت الآن يدعم جميع الأجهزة مع واجهة متجاوبة.",
@@ -2216,9 +2268,10 @@ end
 -- فتح الصفحة الافتراضية (انتقال الفوري)
 ShowTeleport()
 
-print("✅ LYNEX - النسخة النهائية (مع زر قفز سريع مُصلح للسيارة)")
+print("✅ LYNEX - النسخة النهائية (مع زر قفز سريع مُصلح للسيارة + أزرار تحكم بالسرعة)")
 print("📌 الأزرار: انتقال الفوري | فلوس | صيد | لاعبين | أخبار | طيران ذكي")
 print("💰 تصميم جديد لصفحة الفلوس")
 print("🔍 إضافة بحث للاعبين")
 print("🚀 إضافة زر القفز السريع للسيارة (يعمل بثلاث طرق مختلفة)")
+print("⬆️⬇️ إضافة أزرار زيادة وتقليل السرعة")
 print("🔗 رابط الديسكورد: https://discord.gg/fJTvyYW4A")
