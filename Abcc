@@ -1,4 +1,4 @@
--- LYNEX - النسخة النهائية (مع نظام سرعة السيارة المتقدم - منزل للأسفل أكثر)
+-- LYNEX - النسخة النهائية (مع نظام سرعة السيارة المتقدم - مرتب تحت التعليمات)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -1398,7 +1398,7 @@ Players.PlayerAdded:Connect(function() UpdatePlayerList() end)
 Players.PlayerRemoving:Connect(function() UpdatePlayerList() end)
 
 -- ============================================
--- محتوى صفحة الطيران الذكي (مع نظام سرعة السيارة المتقدم - منزل للأسفل أكثر)
+-- محتوى صفحة الطيران الذكي (مع نظام سرعة السيارة المتقدم - مرتب تحت التعليمات)
 -- ============================================
 
 local CarFrame = Instance.new("Frame")
@@ -1704,7 +1704,7 @@ QuickFlyButton.MouseButton1Click:Connect(function()
 end)
 
 -- ============================================
--- تعليمات الاستخدام (مكبرة ومنزلة للأسفل أكثر)
+-- تعليمات الاستخدام (مرتبة ومنزلة للأسفل)
 -- ============================================
 
 local InstructionsBox = Instance.new("Frame")
@@ -1768,12 +1768,12 @@ InstructionsText.Parent = InstructionsBox
 InstructionsText.ZIndex = 8
 
 -- ============================================
--- نظام السرعة (منزل للأسفل أكثر)
+-- نظام السرعة (مرتب ومنزل للأسفل)
 -- ============================================
 
 local SpeedFrame = Instance.new("Frame")
 SpeedFrame.Size = UDim2.new(0.85, 0, 0, 80)
-SpeedFrame.Position = UDim2.new(0.075, 0, 0.62, 0)  -- نزلناه من 0.60 إلى 0.62
+SpeedFrame.Position = UDim2.new(0.075, 0, 0.63, 0)  -- نزلناه أكثر عشان يكون مرتب تحت التعليمات
 SpeedFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 40)
 SpeedFrame.BorderSizePixel = 0
 SpeedFrame.Parent = CarFrame
@@ -2277,10 +2277,10 @@ end
 
 ShowTeleport()
 
-print("✅ LYNEX - النسخة النهائية (مع نظام سرعة السيارة المتقدم - منزل للأسفل أكثر)")
+print("✅ LYNEX - النسخة النهائية (مع نظام سرعة السيارة المتقدم - مرتب تحت التعليمات)")
 print("📌 الأزرار: انتقال الفوري | فلوس | صيد | لاعبين | أخبار | سرعة السيارة")
 print("💰 تصميم جديد لصفحة الفلوس")
 print("🔍 إضافة بحث للاعبين")
 print("🚀 إضافة زر القفز السريع للسيارة")
-print("🏎️ إضافة نظام سرعة السيارة المتقدم تحت التعليمات (منزل للأسفل أكثر)")
+print("🏎️ إضافة نظام سرعة السيارة المتقدم تحت التعليمات (مرتب)")
 print("🔗 رابط الديسكورد: https://discord.gg/fJTvyYW4A")
