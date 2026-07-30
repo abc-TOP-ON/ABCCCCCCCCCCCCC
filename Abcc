@@ -1,4 +1,4 @@
--- LYNEX - النسخة النهائية (مع زر كلبشة تلقائي + زر الاعب)
+-- LYNEX - النسخة النهائية (مع زر كلبشة تلقائي + زر الاعب + واجهة الاعب)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -360,7 +360,7 @@ end)
 local function createSidebarButton(text, posIndex, isActive)
     local Btn = Instance.new("TextButton")
     Btn.Size = UDim2.new(1, -20, 0, 40)
-    Btn.Position = UDim2.new(0, 10, 0, 60 + ((posIndex - 1) * 48))
+    Btn.Position = UDim2.new(0, 10, 0, 60 + ((posIndex - 1) * 45))
     
     if isActive then
         Btn.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
@@ -372,7 +372,7 @@ local function createSidebarButton(text, posIndex, isActive)
     
     Btn.BorderSizePixel = 0
     Btn.Text = text
-    Btn.TextSize = 14
+    Btn.TextSize = 12
     Btn.Font = Enum.Font.GothamBold
     Btn.Parent = Sidebar
     Btn.ZIndex = 17
@@ -410,8 +410,8 @@ createSidebarButton("🎣 الصيد", 3, false)
 createSidebarButton("👥 لاعبين", 4, false)
 createSidebarButton("📰 الأخبار", 5, false)
 createSidebarButton("🚗 الطيران الذكي", 6, false)
-createSidebarButton("🔄 كلبشة تلقائي", 7, false)
-createSidebarButton("🎮 الاعب", 8, false)  -- زر الاعب الجديد
+createSidebarButton("🔄 كلبشة تلقائي", 7, false)  -- الزر الجديد الأول
+createSidebarButton("🎮 الاعب", 8, false)  -- الزر الجديد الثاني
 
 -- ============================================
 -- الحاويات
@@ -472,17 +472,17 @@ NewsContainer.ZIndex = 1
 NewsContainer.Visible = false
 
 -- ============================================
--- الحاوية الجديدة: صفحة الاعب (PlayerController)
+-- حاوية الاعب (PlayerStats)
 -- ============================================
 
-local PlayerControllerContainer = Instance.new("Frame")
-PlayerControllerContainer.Name = "PlayerControllerContainer"
-PlayerControllerContainer.Size = UDim2.new(1, -150, 1, -20)
-PlayerControllerContainer.Position = UDim2.new(0, 150, 0, 10)
-PlayerControllerContainer.BackgroundTransparency = 1
-PlayerControllerContainer.Parent = MainFrame
-PlayerControllerContainer.ZIndex = 1
-PlayerControllerContainer.Visible = false
+local PlayerStatsContainer = Instance.new("Frame")
+PlayerStatsContainer.Name = "PlayerStatsContainer"
+PlayerStatsContainer.Size = UDim2.new(1, -150, 1, -20)
+PlayerStatsContainer.Position = UDim2.new(0, 150, 0, 10)
+PlayerStatsContainer.BackgroundTransparency = 1
+PlayerStatsContainer.Parent = MainFrame
+PlayerStatsContainer.ZIndex = 1
+PlayerStatsContainer.Visible = false
 
 -- ============================================
 -- محتوى صفحة الانتقال الفوري (Teleport)
@@ -681,8 +681,7 @@ MoneyIcon.Text = "💰"
 MoneyIcon.TextColor3 = Color3.fromRGB(255, 215, 0)
 MoneyIcon.TextSize = 30
 MoneyIcon.Font = Enum.Font.GothamBold
-MoneyIcon.TextXAlignment = Enum.TextXAlignment.Center
-MoneyIcon.Parent = MoneyHeader
+MoneyIcon.TextXAlignment = Enum.TextXAlignment.CenterMoneyIcon.Parent = MoneyHeader
 MoneyIcon.ZIndex = 7
 
 local MoneyTitle = Instance.new("TextLabel")
@@ -1948,7 +1947,7 @@ RunService.Heartbeat:Connect(function()
 end)
 
 -- ============================================
--- محتوى صفحة الأخبار
+-- محتوى الأخبار
 -- ============================================
 
 local NewsFrame = Instance.new("Frame")
@@ -2168,383 +2167,643 @@ newsY = newsY + 85
 NewsScroll.CanvasSize = UDim2.new(0, 0, 0, newsY + 30)
 
 -- ============================================
--- صفحة الاعب (Player Controller) - واجهة جديدة كاملة
+-- محتوى صفحة الاعب (Player Stats) - الواجهة الكاملة
 -- ============================================
 
-local PlayerCtrlFrame = Instance.new("Frame")
-PlayerCtrlFrame.Size = UDim2.new(0.92, 0, 0.88, 0)
-PlayerCtrlFrame.Position = UDim2.new(0.04, 0, 0.04, 0)
-PlayerCtrlFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 35)
-PlayerCtrlFrame.BorderSizePixel = 0
-PlayerCtrlFrame.Parent = PlayerControllerContainer
-PlayerCtrlFrame.ZIndex = 5
+local PlayerStatsFrame = Instance.new("Frame")
+PlayerStatsFrame.Size = UDim2.new(0.9, 0, 0.85, 0)
+PlayerStatsFrame.Position = UDim2.new(0.05, 0, 0.05, 0)
+PlayerStatsFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 40)
+PlayerStatsFrame.BorderSizePixel = 0
+PlayerStatsFrame.Parent = PlayerStatsContainer
+PlayerStatsFrame.ZIndex = 5
 
-local PlayerCtrlCorner = Instance.new("UICorner")
-PlayerCtrlCorner.CornerRadius = UDim.new(0, 12)
-PlayerCtrlCorner.Parent = PlayerCtrlFrame
+local PlayerStatsFrameCorner = Instance.new("UICorner")
+PlayerStatsFrameCorner.CornerRadius = UDim.new(0, 12)
+PlayerStatsFrameCorner.Parent = PlayerStatsFrame
 
--- إطار مضيء أزرق للصفحة
-local PlayerCtrlGlow = Instance.new("Frame")
-PlayerCtrlGlow.Size = UDim2.new(1, 8, 1, 8)
-PlayerCtrlGlow.Position = UDim2.new(0, -4, 0, -4)
-PlayerCtrlGlow.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
-PlayerCtrlGlow.BackgroundTransparency = 0.25
-PlayerCtrlGlow.BorderSizePixel = 0
-PlayerCtrlGlow.Parent = PlayerCtrlFrame
-PlayerCtrlGlow.ZIndex = -1
+local PlayerStatsGlow = Instance.new("Frame")
+PlayerStatsGlow.Size = UDim2.new(1, 6, 1, 6)
+PlayerStatsGlow.Position = UDim2.new(0, -3, 0, -3)
+PlayerStatsGlow.BackgroundColor3 = Color3.fromRGB(200, 50, 255)
+PlayerStatsGlow.BackgroundTransparency = 0.3
+PlayerStatsGlow.BorderSizePixel = 0
+PlayerStatsGlow.Parent = PlayerStatsFrame
+PlayerStatsGlow.ZIndex = -1
 
-local PlayerCtrlGlowCorner = Instance.new("UICorner")
-PlayerCtrlGlowCorner.CornerRadius = UDim.new(0, 16)
-PlayerCtrlGlowCorner.Parent = PlayerCtrlGlow
+local PlayerStatsGlowCorner = Instance.new("UICorner")
+PlayerStatsGlowCorner.CornerRadius = UDim.new(0, 15)
+PlayerStatsGlowCorner.Parent = PlayerStatsGlow
 
--- عنوان الصفحة
-local PlayerCtrlTitle = Instance.new("TextLabel")
-PlayerCtrlTitle.Size = UDim2.new(1, -40, 0, 40)
-PlayerCtrlTitle.Position = UDim2.new(0, 20, 0, 5)
-PlayerCtrlTitle.BackgroundTransparency = 1
-PlayerCtrlTitle.Text = "🎮 التحكم باللاعب والمركبة"
-PlayerCtrlTitle.TextColor3 = Color3.fromRGB(0, 200, 255)
-PlayerCtrlTitle.TextSize = 18
-PlayerCtrlTitle.Font = Enum.Font.GothamBold
-PlayerCtrlTitle.TextXAlignment = Enum.TextXAlignment.Center
-PlayerCtrlTitle.Parent = PlayerCtrlFrame
-PlayerCtrlTitle.ZIndex = 6
+local PlayerStatsTitle = Instance.new("TextLabel")
+PlayerStatsTitle.Size = UDim2.new(1, -40, 0, 40)
+PlayerStatsTitle.Position = UDim2.new(0, 20, 0, 5)
+PlayerStatsTitle.BackgroundTransparency = 1
+PlayerStatsTitle.Text = "🎮 تحكم باللاعب 🎮"
+PlayerStatsTitle.TextColor3 = Color3.fromRGB(200, 50, 255)
+PlayerStatsTitle.TextSize = 20
+PlayerStatsTitle.Font = Enum.Font.GothamBold
+PlayerStatsTitle.TextXAlignment = Enum.TextXAlignment.Center
+PlayerStatsTitle.Parent = PlayerStatsFrame
+PlayerStatsTitle.ZIndex = 6
 
-local PlayerCtrlDivider = Instance.new("Frame")
-PlayerCtrlDivider.Size = UDim2.new(0.7, 0, 0, 2)
-PlayerCtrlDivider.Position = UDim2.new(0.15, 0, 0, 50)
-PlayerCtrlDivider.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
-PlayerCtrlDivider.BackgroundTransparency = 0.4
-PlayerCtrlDivider.BorderSizePixel = 0
-PlayerCtrlDivider.Parent = PlayerCtrlFrame
-PlayerCtrlDivider.ZIndex = 6
+local PlayerStatsDivider = Instance.new("Frame")
+PlayerStatsDivider.Size = UDim2.new(0.6, 0, 0, 2)
+PlayerStatsDivider.Position = UDim2.new(0.2, 0, 0, 50)
+PlayerStatsDivider.BackgroundColor3 = Color3.fromRGB(200, 50, 255)
+PlayerStatsDivider.BackgroundTransparency = 0.4
+PlayerStatsDivider.BorderSizePixel = 0
+PlayerStatsDivider.Parent = PlayerStatsFrame
+PlayerStatsDivider.ZIndex = 6
 
--- ==============================
--- قسم السرعة في صفحة الاعب
--- ==============================
+-- ============================================
+-- كروت التحكم الثلاثة (صف واحد)
+-- ============================================
 
--- عنوان قسم السرعة
-local SpeedSectionTitle = Instance.new("TextLabel")
-SpeedSectionTitle.Size = UDim2.new(0.85, 0, 0, 25)
-SpeedSectionTitle.Position = UDim2.new(0.075, 0, 0.07, 0)
-SpeedSectionTitle.BackgroundTransparency = 1
-SpeedSectionTitle.Text = "🏎️ التحكم بالسرعة"
-SpeedSectionTitle.TextColor3 = Color3.fromRGB(255, 180, 50)
-SpeedSectionTitle.TextSize = 16
-SpeedSectionTitle.Font = Enum.Font.GothamBold
-SpeedSectionTitle.TextXAlignment = Enum.TextXAlignment.Center
-SpeedSectionTitle.Parent = PlayerCtrlFrame
-SpeedSectionTitle.ZIndex = 7
+local ControlContainer = Instance.new("Frame")
+ControlContainer.Size = UDim2.new(0.9, 0, 0, 200)
+ControlContainer.Position = UDim2.new(0.05, 0, 0.12, 0)
+ControlContainer.BackgroundTransparency = 1
+ControlContainer.Parent = PlayerStatsFrame
+ControlContainer.ZIndex = 7
 
--- إطار السرعة في صفحة الاعب
-local PlayerSpeedFrame = Instance.new("Frame")
-PlayerSpeedFrame.Size = UDim2.new(0.85, 0, 0, 65)
-PlayerSpeedFrame.Position = UDim2.new(0.075, 0, 0.12, 0)
-PlayerSpeedFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 45)
-PlayerSpeedFrame.BorderSizePixel = 0
-PlayerSpeedFrame.Parent = PlayerCtrlFrame
-PlayerSpeedFrame.ZIndex = 7
+-- ========== كارد 1: سرعة القفز ==========
+local JumpCard = Instance.new("Frame")
+JumpCard.Size = UDim2.new(0.31, -5, 1, 0)
+JumpCard.Position = UDim2.new(0, 0, 0, 0)
+JumpCard.BackgroundColor3 = Color3.fromRGB(25, 15, 40)
+JumpCard.BorderSizePixel = 0
+JumpCard.Parent = ControlContainer
+JumpCard.ZIndex = 8
 
-local PlayerSpeedCorner = Instance.new("UICorner")
-PlayerSpeedCorner.CornerRadius = UDim.new(0, 8)
-PlayerSpeedCorner.Parent = PlayerSpeedFrame
+local JumpCorner = Instance.new("UICorner")
+JumpCorner.CornerRadius = UDim.new(0, 10)
+JumpCorner.Parent = JumpCard
 
--- إطار مضيء للسرعة
-local PlayerSpeedGlow = Instance.new("Frame")
-PlayerSpeedGlow.Size = UDim2.new(1, 4, 1, 4)
-PlayerSpeedGlow.Position = UDim2.new(0, -2, 0, -2)
-PlayerSpeedGlow.BackgroundColor3 = Color3.fromRGB(255, 150, 0)
-PlayerSpeedGlow.BackgroundTransparency = 0.2
-PlayerSpeedGlow.BorderSizePixel = 0
-PlayerSpeedGlow.Parent = PlayerSpeedFrame
-PlayerSpeedGlow.ZIndex = -1
+local JumpGlow = Instance.new("Frame")
+JumpGlow.Size = UDim2.new(1, 4, 1, 4)
+JumpGlow.Position = UDim2.new(0, -2, 0, -2)
+JumpGlow.BackgroundColor3 = Color3.fromRGB(200, 50, 255)
+JumpGlow.BackgroundTransparency = 0.3
+JumpGlow.BorderSizePixel = 0
+JumpGlow.Parent = JumpCard
+JumpGlow.ZIndex = -1
 
-local PlayerSpeedGlowCorner = Instance.new("UICorner")
-PlayerSpeedGlowCorner.CornerRadius = UDim.new(0, 10)
-PlayerSpeedGlowCorner.Parent = PlayerSpeedGlow
+local JumpGlowCorner = Instance.new("UICorner")
+JumpGlowCorner.CornerRadius = UDim.new(0, 12)
+JumpGlowCorner.Parent = JumpGlow
 
--- مربع إدخال السرعة (في صفحة الاعب)
-local PlayerSpeedInput = Instance.new("TextBox")
-PlayerSpeedInput.Size = UDim2.new(0.28, 0, 0.5, 0)
-PlayerSpeedInput.Position = UDim2.new(0.02, 0, 0.1, 0)
-PlayerSpeedInput.BackgroundColor3 = Color3.fromRGB(50, 50, 65)
-PlayerSpeedInput.Text = "120"
-PlayerSpeedInput.TextColor3 = Color3.fromRGB(255, 255, 255)
-PlayerSpeedInput.TextSize = 18
-PlayerSpeedInput.Font = Enum.Font.Gotham
-PlayerSpeedInput.PlaceholderText = "السرعة"
-PlayerSpeedInput.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
-PlayerSpeedInput.ClearTextOnFocus = false
-PlayerSpeedInput.Parent = PlayerSpeedFrame
-PlayerSpeedInput.ZIndex = 10
+local JumpIcon = Instance.new("TextLabel")
+JumpIcon.Size = UDim2.new(0, 40, 0, 40)
+JumpIcon.Position = UDim2.new(0.5, -20, 0, 8)
+JumpIcon.BackgroundTransparency = 1
+JumpIcon.Text = "🚀"
+JumpIcon.TextColor3 = Color3.fromRGB(255, 255, 255)
+JumpIcon.TextSize = 30
+JumpIcon.Font = Enum.Font.GothamBold
+JumpIcon.TextXAlignment = Enum.TextXAlignment.Center
+JumpIcon.Parent = JumpCard
+JumpIcon.ZIndex = 9
 
-local PlayerInputCorner = Instance.new("UICorner")
-PlayerInputCorner.CornerRadius = UDim.new(0, 6)
-PlayerInputCorner.Parent = PlayerSpeedInput
+local JumpTitle = Instance.new("TextLabel")
+JumpTitle.Size = UDim2.new(1, -10, 0, 20)
+JumpTitle.Position = UDim2.new(0, 5, 0, 50)
+JumpTitle.BackgroundTransparency = 1
+JumpTitle.Text = "سرعة القفز"
+JumpTitle.TextColor3 = Color3.fromRGB(200, 150, 255)
+JumpTitle.TextSize = 13
+JumpTitle.Font = Enum.Font.GothamBold
+JumpTitle.TextXAlignment = Enum.TextXAlignment.Center
+JumpTitle.Parent = JumpCard
+JumpTitle.ZIndex = 9
 
--- زر التفعيل (في صفحة الاعب)
-local PlayerToggleSpeed = Instance.new("TextButton")
-PlayerToggleSpeed.Size = UDim2.new(0.2, 0, 0.5, 0)
-PlayerToggleSpeed.Position = UDim2.new(0.32, 0, 0.1, 0)
-PlayerToggleSpeed.BackgroundColor3 = Color3.fromRGB(230, 50, 50)
-PlayerToggleSpeed.Text = "OFF ❌"
-PlayerToggleSpeed.TextColor3 = Color3.fromRGB(255, 255, 255)
-PlayerToggleSpeed.TextSize = 15
-PlayerToggleSpeed.Font = Enum.Font.GothamBold
-PlayerToggleSpeed.Parent = PlayerSpeedFrame
-PlayerToggleSpeed.ZIndex = 10
+local JumpValue = Instance.new("TextLabel")
+JumpValue.Size = UDim2.new(1, -10, 0, 30)
+JumpValue.Position = UDim2.new(0, 5, 0, 70)
+JumpValue.BackgroundTransparency = 1
+JumpValue.Text = "50"
+JumpValue.TextColor3 = Color3.fromRGB(200, 50, 255)
+JumpValue.TextSize = 24
+JumpValue.Font = Enum.Font.GothamBold
+JumpValue.TextXAlignment = Enum.TextXAlignment.Center
+JumpValue.Parent = JumpCard
+JumpValue.ZIndex = 9
 
-local PlayerButtonCorner = Instance.new("UICorner")
-PlayerButtonCorner.CornerRadius = UDim.new(0, 6)
-PlayerButtonCorner.Parent = PlayerToggleSpeed
+local JumpSlider = Instance.new("Frame")
+JumpSlider.Size = UDim2.new(0.8, 0, 0, 6)
+JumpSlider.Position = UDim2.new(0.1, 0, 0.88, 0)
+JumpSlider.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
+JumpSlider.BorderSizePixel = 0
+JumpSlider.Parent = JumpCard
+JumpSlider.ZIndex = 9
 
--- عرض السرعة (في صفحة الاعب)
-local PlayerSpeedDisplay = Instance.new("TextLabel")
-PlayerSpeedDisplay.Size = UDim2.new(0.2, 0, 0.5, 0)
-PlayerSpeedDisplay.Position = UDim2.new(0.54, 0, 0.1, 0)
-PlayerSpeedDisplay.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
-PlayerSpeedDisplay.Text = "120"
-PlayerSpeedDisplay.TextColor3 = Color3.fromRGB(0, 255, 150)
-PlayerSpeedDisplay.TextSize = 18
-PlayerSpeedDisplay.Font = Enum.Font.GothamBold
-PlayerSpeedDisplay.TextXAlignment = Enum.TextXAlignment.Center
-PlayerSpeedDisplay.Parent = PlayerSpeedFrame
-PlayerSpeedDisplay.ZIndex = 10
+local JumpSliderCorner = Instance.new("UICorner")
+JumpSliderCorner.CornerRadius = UDim.new(0, 3)
+JumpSliderCorner.Parent = JumpSlider
 
-local PlayerDisplayCorner = Instance.new("UICorner")
-PlayerDisplayCorner.CornerRadius = UDim.new(0, 6)
-PlayerDisplayCorner.Parent = PlayerSpeedDisplay
+local JumpFill = Instance.new("Frame")
+JumpFill.Size = UDim2.new(0.25, 0, 1, 0)
+JumpFill.BackgroundColor3 = Color3.fromRGB(200, 50, 255)
+JumpFill.BorderSizePixel = 0
+JumpFill.Parent = JumpSlider
+JumpFill.ZIndex = 10
 
--- حالة النظام (في صفحة الاعب)
-local PlayerStatusDisplay = Instance.new("TextLabel")
-PlayerStatusDisplay.Size = UDim2.new(0.2, 0, 0.5, 0)
-PlayerStatusDisplay.Position = UDim2.new(0.76, 0, 0.1, 0)
-PlayerStatusDisplay.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
-PlayerStatusDisplay.Text = "⏸️"
-PlayerStatusDisplay.TextColor3 = Color3.fromRGB(255, 100, 100)
-PlayerStatusDisplay.TextSize = 18
-PlayerStatusDisplay.Font = Enum.Font.GothamBold
-PlayerStatusDisplay.TextXAlignment = Enum.TextXAlignment.Center
-PlayerStatusDisplay.Parent = PlayerSpeedFrame
-PlayerStatusDisplay.ZIndex = 10
+local JumpFillCorner = Instance.new("UICorner")
+JumpFillCorner.CornerRadius = UDim.new(0, 3)
+JumpFillCorner.Parent = JumpFill
 
-local PlayerStatusCorner = Instance.new("UICorner")
-PlayerStatusCorner.CornerRadius = UDim.new(0, 6)
-PlayerStatusCorner.Parent = PlayerStatusDisplay
+-- ========== كارد 2: سرعة المشي ==========
+local WalkCard = Instance.new("Frame")
+WalkCard.Size = UDim2.new(0.31, -5, 1, 0)
+WalkCard.Position = UDim2.new(0.345, 0, 0, 0)
+WalkCard.BackgroundColor3 = Color3.fromRGB(15, 25, 40)
+WalkCard.BorderSizePixel = 0
+WalkCard.Parent = ControlContainer
+WalkCard.ZIndex = 8
 
--- ==============================
--- قسم القفز في صفحة الاعب
--- ==============================
+local WalkCorner = Instance.new("UICorner")
+WalkCorner.CornerRadius = UDim.new(0, 10)
+WalkCorner.Parent = WalkCard
 
--- عنوان قسم القفز
-local JumpSectionTitle = Instance.new("TextLabel")
-JumpSectionTitle.Size = UDim2.new(0.85, 0, 0, 25)
-JumpSectionTitle.Position = UDim2.new(0.075, 0, 0.27, 0)
-JumpSectionTitle.BackgroundTransparency = 1
-JumpSectionTitle.Text = "🚀 القفز السريع"
-JumpSectionTitle.TextColor3 = Color3.fromRGB(255, 100, 50)
-JumpSectionTitle.TextSize = 16
-JumpSectionTitle.Font = Enum.Font.GothamBold
-JumpSectionTitle.TextXAlignment = Enum.TextXAlignment.Center
-JumpSectionTitle.Parent = PlayerCtrlFrame
-JumpSectionTitle.ZIndex = 7
+local WalkGlow = Instance.new("Frame")
+WalkGlow.Size = UDim2.new(1, 4, 1, 4)
+WalkGlow.Position = UDim2.new(0, -2, 0, -2)
+WalkGlow.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
+WalkGlow.BackgroundTransparency = 0.3
+WalkGlow.BorderSizePixel = 0
+WalkGlow.Parent = WalkCard
+WalkGlow.ZIndex = -1
 
--- زر القفز (في صفحة الاعب)
-local PlayerJumpButton = Instance.new("TextButton")
-PlayerJumpButton.Size = UDim2.new(0.7, 0, 0, 55)
-PlayerJumpButton.Position = UDim2.new(0.15, 0, 0.32, 0)
-PlayerJumpButton.BackgroundColor3 = Color3.fromRGB(200, 100, 0)
-PlayerJumpButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-PlayerJumpButton.TextSize = 22
-PlayerJumpButton.Font = Enum.Font.SourceSansBold
-PlayerJumpButton.Text = "🚀 اضغط للقفز"
-PlayerJumpButton.Parent = PlayerCtrlFrame
-PlayerJumpButton.ZIndex = 7
+local WalkGlowCorner = Instance.new("UICorner")
+WalkGlowCorner.CornerRadius = UDim.new(0, 12)
+WalkGlowCorner.Parent = WalkGlow
 
-local PlayerJumpCorner = Instance.new("UICorner")
-PlayerJumpCorner.CornerRadius = UDim.new(0, 12)
-PlayerJumpCorner.Parent = PlayerJumpButton
+local WalkIcon = Instance.new("TextLabel")
+WalkIcon.Size = UDim2.new(0, 40, 0, 40)
+WalkIcon.Position = UDim2.new(0.5, -20, 0, 8)
+WalkIcon.BackgroundTransparency = 1
+WalkIcon.Text = "🚶"
+WalkIcon.TextColor3 = Color3.fromRGB(255, 255, 255)
+WalkIcon.TextSize = 30
+WalkIcon.Font = Enum.Font.GothamBold
+WalkIcon.TextXAlignment = Enum.TextXAlignment.Center
+WalkIcon.Parent = WalkCard
+WalkIcon.ZIndex = 9
 
--- تأثير الضغط على زر القفز
-PlayerJumpButton.MouseButton1Down:Connect(function()
-    PlayerJumpButton.BackgroundColor3 = Color3.fromRGB(255, 50, 0)
+local WalkTitle = Instance.new("TextLabel")
+WalkTitle.Size = UDim2.new(1, -10, 0, 20)
+WalkTitle.Position = UDim2.new(0, 5, 0, 50)
+WalkTitle.BackgroundTransparency = 1
+WalkTitle.Text = "سرعة المشي"
+WalkTitle.TextColor3 = Color3.fromRGB(150, 200, 255)
+WalkTitle.TextSize = 13
+WalkTitle.Font = Enum.Font.GothamBold
+WalkTitle.TextXAlignment = Enum.TextXAlignment.Center
+WalkTitle.Parent = WalkCard
+WalkTitle.ZIndex = 9
+
+local WalkValue = Instance.new("TextLabel")
+WalkValue.Size = UDim2.new(1, -10, 0, 30)
+WalkValue.Position = UDim2.new(0, 5, 0, 70)
+WalkValue.BackgroundTransparency = 1
+WalkValue.Text = "16"
+WalkValue.TextColor3 = Color3.fromRGB(0, 200, 255)
+WalkValue.TextSize = 24
+WalkValue.Font = Enum.Font.GothamBold
+WalkValue.TextXAlignment = Enum.TextXAlignment.Center
+WalkValue.Parent = WalkCard
+WalkValue.ZIndex = 9
+
+local WalkSlider = Instance.new("Frame")
+WalkSlider.Size = UDim2.new(0.8, 0, 0, 6)
+WalkSlider.Position = UDim2.new(0.1, 0, 0.88, 0)
+WalkSlider.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
+WalkSlider.BorderSizePixel = 0
+WalkSlider.Parent = WalkCard
+WalkSlider.ZIndex = 9
+
+local WalkSliderCorner = Instance.new("UICorner")
+WalkSliderCorner.CornerRadius = UDim.new(0, 3)
+WalkSliderCorner.Parent = WalkSlider
+
+local WalkFill = Instance.new("Frame")
+WalkFill.Size = UDim2.new(0.3, 0, 1, 0)
+WalkFill.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
+WalkFill.BorderSizePixel = 0
+WalkFill.Parent = WalkSlider
+WalkFill.ZIndex = 10
+
+local WalkFillCorner = Instance.new("UICorner")
+WalkFillCorner.CornerRadius = UDim.new(0, 3)
+WalkFillCorner.Parent = WalkFill
+
+-- ========== كارد 3: سرعة الجري ==========
+local RunCard = Instance.new("Frame")
+RunCard.Size = UDim2.new(0.31, -5, 1, 0)
+RunCard.Position = UDim2.new(0.69, 0, 0, 0)
+RunCard.BackgroundColor3 = Color3.fromRGB(40, 20, 20)
+RunCard.BorderSizePixel = 0
+RunCard.Parent = ControlContainer
+RunCard.ZIndex = 8
+
+local RunCorner = Instance.new("UICorner")
+RunCorner.CornerRadius = UDim.new(0, 10)
+RunCorner.Parent = RunCard
+
+local RunGlow = Instance.new("Frame")
+RunGlow.Size = UDim2.new(1, 4, 1, 4)
+RunGlow.Position = UDim2.new(0, -2, 0, -2)
+RunGlow.BackgroundColor3 = Color3.fromRGB(255, 100, 0)
+RunGlow.BackgroundTransparency = 0.3
+RunGlow.BorderSizePixel = 0
+RunGlow.Parent = RunCard
+RunGlow.ZIndex = -1
+
+local RunGlowCorner = Instance.new("UICorner")
+RunGlowCorner.CornerRadius = UDim.new(0, 12)
+RunGlowCorner.Parent = RunGlow
+
+local RunIcon = Instance.new("TextLabel")
+RunIcon.Size = UDim2.new(0, 40, 0, 40)
+RunIcon.Position = UDim2.new(0.5, -20, 0, 8)
+RunIcon.BackgroundTransparency = 1
+RunIcon.Text = "🏃"
+RunIcon.TextColor3 = Color3.fromRGB(255, 255, 255)
+RunIcon.TextSize = 30
+RunIcon.Font = Enum.Font.GothamBold
+RunIcon.TextXAlignment = Enum.TextXAlignment.Center
+RunIcon.Parent = RunCard
+RunIcon.ZIndex = 9
+
+local RunTitle = Instance.new("TextLabel")
+RunTitle.Size = UDim2.new(1, -10, 0, 20)
+RunTitle.Position = UDim2.new(0, 5, 0, 50)
+RunTitle.BackgroundTransparency = 1
+RunTitle.Text = "سرعة الجري"
+RunTitle.TextColor3 = Color3.fromRGB(255, 180, 100)
+RunTitle.TextSize = 13
+RunTitle.Font = Enum.Font.GothamBold
+RunTitle.TextXAlignment = Enum.TextXAlignment.Center
+RunTitle.Parent = RunCard
+RunTitle.ZIndex = 9
+
+local RunValue = Instance.new("TextLabel")
+RunValue.Size = UDim2.new(1, -10, 0, 30)
+RunValue.Position = UDim2.new(0, 5, 0, 70)
+RunValue.BackgroundTransparency = 1
+RunValue.Text = "25"
+RunValue.TextColor3 = Color3.fromRGB(255, 100, 0)
+RunValue.TextSize = 24
+RunValue.Font = Enum.Font.GothamBold
+RunValue.TextXAlignment = Enum.TextXAlignment.Center
+RunValue.Parent = RunCard
+RunValue.ZIndex = 9
+
+local RunSlider = Instance.new("Frame")
+RunSlider.Size = UDim2.new(0.8, 0, 0, 6)
+RunSlider.Position = UDim2.new(0.1, 0, 0.88, 0)
+RunSlider.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
+RunSlider.BorderSizePixel = 0
+RunSlider.Parent = RunCard
+RunSlider.ZIndex = 9
+
+local RunSliderCorner = Instance.new("UICorner")
+RunSliderCorner.CornerRadius = UDim.new(0, 3)
+RunSliderCorner.Parent = RunSlider
+
+local RunFill = Instance.new("Frame")
+RunFill.Size = UDim2.new(0.35, 0, 1, 0)
+RunFill.BackgroundColor3 = Color3.fromRGB(255, 100, 0)
+RunFill.BorderSizePixel = 0
+RunFill.Parent = RunSlider
+RunFill.ZIndex = 10
+
+local RunFillCorner = Instance.new("UICorner")
+RunFillCorner.CornerRadius = UDim.new(0, 3)
+RunFillCorner.Parent = RunFill
+
+-- ============================================
+-- أزرار التحكم السريع أسفل الكروت
+-- ============================================
+
+local QuickButtons = Instance.new("Frame")
+QuickButtons.Size = UDim2.new(0.9, 0, 0, 45)
+QuickButtons.Position = UDim2.new(0.05, 0, 0.58, 0)
+QuickButtons.BackgroundTransparency = 1
+QuickButtons.Parent = PlayerStatsFrame
+QuickButtons.ZIndex = 7
+
+-- زر تطبيق الكل
+local ApplyAllBtn = Instance.new("TextButton")
+ApplyAllBtn.Size = UDim2.new(0.22, -5, 1, 0)
+ApplyAllBtn.Position = UDim2.new(0, 0, 0, 0)
+ApplyAllBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
+ApplyAllBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+ApplyAllBtn.TextSize = 13
+ApplyAllBtn.Font = Enum.Font.GothamBold
+ApplyAllBtn.Text = "✅ تطبيق الكل"
+ApplyAllBtn.Parent = QuickButtons
+ApplyAllBtn.ZIndex = 8
+
+local ApplyAllCorner = Instance.new("UICorner")
+ApplyAllCorner.CornerRadius = UDim.new(0, 8)
+ApplyAllCorner.Parent = ApplyAllBtn
+
+ApplyAllBtn.MouseEnter:Connect(function()
+    ApplyAllBtn.BackgroundColor3 = Color3.fromRGB(0, 220, 120)
+end)
+ApplyAllBtn.MouseLeave:Connect(function()
+    ApplyAllBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
 end)
 
-PlayerJumpButton.MouseLeave:Connect(function()
-    PlayerJumpButton.BackgroundColor3 = Color3.fromRGB(200, 100, 0)
+-- زر إعادة ضبط
+local ResetStatsBtn = Instance.new("TextButton")
+ResetStatsBtn.Size = UDim2.new(0.22, -5, 1, 0)
+ResetStatsBtn.Position = UDim2.new(0.26, 0, 0, 0)
+ResetStatsBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+ResetStatsBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+ResetStatsBtn.TextSize = 13
+ResetStatsBtn.Font = Enum.Font.GothamBold
+ResetStatsBtn.Text = "🔄 إعادة ضبط"
+ResetStatsBtn.Parent = QuickButtons
+ResetStatsBtn.ZIndex = 8
+
+local ResetStatsCorner = Instance.new("UICorner")
+ResetStatsCorner.CornerRadius = UDim.new(0, 8)
+ResetStatsCorner.Parent = ResetStatsBtn
+
+ResetStatsBtn.MouseEnter:Connect(function()
+    ResetStatsBtn.BackgroundColor3 = Color3.fromRGB(220, 70, 70)
+end)
+ResetStatsBtn.MouseLeave:Connect(function()
+    ResetStatsBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
 end)
 
--- وظيفة القفز (في صفحة الاعب)
-PlayerJumpButton.MouseButton1Click:Connect(function()
-    PlayerJumpButton.BackgroundColor3 = Color3.fromRGB(200, 100, 0)
-    
-    local player = game.Players.LocalPlayer
-    local character = player.Character
-    
-    if not character or not character:FindFirstChild("Humanoid") then
-        showNotification("⚠️ ما لقيت شخصيتك!", PlayerCtrlFrame)
-        return
-    end
-    
-    local seat = character.Humanoid.SeatPart
-    
-    -- إذا كان اللاعب راكب سيارة
-    if seat then
-        local vehicle = seat.Parent
-        if vehicle and vehicle:IsA("Model") then
-            local PrimaryPart = vehicle.PrimaryPart
-            if not PrimaryPart then
-                for _, child in pairs(vehicle:GetDescendants()) do
-                    if child:IsA("BasePart") and child.Name ~= "Seat" and child.Name ~= "DriveSeat" then
-                        PrimaryPart = child
-                        break
-                    end
-                end
-            end
-            if not PrimaryPart then
-                PrimaryPart = seat
-            end
-            
-            if PrimaryPart then
-                local bodyVelocity = Instance.new("BodyVelocity")
-                bodyVelocity.Velocity = Vector3.new(0, 200, 0)
-                bodyVelocity.MaxForce = Vector3.new(0, 1000000, 0)
-                bodyVelocity.Parent = PrimaryPart
-                
-                local bodyForce = Instance.new("BodyForce")
-                bodyForce.Force = Vector3.new(0, PrimaryPart:GetMass() * 196.2, 0)
-                bodyForce.Parent = PrimaryPart
-                
-                local currentPos = PrimaryPart.Position
-                PrimaryPart.CFrame = CFrame.new(currentPos + Vector3.new(0, 15, 0))
-                
-                task.wait(1.5)
-                bodyVelocity:Destroy()
-                bodyForce:Destroy()
-                
-                showNotification("🚀 تم قفز السيارة للأعلى!", PlayerCtrlFrame)
-                return
-            end
-        end
-    end
-    
-    -- إذا كان اللاعب ماشي (ليس راكب)
-    local hrp = character:FindFirstChild("HumanoidRootPart")
-    if hrp then
-        local bodyVelocity = Instance.new("BodyVelocity")
-        bodyVelocity.Velocity = Vector3.new(0, 50, 0)
-        bodyVelocity.MaxForce = Vector3.new(0, 1000000, 0)
-        bodyVelocity.Parent = hrp
-        
-        local currentPos = hrp.Position
-        hrp.CFrame = CFrame.new(currentPos + Vector3.new(0, 10, 0))
-        
-        task.wait(0.5)
-        bodyVelocity:Destroy()
-        
-        showNotification("🚀 قفزت للأعلى!", PlayerCtrlFrame)
-    else
-        showNotification("⚠️ ما لقيت HumanoidRootPart!", PlayerCtrlFrame)
-    end
+-- زر السرعة القصوى
+local MaxSpeedBtn = Instance.new("TextButton")
+MaxSpeedBtn.Size = UDim2.new(0.22, -5, 1, 0)
+MaxSpeedBtn.Position = UDim2.new(0.52, 0, 0, 0)
+MaxSpeedBtn.BackgroundColor3 = Color3.fromRGB(255, 150, 0)
+MaxSpeedBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+MaxSpeedBtn.TextSize = 13
+MaxSpeedBtn.Font = Enum.Font.GothamBold
+MaxSpeedBtn.Text = "💨 سرعة قصوى"
+MaxSpeedBtn.Parent = QuickButtons
+MaxSpeedBtn.ZIndex = 8
+
+local MaxSpeedCorner = Instance.new("UICorner")
+MaxSpeedCorner.CornerRadius = UDim.new(0, 8)
+MaxSpeedCorner.Parent = MaxSpeedBtn
+
+MaxSpeedBtn.MouseEnter:Connect(function()
+    MaxSpeedBtn.BackgroundColor3 = Color3.fromRGB(255, 170, 20)
+end)
+MaxSpeedBtn.MouseLeave:Connect(function()
+    MaxSpeedBtn.BackgroundColor3 = Color3.fromRGB(255, 150, 0)
 end)
 
--- ==============================
--- متغيرات السرعة في صفحة الاعب
--- ==============================
+-- زر سرعة المشي الطبيعي
+local NormalWalkBtn = Instance.new("TextButton")
+NormalWalkBtn.Size = UDim2.new(0.22, -5, 1, 0)
+NormalWalkBtn.Position = UDim2.new(0.78, 0, 0, 0)
+NormalWalkBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 200)
+NormalWalkBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+NormalWalkBtn.TextSize = 13
+NormalWalkBtn.Font = Enum.Font.GothamBold
+NormalWalkBtn.Text = "🚶 مشي طبيعي"
+NormalWalkBtn.Parent = QuickButtons
+NormalWalkBtn.ZIndex = 8
 
-local playerTargetSpeed = 120
-local playerSpeedEnabled = false
+local NormalWalkCorner = Instance.new("UICorner")
+NormalWalkCorner.CornerRadius = UDim.new(0, 8)
+NormalWalkCorner.Parent = NormalWalkBtn
 
--- تسجيل قيمة السرعة
-PlayerSpeedInput.FocusLost:Connect(function()
-    local inputNum = tonumber(PlayerSpeedInput.Text)
-    if inputNum and inputNum > 0 then
-        playerTargetSpeed = inputNum
-        PlayerSpeedDisplay.Text = tostring(playerTargetSpeed)
-    else
-        PlayerSpeedInput.Text = tostring(playerTargetSpeed)
-        showNotification("⚠️ أدخل رقم صحيح!", PlayerCtrlFrame)
-    end
+NormalWalkBtn.MouseEnter:Connect(function()
+    NormalWalkBtn.BackgroundColor3 = Color3.fromRGB(70, 170, 220)
+end)
+NormalWalkBtn.MouseLeave:Connect(function()
+    NormalWalkBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 200)
 end)
 
--- زر التفعيل في صفحة الاعب
-PlayerToggleSpeed.MouseButton1Click:Connect(function()
-    playerSpeedEnabled = not playerSpeedEnabled
-    
-    if playerSpeedEnabled then
-        PlayerToggleSpeed.Text = "ON ✅"
-        PlayerToggleSpeed.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
-        PlayerStatusDisplay.Text = "🟢"
-        PlayerStatusDisplay.TextColor3 = Color3.fromRGB(0, 255, 100)
-        showNotification("🏎️ تم تفعيل السرعة: " .. playerTargetSpeed, PlayerCtrlFrame)
-    else
-        PlayerToggleSpeed.Text = "OFF ❌"
-        PlayerToggleSpeed.BackgroundColor3 = Color3.fromRGB(230, 50, 50)
-        PlayerStatusDisplay.Text = "⏸️"
-        PlayerStatusDisplay.TextColor3 = Color3.fromRGB(255, 100, 100)
-        showNotification("⛔ تم إيقاف السرعة", PlayerCtrlFrame)
-    end
-end)
+-- ============================================
+-- الوظائف الرئيسية لتعديل سرعات اللاعب
+-- ============================================
 
--- نظام السرعة الثاني (لصفحة الاعب) - يعمل بنفس الوقت مع نظام السرعة الأول
-RunService.Heartbeat:Connect(function()
-    if not playerSpeedEnabled then return end
-    
+local function ApplyPlayerStats(jumpPower, walkSpeed, runSpeed)
     local character = LocalPlayer.Character
     if not character then return end
     
     local humanoid = character:FindFirstChildOfClass("Humanoid")
-    if humanoid and humanoid.SeatPart and humanoid.SeatPart:IsA("VehicleSeat") then
-        local vehicleSeat = humanoid.SeatPart
-        
-        if vehicleSeat.Throttle ~= 0 then
-            vehicleSeat.AssemblyLinearVelocity = vehicleSeat.CFrame.LookVector * (vehicleSeat.Throttle * playerTargetSpeed)
+    if not humanoid then return end
+    
+    if jumpPower then
+        humanoid.JumpPower = jumpPower
+    end
+    if walkSpeed then
+        humanoid.WalkSpeed = walkSpeed
+    end
+    if runSpeed then
+        humanoid.RunSpeed = runSpeed
+    end
+end
+
+local function UpdateJumpDisplay(value)
+    JumpValue.Text = tostring(math.floor(value))
+    local percent = (value - 10) / 190
+    JumpFill.Size = UDim2.new(math.clamp(percent, 0, 1), 0, 1, 0)
+end
+
+local function UpdateWalkDisplay(value)
+    WalkValue.Text = tostring(math.floor(value))
+    local percent = (value - 8) / 42
+    WalkFill.Size = UDim2.new(math.clamp(percent, 0, 1), 0, 1, 0)
+end
+
+local function UpdateRunDisplay(value)
+    RunValue.Text = tostring(math.floor(value))
+    local percent = (value - 10) / 75
+    RunFill.Size = UDim2.new(math.clamp(percent, 0, 1), 0, 1, 0)
+end
+
+-- ============================================
+-- متغيرات التحكم
+-- ============================================
+
+local currentJump = 50
+local currentWalk = 16
+local currentRun = 25
+
+-- ============================================
+-- تفعيل السلايدرز
+-- ============================================
+
+-- سلايدر القفز (باستخدام UIS)
+local jumpingActive = false
+local jumpTouchStart = nil
+
+JumpSlider.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        jumpingActive = true
+        jumpTouchStart = input.Position
+        local size = JumpSlider.AbsoluteSize.X
+        local position = input.Position.X - JumpSlider.AbsolutePosition.X
+        local percent = math.clamp(position / size, 0, 1)
+        local value = 10 + (percent * 190)
+        currentJump = math.floor(value)
+        UpdateJumpDisplay(currentJump)
+        ApplyPlayerStats(currentJump, nil, nil)
+        showNotification("🚀 قفز: " .. currentJump, PlayerStatsFrame)
+    end
+end)
+
+JumpSlider.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        jumpingActive = false
+    end
+end)
+
+JumpSlider.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        if jumpingActive then
+            local size = JumpSlider.AbsoluteSize.X
+            local position = input.Position.X - JumpSlider.AbsolutePosition.X
+            local percent = math.clamp(position / size, 0, 1)
+            local value = 10 + (percent * 190)
+            currentJump = math.floor(value)
+            UpdateJumpDisplay(currentJump)
+            ApplyPlayerStats(currentJump, nil, nil)
         end
     end
 end)
 
--- ==============================
--- معلومات إضافية في صفحة الاعب
--- ==============================
+-- سلايدر المشي
+local walkingActive = false
 
-local PlayerInfoBox = Instance.new("Frame")
-PlayerInfoBox.Size = UDim2.new(0.85, 0, 0, 70)
-PlayerInfoBox.Position = UDim2.new(0.075, 0, 0.48, 0)
-PlayerInfoBox.BackgroundColor3 = Color3.fromRGB(20, 20, 40)
-PlayerInfoBox.BorderSizePixel = 0
-PlayerInfoBox.Parent = PlayerCtrlFrame
-PlayerInfoBox.ZIndex = 7
+WalkSlider.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        walkingActive = true
+        local size = WalkSlider.AbsoluteSize.X
+        local position = input.Position.X - WalkSlider.AbsolutePosition.X
+        local percent = math.clamp(position / size, 0, 1)
+        local value = 8 + (percent * 42)
+        currentWalk = math.floor(value)
+        UpdateWalkDisplay(currentWalk)
+        ApplyPlayerStats(nil, currentWalk, nil)
+        showNotification("🚶 مشي: " .. currentWalk, PlayerStatsFrame)
+    end
+end)
 
-local PlayerInfoCorner = Instance.new("UICorner")
-PlayerInfoCorner.CornerRadius = UDim.new(0, 10)
-PlayerInfoCorner.Parent = PlayerInfoBox
+WalkSlider.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        walkingActive = false
+    end
+end)
 
-local PlayerInfoGlow = Instance.new("Frame")
-PlayerInfoGlow.Size = UDim2.new(1, 4, 1, 4)
-PlayerInfoGlow.Position = UDim2.new(0, -2, 0, -2)
-PlayerInfoGlow.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
-PlayerInfoGlow.BackgroundTransparency = 0.2
-PlayerInfoGlow.BorderSizePixel = 0
-PlayerInfoGlow.Parent = PlayerInfoBox
-PlayerInfoGlow.ZIndex = -1
+WalkSlider.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        if walkingActive then
+            local size = WalkSlider.AbsoluteSize.X
+            local position = input.Position.X - WalkSlider.AbsolutePosition.X
+            local percent = math.clamp(position / size, 0, 1)
+            local value = 8 + (percent * 42)
+            currentWalk = math.floor(value)
+            UpdateWalkDisplay(currentWalk)
+            ApplyPlayerStats(nil, currentWalk, nil)
+        end
+    end
+end)
 
-local PlayerInfoGlowCorner = Instance.new("UICorner")
-PlayerInfoGlowCorner.CornerRadius = UDim.new(0, 12)
-PlayerInfoGlowCorner.Parent = PlayerInfoGlow
+-- سلايدر الجري
+local runningActive = false
 
-local PlayerInfoText = Instance.new("TextLabel")
-PlayerInfoText.Size = UDim2.new(1, -15, 1, -10)
-PlayerInfoText.Position = UDim2.new(0, 7, 0, 5)
-PlayerInfoText.BackgroundTransparency = 1
-PlayerInfoText.Text = "📌 يمكنك التحكم بالسرعة والقفز سواء كنت راكب سيارة أو ماشياً\n🏎️ السرعة تعمل عند ركوب السيارة فقط\n🚀 القفز يعمل للسيارة ولللاعب"
-PlayerInfoText.TextColor3 = Color3.fromRGB(200, 200, 230)
-PlayerInfoText.TextSize = 12
-PlayerInfoText.Font = Enum.Font.GothamMedium
-PlayerInfoText.TextXAlignment = Enum.TextXAlignment.Center
-PlayerInfoText.TextYAlignment = Enum.TextYAlignment.Center
-PlayerInfoText.TextWrapped = true
-PlayerInfoText.Parent = PlayerInfoBox
-PlayerInfoText.ZIndex = 8
+RunSlider.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        runningActive = true
+        local size = RunSlider.AbsoluteSize.X
+        local position = input.Position.X - RunSlider.AbsolutePosition.X
+        local percent = math.clamp(position / size, 0, 1)
+        local value = 10 + (percent * 75)
+        currentRun = math.floor(value)
+        UpdateRunDisplay(currentRun)
+        ApplyPlayerStats(nil, nil, currentRun)
+        showNotification("🏃 جري: " .. currentRun, PlayerStatsFrame)
+    end
+end)
+
+RunSlider.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        runningActive = false
+    end
+end)
+
+RunSlider.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        if runningActive then
+            local size = RunSlider.AbsoluteSize.X
+            local position = input.Position.X - RunSlider.AbsolutePosition.X
+            local percent = math.clamp(position / size, 0, 1)
+            local value = 10 + (percent * 75)
+            currentRun = math.floor(value)
+            UpdateRunDisplay(currentRun)
+            ApplyPlayerStats(nil, nil, currentRun)
+        end
+    end
+end)
+
+-- ============================================
+-- وظائف الأزرار السريعة
+-- ============================================
+
+-- تطبيق الكل
+ApplyAllBtn.MouseButton1Click:Connect(function()
+    ApplyPlayerStats(currentJump, currentWalk, currentRun)
+    showNotification("✅ تم تطبيق جميع السرعات!", PlayerStatsFrame)
+end)
+
+-- إعادة ضبط
+ResetStatsBtn.MouseButton1Click:Connect(function()
+    currentJump = 50
+    currentWalk = 16
+    currentRun = 25
+    UpdateJumpDisplay(currentJump)
+    UpdateWalkDisplay(currentWalk)
+    UpdateRunDisplay(currentRun)
+    ApplyPlayerStats(50, 16, 25)
+    showNotification("🔄 تم إعادة الضبط إلى القيم الافتراضية!", PlayerStatsFrame)
+end)
+
+-- سرعة قصوى
+MaxSpeedBtn.MouseButton1Click:Connect(function()
+    currentJump = 200
+    currentWalk = 50
+    currentRun = 85
+    UpdateJumpDisplay(currentJump)
+    UpdateWalkDisplay(currentWalk)
+    UpdateRunDisplay(currentRun)
+    ApplyPlayerStats(200, 50, 85)
+    showNotification("💨 تم تفعيل السرعة القصوى!", PlayerStatsFrame)
+end)
+
+-- مشي طبيعي
+NormalWalkBtn.MouseButton1Click:Connect(function()
+    currentJump = 50
+    currentWalk = 16
+    currentRun = 25
+    UpdateJumpDisplay(currentJump)
+    UpdateWalkDisplay(currentWalk)
+    UpdateRunDisplay(currentRun)
+    ApplyPlayerStats(50, 16, 25)
+    showNotification("🚶 تم العودة للمشي الطبيعي!", PlayerStatsFrame)
+end)
+
+-- ============================================
+-- تحديث القيم عند إعادة الولادة
+-- ============================================
+
+LocalPlayer.CharacterAdded:Connect(function()
+    task.wait(0.5)
+    ApplyPlayerStats(currentJump, currentWalk, currentRun)
+end)
 
 -- ============================================
 -- وظائف عرض الصفحات
@@ -2557,7 +2816,7 @@ local function ShowTeleport()
     PlayerContainer.Visible = false
     NewsContainer.Visible = false
     CarContainer.Visible = false
-    PlayerControllerContainer.Visible = false
+    PlayerStatsContainer.Visible = false
     
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
@@ -2579,7 +2838,7 @@ local function ShowMoney()
     PlayerContainer.Visible = false
     NewsContainer.Visible = false
     CarContainer.Visible = false
-    PlayerControllerContainer.Visible = false
+    PlayerStatsContainer.Visible = false
     
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
@@ -2601,7 +2860,7 @@ local function ShowFishing()
     PlayerContainer.Visible = false
     NewsContainer.Visible = false
     CarContainer.Visible = false
-    PlayerControllerContainer.Visible = false
+    PlayerStatsContainer.Visible = false
     
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
@@ -2623,7 +2882,7 @@ local function ShowPlayers()
     PlayerContainer.Visible = true
     NewsContainer.Visible = false
     CarContainer.Visible = false
-    PlayerControllerContainer.Visible = false
+    PlayerStatsContainer.Visible = false
     UpdatePlayerList()
     
     for _, child in pairs(Sidebar:GetChildren()) do
@@ -2646,7 +2905,7 @@ local function ShowNews()
     PlayerContainer.Visible = false
     NewsContainer.Visible = true
     CarContainer.Visible = false
-    PlayerControllerContainer.Visible = false
+    PlayerStatsContainer.Visible = false
     
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
@@ -2668,7 +2927,7 @@ local function ShowCars()
     PlayerContainer.Visible = false
     NewsContainer.Visible = false
     CarContainer.Visible = true
-    PlayerControllerContainer.Visible = false
+    PlayerStatsContainer.Visible = false
     
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
@@ -2683,23 +2942,19 @@ local function ShowCars()
     end
 end
 
--- ============================================
--- عرض صفحة الاعب (الجديدة)
--- ============================================
-
-local function ShowPlayerController()
+local function ShowPlayerStats()
     TeleportContainer.Visible = false
     MoneyContainer.Visible = false
     FishingContainer.Visible = false
     PlayerContainer.Visible = false
     NewsContainer.Visible = false
     CarContainer.Visible = false
-    PlayerControllerContainer.Visible = true
+    PlayerStatsContainer.Visible = true
     
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
             if child.Text == "🎮 الاعب" then
-                child.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
+                child.BackgroundColor3 = Color3.fromRGB(200, 50, 255)
                 child.TextColor3 = Color3.fromRGB(255, 255, 255)
             else
                 child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
@@ -2709,7 +2964,6 @@ local function ShowPlayerController()
     end
 end
 
--- ربط أزرار القائمة الجانبية
 for _, child in pairs(Sidebar:GetChildren()) do
     if child:IsA("TextButton") then
         if child.Text == "⚡ انتقال الفوري" then
@@ -2725,16 +2979,18 @@ for _, child in pairs(Sidebar:GetChildren()) do
         elseif child.Text == "🚗 الطيران الذكي" then
             child.MouseButton1Click:Connect(ShowCars)
         elseif child.Text == "🎮 الاعب" then
-            child.MouseButton1Click:Connect(ShowPlayerController)
+            child.MouseButton1Click:Connect(ShowPlayerStats)
         end
     end
 end
 
 ShowTeleport()
 
-print("✅ LYNEX - النسخة النهائية (مع زر كلبشة تلقائي + زر الاعب)")
+print("✅ LYNEX - النسخة النهائية (مع زر كلبشة تلقائي + زر الاعب + واجهة الاعب)")
 print("📌 الأزرار: انتقال الفوري | فلوس | صيد | لاعبين | أخبار | طيران ذكي | كلبشة تلقائي | الاعب")
-print("🎮 زر الاعب يحتوي على:")
-print("   🏎️ نظام السرعة (ON/OFF + إدخال السرعة)")
-print("   🚀 زر القفز السريع (للسيارة واللاعب)")
+print("💰 تصميم جديد لصفحة الفلوس")
+print("🔍 إضافة بحث للاعبين")
+print("🚀 إضافة زر القفز السريع للسيارة")
+print("🏎️ إضافة نظام سرعة السيارة المتقدم")
+print("🎮 واجهة الاعب: سرعة القفز | سرعة المشي | سرعة الجري")
 print("🔗 رابط الديسكورد: https://discord.gg/fJTvyYW4A")
