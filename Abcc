@@ -410,8 +410,8 @@ createSidebarButton("🎣 الصيد", 3, false)
 createSidebarButton("👥 لاعبين", 4, false)
 createSidebarButton("📰 الأخبار", 5, false)
 createSidebarButton("🚗 الطيران الذكي", 6, false)
-createSidebarButton("🔄 كلبشة تلقائي", 7, false)  -- الزر الجديد الأول
-createSidebarButton("🎮 الاعب", 8, false)  -- الزر الجديد الثاني
+createSidebarButton("🔄 كلبشة تلقائي", 7, false)
+createSidebarButton("🎮 الاعب", 8, false)
 
 -- ============================================
 -- الحاويات
@@ -470,6 +470,32 @@ NewsContainer.BackgroundTransparency = 1
 NewsContainer.Parent = MainFrame
 NewsContainer.ZIndex = 1
 NewsContainer.Visible = false
+
+-- ============================================
+-- حاوية زر كلبشة تلقائي (Auto Clutch)
+-- ============================================
+
+local ClutchContainer = Instance.new("Frame")
+ClutchContainer.Name = "ClutchContainer"
+ClutchContainer.Size = UDim2.new(1, -150, 1, -20)
+ClutchContainer.Position = UDim2.new(0, 150, 0, 10)
+ClutchContainer.BackgroundTransparency = 1
+ClutchContainer.Parent = MainFrame
+ClutchContainer.ZIndex = 1
+ClutchContainer.Visible = false
+
+-- ============================================
+-- حاوية زر الاعب (Player Settings)
+-- ============================================
+
+local PlayerSettingsContainer = Instance.new("Frame")
+PlayerSettingsContainer.Name = "PlayerSettingsContainer"
+PlayerSettingsContainer.Size = UDim2.new(1, -150, 1, -20)
+PlayerSettingsContainer.Position = UDim2.new(0, 150, 0, 10)
+PlayerSettingsContainer.BackgroundTransparency = 1
+PlayerSettingsContainer.Parent = MainFrame
+PlayerSettingsContainer.ZIndex = 1
+PlayerSettingsContainer.Visible = false
 
 -- ============================================
 -- محتوى صفحة الانتقال الفوري (Teleport)
@@ -2155,6 +2181,468 @@ newsY = newsY + 85
 NewsScroll.CanvasSize = UDim2.new(0, 0, 0, newsY + 30)
 
 -- ============================================
+-- محتوى صفحة كلبشة تلقائي (Auto Clutch)
+-- ============================================
+
+local ClutchFrame = Instance.new("Frame")
+ClutchFrame.Size = UDim2.new(0.9, 0, 0.85, 0)
+ClutchFrame.Position = UDim2.new(0.05, 0, 0.05, 0)
+ClutchFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 40)
+ClutchFrame.BorderSizePixel = 0
+ClutchFrame.Parent = ClutchContainer
+ClutchFrame.ZIndex = 5
+
+local ClutchFrameCorner = Instance.new("UICorner")
+ClutchFrameCorner.CornerRadius = UDim.new(0, 12)
+ClutchFrameCorner.Parent = ClutchFrame
+
+local ClutchGlow = Instance.new("Frame")
+ClutchGlow.Size = UDim2.new(1, 6, 1, 6)
+ClutchGlow.Position = UDim2.new(0, -3, 0, -3)
+ClutchGlow.BackgroundColor3 = Color3.fromRGB(255, 100, 0)
+ClutchGlow.BackgroundTransparency = 0.3
+ClutchGlow.BorderSizePixel = 0
+ClutchGlow.Parent = ClutchFrame
+ClutchGlow.ZIndex = -1
+
+local ClutchGlowCorner = Instance.new("UICorner")
+ClutchGlowCorner.CornerRadius = UDim.new(0, 15)
+ClutchGlowCorner.Parent = ClutchGlow
+
+local ClutchTitle = Instance.new("TextLabel")
+ClutchTitle.Size = UDim2.new(1, -40, 0, 40)
+ClutchTitle.Position = UDim2.new(0, 20, 0, 5)
+ClutchTitle.BackgroundTransparency = 1
+ClutchTitle.Text = "🔄 نظام الكلبشة التلقائي 🔄"
+ClutchTitle.TextColor3 = Color3.fromRGB(255, 100, 0)
+ClutchTitle.TextSize = 20
+ClutchTitle.Font = Enum.Font.GothamBold
+ClutchTitle.TextXAlignment = Enum.TextXAlignment.Center
+ClutchTitle.Parent = ClutchFrame
+ClutchTitle.ZIndex = 6
+
+local ClutchDivider = Instance.new("Frame")
+ClutchDivider.Size = UDim2.new(0.6, 0, 0, 2)
+ClutchDivider.Position = UDim2.new(0.2, 0, 0, 50)
+ClutchDivider.BackgroundColor3 = Color3.fromRGB(255, 100, 0)
+ClutchDivider.BackgroundTransparency = 0.4
+ClutchDivider.BorderSizePixel = 0
+ClutchDivider.Parent = ClutchFrame
+ClutchDivider.ZIndex = 6
+
+-- زر تشغيل/إيقاف الكلبشة
+local ClutchToggleButton = Instance.new("TextButton")
+ClutchToggleButton.Size = UDim2.new(0.7, 0, 0, 55)
+ClutchToggleButton.Position = UDim2.new(0.15, 0, 0.2, 0)
+ClutchToggleButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+ClutchToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ClutchToggleButton.TextSize = 22
+ClutchToggleButton.Font = Enum.Font.SourceSansBold
+ClutchToggleButton.Text = "⏹️ إيقاف الكلبشة"
+ClutchToggleButton.Parent = ClutchFrame
+ClutchToggleButton.ZIndex = 7
+
+local ClutchToggleCorner = Instance.new("UICorner")
+ClutchToggleCorner.CornerRadius = UDim.new(0, 10)
+ClutchToggleCorner.Parent = ClutchToggleButton
+
+local ClutchStatus = Instance.new("TextLabel")
+ClutchStatus.Size = UDim2.new(1, -20, 0, 30)
+ClutchStatus.Position = UDim2.new(0, 10, 0.45, 0)
+ClutchStatus.BackgroundTransparency = 1
+ClutchStatus.Text = "⏸️ الكلبشة متوقفة"
+ClutchStatus.TextColor3 = Color3.fromRGB(255, 100, 100)
+ClutchStatus.TextSize = 16
+ClutchStatus.Font = Enum.Font.GothamBold
+ClutchStatus.TextXAlignment = Enum.TextXAlignment.Center
+ClutchStatus.Parent = ClutchFrame
+ClutchStatus.ZIndex = 7
+
+-- مربع معلومات
+local ClutchInfoBox = Instance.new("Frame")
+ClutchInfoBox.Size = UDim2.new(0.85, 0, 0, 80)
+ClutchInfoBox.Position = UDim2.new(0.075, 0, 0.55, 0)
+ClutchInfoBox.BackgroundColor3 = Color3.fromRGB(30, 15, 15)
+ClutchInfoBox.BorderSizePixel = 0
+ClutchInfoBox.Parent = ClutchFrame
+ClutchInfoBox.ZIndex = 7
+
+local ClutchInfoBoxCorner = Instance.new("UICorner")
+ClutchInfoBoxCorner.CornerRadius = UDim.new(0, 8)
+ClutchInfoBoxCorner.Parent = ClutchInfoBox
+
+local ClutchInfoText = Instance.new("TextLabel")
+ClutchInfoText.Size = UDim2.new(1, -10, 1, -10)
+ClutchInfoText.Position = UDim2.new(0, 5, 0, 5)
+ClutchInfoText.BackgroundTransparency = 1
+ClutchInfoText.Text = "🔄 نظام الكلبشة التلقائي للسيارات\n📌 يعمل تلقائياً عند تشغيله"
+ClutchInfoText.TextColor3 = Color3.fromRGB(255, 200, 150)
+ClutchInfoText.TextSize = 14
+ClutchInfoText.Font = Enum.Font.GothamMedium
+ClutchInfoText.TextXAlignment = Enum.TextXAlignment.Center
+ClutchInfoText.TextYAlignment = Enum.TextYAlignment.Center
+ClutchInfoText.Parent = ClutchInfoBox
+ClutchInfoText.ZIndex = 8
+
+-- متغيرات الكلبشة
+local clutchActive = false
+local clutchConnection = nil
+
+-- وظيفة الكلبشة
+local function startClutch()
+    if clutchActive then
+        clutchActive = false
+        ClutchToggleButton.Text = "▶️ تشغيل الكلبشة"
+        ClutchToggleButton.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
+        ClutchStatus.Text = "⏸️ الكلبشة متوقفة"
+        ClutchStatus.TextColor3 = Color3.fromRGB(255, 100, 100)
+        ClutchInfoText.Text = "🔄 تم إيقاف الكلبشة التلقائي"
+        if clutchConnection then
+            clutchConnection:Disconnect()
+            clutchConnection = nil
+        end
+        showNotification("⛔ تم إيقاف الكلبشة", ClutchFrame)
+    else
+        clutchActive = true
+        ClutchToggleButton.Text = "⏹️ إيقاف الكلبشة"
+        ClutchToggleButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+        ClutchStatus.Text = "🟢 الكلبشة تعمل..."
+        ClutchStatus.TextColor3 = Color3.fromRGB(0, 255, 100)
+        ClutchInfoText.Text = "🔄 الكلبشة التلقائي مفعلة ✅"
+        
+        -- نظام الكلبشة التلقائي
+        clutchConnection = RunService.Heartbeat:Connect(function()
+            if not clutchActive then return end
+            
+            local character = LocalPlayer.Character
+            if not character then return end
+            
+            local humanoid = character:FindFirstChildOfClass("Humanoid")
+            if not humanoid then return end
+            
+            local seat = humanoid.SeatPart
+            if seat and seat:IsA("VehicleSeat") then
+                local vehicle = seat.Parent
+                if vehicle then
+                    -- محاولة العثور على الأجزاء المناسبة للكلبشة
+                    for _, child in pairs(vehicle:GetDescendants()) do
+                        if child:IsA("BasePart") and child.Name ~= "Seat" then
+                            -- تطبيق الكلبشة (تثبيت السيارة)
+                            child.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+                            child.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+                        end
+                    end
+                end
+            end
+        end)
+        
+        showNotification("✅ تم تشغيل الكلبشة!", ClutchFrame)
+    end
+end
+
+ClutchToggleButton.MouseButton1Click:Connect(startClutch)
+
+-- تعيين الحالة الابتدائية
+ClutchToggleButton.Text = "▶️ تشغيل الكلبشة"
+ClutchToggleButton.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
+
+-- ============================================
+-- محتوى صفحة الاعب (Player Settings)
+-- ============================================
+
+local SettingsFrame = Instance.new("Frame")
+SettingsFrame.Size = UDim2.new(0.9, 0, 0.85, 0)
+SettingsFrame.Position = UDim2.new(0.05, 0, 0.05, 0)
+SettingsFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 40)
+SettingsFrame.BorderSizePixel = 0
+SettingsFrame.Parent = PlayerSettingsContainer
+SettingsFrame.ZIndex = 5
+
+local SettingsFrameCorner = Instance.new("UICorner")
+SettingsFrameCorner.CornerRadius = UDim.new(0, 12)
+SettingsFrameCorner.Parent = SettingsFrame
+
+-- إطار مضيء
+local SettingsGlow = Instance.new("Frame")
+SettingsGlow.Size = UDim2.new(1, 6, 1, 6)
+SettingsGlow.Position = UDim2.new(0, -3, 0, -3)
+SettingsGlow.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
+SettingsGlow.BackgroundTransparency = 0.3
+SettingsGlow.BorderSizePixel = 0
+SettingsGlow.Parent = SettingsFrame
+SettingsGlow.ZIndex = -1
+
+local SettingsGlowCorner = Instance.new("UICorner")
+SettingsGlowCorner.CornerRadius = UDim.new(0, 15)
+SettingsGlowCorner.Parent = SettingsGlow
+
+-- العنوان
+local SettingsTitle = Instance.new("TextLabel")
+SettingsTitle.Size = UDim2.new(1, -40, 0, 45)
+SettingsTitle.Position = UDim2.new(0, 20, 0, 5)
+SettingsTitle.BackgroundTransparency = 1
+SettingsTitle.Text = "🎮 إعدادات الاعب 🎮"
+SettingsTitle.TextColor3 = Color3.fromRGB(0, 200, 255)
+SettingsTitle.TextSize = 20
+SettingsTitle.Font = Enum.Font.GothamBold
+SettingsTitle.TextXAlignment = Enum.TextXAlignment.Center
+SettingsTitle.Parent = SettingsFrame
+SettingsTitle.ZIndex = 6
+
+-- خط فاصل
+local SettingsDivider = Instance.new("Frame")
+SettingsDivider.Size = UDim2.new(0.6, 0, 0, 2)
+SettingsDivider.Position = UDim2.new(0.2, 0, 0, 52)
+SettingsDivider.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
+SettingsDivider.BackgroundTransparency = 0.4
+SettingsDivider.BorderSizePixel = 0
+SettingsDivider.Parent = SettingsFrame
+SettingsDivider.ZIndex = 6
+
+-- ============================================
+-- إعداد السرعة
+-- ============================================
+
+local SpeedContainer = Instance.new("Frame")
+SpeedContainer.Size = UDim2.new(0.8, 0, 0.15, 0)
+SpeedContainer.Position = UDim2.new(0.1, 0, 0.15, 0)
+SpeedContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
+SpeedContainer.BorderSizePixel = 0
+SpeedContainer.Parent = SettingsFrame
+SpeedContainer.ZIndex = 7
+
+local SpeedContainerCorner = Instance.new("UICorner")
+SpeedContainerCorner.CornerRadius = UDim.new(0, 10)
+SpeedContainerCorner.Parent = SpeedContainer
+
+-- أيقونة السرعة
+local SpeedIcon = Instance.new("TextLabel")
+SpeedIcon.Size = UDim2.new(0, 40, 1, 0)
+SpeedIcon.Position = UDim2.new(0, 5, 0, 0)
+SpeedIcon.BackgroundTransparency = 1
+SpeedIcon.Text = "🏃"
+SpeedIcon.TextColor3 = Color3.fromRGB(0, 200, 255)
+SpeedIcon.TextSize = 22
+SpeedIcon.Font = Enum.Font.GothamBold
+SpeedIcon.TextXAlignment = Enum.TextXAlignment.Center
+SpeedIcon.Parent = SpeedContainer
+SpeedIcon.ZIndex = 8
+
+-- عنوان السرعة
+local SpeedLabel = Instance.new("TextLabel")
+SpeedLabel.Size = UDim2.new(1, -50, 0, 20)
+SpeedLabel.Position = UDim2.new(0, 48, 0, 4)
+SpeedLabel.BackgroundTransparency = 1
+SpeedLabel.Text = "🚀 سرعة الاعب"
+SpeedLabel.TextColor3 = Color3.fromRGB(200, 200, 220)
+SpeedLabel.TextSize = 13
+SpeedLabel.Font = Enum.Font.GothamBold
+SpeedLabel.TextXAlignment = Enum.TextXAlignment.Left
+SpeedLabel.Parent = SpeedContainer
+SpeedLabel.ZIndex = 8
+
+-- مربع إدخال السرعة
+local SpeedInputBox = Instance.new("TextBox")
+SpeedInputBox.Size = UDim2.new(0.2, 0, 0.5, 0)
+SpeedInputBox.Position = UDim2.new(0.75, 0, 0.25, 0)
+SpeedInputBox.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
+SpeedInputBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpeedInputBox.TextSize = 16
+SpeedInputBox.Font = Enum.Font.GothamBold
+SpeedInputBox.Text = "16"
+SpeedInputBox.PlaceholderText = "السرعة"
+SpeedInputBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
+SpeedInputBox.ClearTextOnFocus = false
+SpeedInputBox.Parent = SpeedContainer
+SpeedInputBox.ZIndex = 9
+
+local SpeedInputCorner = Instance.new("UICorner")
+SpeedInputCorner.CornerRadius = UDim.new(0, 6)
+SpeedInputCorner.Parent = SpeedInputBox
+
+-- ============================================
+-- إعداد القفز
+-- ============================================
+
+local JumpContainer = Instance.new("Frame")
+JumpContainer.Size = UDim2.new(0.8, 0, 0.15, 0)
+JumpContainer.Position = UDim2.new(0.1, 0, 0.38, 0)
+JumpContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
+JumpContainer.BorderSizePixel = 0
+JumpContainer.Parent = SettingsFrame
+JumpContainer.ZIndex = 7
+
+local JumpContainerCorner = Instance.new("UICorner")
+JumpContainerCorner.CornerRadius = UDim.new(0, 10)
+JumpContainerCorner.Parent = JumpContainer
+
+-- أيقونة القفز
+local JumpIcon = Instance.new("TextLabel")
+JumpIcon.Size = UDim2.new(0, 40, 1, 0)
+JumpIcon.Position = UDim2.new(0, 5, 0, 0)
+JumpIcon.BackgroundTransparency = 1
+JumpIcon.Text = "🦘"
+JumpIcon.TextColor3 = Color3.fromRGB(255, 200, 0)
+JumpIcon.TextSize = 22
+JumpIcon.Font = Enum.Font.GothamBold
+JumpIcon.TextXAlignment = Enum.TextXAlignment.Center
+JumpIcon.Parent = JumpContainer
+JumpIcon.ZIndex = 8
+
+-- عنوان القفز
+local JumpLabel = Instance.new("TextLabel")
+JumpLabel.Size = UDim2.new(1, -50, 0, 20)
+JumpLabel.Position = UDim2.new(0, 48, 0, 4)
+JumpLabel.BackgroundTransparency = 1
+JumpLabel.Text = "🦘 قوة القفز"
+JumpLabel.TextColor3 = Color3.fromRGB(200, 200, 220)
+JumpLabel.TextSize = 13
+JumpLabel.Font = Enum.Font.GothamBold
+JumpLabel.TextXAlignment = Enum.TextXAlignment.Left
+JumpLabel.Parent = JumpContainer
+JumpLabel.ZIndex = 8
+
+-- مربع إدخال القفز
+local JumpInputBox = Instance.new("TextBox")
+JumpInputBox.Size = UDim2.new(0.2, 0, 0.5, 0)
+JumpInputBox.Position = UDim2.new(0.75, 0, 0.25, 0)
+JumpInputBox.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
+JumpInputBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+JumpInputBox.TextSize = 16
+JumpInputBox.Font = Enum.Font.GothamBold
+JumpInputBox.Text = "50"
+JumpInputBox.PlaceholderText = "القفز"
+JumpInputBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
+JumpInputBox.ClearTextOnFocus = false
+JumpInputBox.Parent = JumpContainer
+JumpInputBox.ZIndex = 9
+
+local JumpInputCorner = Instance.new("UICorner")
+JumpInputCorner.CornerRadius = UDim.new(0, 6)
+JumpInputCorner.Parent = JumpInputBox
+
+-- ============================================
+-- أزرار التحكم
+-- ============================================
+
+local ButtonContainer = Instance.new("Frame")
+ButtonContainer.Size = UDim2.new(0.8, 0, 0.12, 0)
+ButtonContainer.Position = UDim2.new(0.1, 0, 0.6, 0)
+ButtonContainer.BackgroundTransparency = 1
+ButtonContainer.Parent = SettingsFrame
+ButtonContainer.ZIndex = 7
+
+-- زر تطبيق
+local ApplyBtn = Instance.new("TextButton")
+ApplyBtn.Size = UDim2.new(0.45, -5, 1, 0)
+ApplyBtn.Position = UDim2.new(0, 0, 0, 0)
+ApplyBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
+ApplyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+ApplyBtn.TextSize = 16
+ApplyBtn.Font = Enum.Font.GothamBold
+ApplyBtn.Text = "✅ تطبيق"
+ApplyBtn.Parent = ButtonContainer
+ApplyBtn.ZIndex = 8
+
+local ApplyCorner = Instance.new("UICorner")
+ApplyCorner.CornerRadius = UDim.new(0, 8)
+ApplyCorner.Parent = ApplyBtn
+
+ApplyBtn.MouseEnter:Connect(function()
+    ApplyBtn.BackgroundColor3 = Color3.fromRGB(0, 220, 120)
+end)
+ApplyBtn.MouseLeave:Connect(function()
+    ApplyBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
+end)
+
+ApplyBtn.MouseButton1Click:Connect(function()
+    local speedVal = tonumber(SpeedInputBox.Text)
+    local jumpVal = tonumber(JumpInputBox.Text)
+    
+    if speedVal and speedVal > 0 then
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = speedVal
+    end
+    
+    if jumpVal and jumpVal > 0 then
+        game.Players.LocalPlayer.Character.Humanoid.JumpPower = jumpVal
+    end
+    
+    showNotification("✅ تم تطبيق الإعدادات!", SettingsFrame)
+end)
+
+-- زر إعادة تعيين
+local ResetSettingsBtn = Instance.new("TextButton")
+ResetSettingsBtn.Size = UDim2.new(0.45, -5, 1, 0)
+ResetSettingsBtn.Position = UDim2.new(0.55, 0, 0, 0)
+ResetSettingsBtn.BackgroundColor3 = Color3.fromRGB(200, 100, 50)
+ResetSettingsBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+ResetSettingsBtn.TextSize = 16
+ResetSettingsBtn.Font = Enum.Font.GothamBold
+ResetSettingsBtn.Text = "🔄 إعادة تعيين"
+ResetSettingsBtn.Parent = ButtonContainer
+ResetSettingsBtn.ZIndex = 8
+
+local ResetSettingsCorner = Instance.new("UICorner")
+ResetSettingsCorner.CornerRadius = UDim.new(0, 8)
+ResetSettingsCorner.Parent = ResetSettingsBtn
+
+ResetSettingsBtn.MouseEnter:Connect(function()
+    ResetSettingsBtn.BackgroundColor3 = Color3.fromRGB(220, 120, 60)
+end)
+ResetSettingsBtn.MouseLeave:Connect(function()
+    ResetSettingsBtn.BackgroundColor3 = Color3.fromRGB(200, 100, 50)
+end)
+
+ResetSettingsBtn.MouseButton1Click:Connect(function()
+    SpeedInputBox.Text = "16"
+    JumpInputBox.Text = "50"
+    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
+    game.Players.LocalPlayer.Character.Humanoid.JumpPower = 50
+    showNotification("🔄 تم إعادة التعيين للقيم الافتراضية!", SettingsFrame)
+end)
+
+-- ============================================
+-- عرض القيم الحالية
+-- ============================================
+
+local CurrentValuesBox = Instance.new("Frame")
+CurrentValuesBox.Size = UDim2.new(0.8, 0, 0.15, 0)
+CurrentValuesBox.Position = UDim2.new(0.1, 0, 0.78, 0)
+CurrentValuesBox.BackgroundColor3 = Color3.fromRGB(15, 15, 30)
+CurrentValuesBox.BorderSizePixel = 0
+CurrentValuesBox.Parent = SettingsFrame
+CurrentValuesBox.ZIndex = 7
+
+local CurrentValuesCorner = Instance.new("UICorner")
+CurrentValuesCorner.CornerRadius = UDim.new(0, 10)
+CurrentValuesCorner.Parent = CurrentValuesBox
+
+local CurrentValuesLabel = Instance.new("TextLabel")
+CurrentValuesLabel.Size = UDim2.new(1, -10, 1, -10)
+CurrentValuesLabel.Position = UDim2.new(0, 5, 0, 5)
+CurrentValuesLabel.BackgroundTransparency = 1
+CurrentValuesLabel.TextColor3 = Color3.fromRGB(180, 180, 210)
+CurrentValuesLabel.TextSize = 14
+CurrentValuesLabel.Font = Enum.Font.GothamMedium
+CurrentValuesLabel.TextXAlignment = Enum.TextXAlignment.Center
+CurrentValuesLabel.TextYAlignment = Enum.TextYAlignment.Center
+CurrentValuesLabel.Text = "📊 السرعة الحالية: 16 | القفز الحالي: 50"
+CurrentValuesLabel.Parent = CurrentValuesBox
+CurrentValuesLabel.ZIndex = 8
+
+-- تحديث القيم الحالية كل 0.5 ثانية
+task.spawn(function()
+    while PlayerSettingsContainer and PlayerSettingsContainer.Parent do
+        task.wait(0.5)
+        local char = game.Players.LocalPlayer.Character
+        if char and char:FindFirstChild("Humanoid") then
+            local hum = char.Humanoid
+            CurrentValuesLabel.Text = "📊 السرعة الحالية: " .. math.round(hum.WalkSpeed) .. " | القفز الحالي: " .. math.round(hum.JumpPower)
+        end
+    end
+end)
+
+-- ============================================
 -- وظائف عرض الصفحات
 -- ============================================
 
@@ -2165,6 +2653,8 @@ local function ShowTeleport()
     PlayerContainer.Visible = false
     NewsContainer.Visible = false
     CarContainer.Visible = false
+    ClutchContainer.Visible = false
+    PlayerSettingsContainer.Visible = false
     
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
@@ -2186,6 +2676,8 @@ local function ShowMoney()
     PlayerContainer.Visible = false
     NewsContainer.Visible = false
     CarContainer.Visible = false
+    ClutchContainer.Visible = false
+    PlayerSettingsContainer.Visible = false
     
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
@@ -2207,6 +2699,8 @@ local function ShowFishing()
     PlayerContainer.Visible = false
     NewsContainer.Visible = false
     CarContainer.Visible = false
+    ClutchContainer.Visible = false
+    PlayerSettingsContainer.Visible = false
     
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
@@ -2228,6 +2722,8 @@ local function ShowPlayers()
     PlayerContainer.Visible = true
     NewsContainer.Visible = false
     CarContainer.Visible = false
+    ClutchContainer.Visible = false
+    PlayerSettingsContainer.Visible = false
     UpdatePlayerList()
     
     for _, child in pairs(Sidebar:GetChildren()) do
@@ -2250,6 +2746,8 @@ local function ShowNews()
     PlayerContainer.Visible = false
     NewsContainer.Visible = true
     CarContainer.Visible = false
+    ClutchContainer.Visible = false
+    PlayerSettingsContainer.Visible = false
     
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
@@ -2271,12 +2769,60 @@ local function ShowCars()
     PlayerContainer.Visible = false
     NewsContainer.Visible = false
     CarContainer.Visible = true
+    ClutchContainer.Visible = false
+    PlayerSettingsContainer.Visible = false
     
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
             if child.Text == "🚗 الطيران الذكي" then
                 child.BackgroundColor3 = Color3.fromRGB(255, 150, 0)
                 child.TextColor3 = Color3.fromRGB(0, 0, 0)
+            else
+                child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
+                child.TextColor3 = Color3.fromRGB(255, 255, 255)
+            end
+        end
+    end
+end
+
+local function ShowClutch()
+    TeleportContainer.Visible = false
+    MoneyContainer.Visible = false
+    FishingContainer.Visible = false
+    PlayerContainer.Visible = false
+    NewsContainer.Visible = false
+    CarContainer.Visible = false
+    ClutchContainer.Visible = true
+    PlayerSettingsContainer.Visible = false
+    
+    for _, child in pairs(Sidebar:GetChildren()) do
+        if child:IsA("TextButton") then
+            if child.Text == "🔄 كلبشة تلقائي" then
+                child.BackgroundColor3 = Color3.fromRGB(255, 100, 0)
+                child.TextColor3 = Color3.fromRGB(0, 0, 0)
+            else
+                child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
+                child.TextColor3 = Color3.fromRGB(255, 255, 255)
+            end
+        end
+    end
+end
+
+local function ShowPlayerSettings()
+    TeleportContainer.Visible = false
+    MoneyContainer.Visible = false
+    FishingContainer.Visible = false
+    PlayerContainer.Visible = false
+    NewsContainer.Visible = false
+    CarContainer.Visible = false
+    ClutchContainer.Visible = false
+    PlayerSettingsContainer.Visible = true
+    
+    for _, child in pairs(Sidebar:GetChildren()) do
+        if child:IsA("TextButton") then
+            if child.Text == "🎮 الاعب" then
+                child.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
+                child.TextColor3 = Color3.fromRGB(255, 255, 255)
             else
                 child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
                 child.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -2299,6 +2845,10 @@ for _, child in pairs(Sidebar:GetChildren()) do
             child.MouseButton1Click:Connect(ShowNews)
         elseif child.Text == "🚗 الطيران الذكي" then
             child.MouseButton1Click:Connect(ShowCars)
+        elseif child.Text == "🔄 كلبشة تلقائي" then
+            child.MouseButton1Click:Connect(ShowClutch)
+        elseif child.Text == "🎮 الاعب" then
+            child.MouseButton1Click:Connect(ShowPlayerSettings)
         end
     end
 end
@@ -2311,6 +2861,6 @@ print("💰 تصميم جديد لصفحة الفلوس")
 print("🔍 إضافة بحث للاعبين")
 print("🚀 إضافة زر القفز السريع للسيارة")
 print("🏎️ إضافة نظام سرعة السيارة المتقدم")
-print("🔄 زر كلبشة تلقائي (شكلي فقط)")
-print("🎮 زر الاعب (شكلي فقط)")
+print("🔄 نظام الكلبشة التلقائي للسيارات")
+print("🎮 إعدادات الاعب (سرعة + قفز)")
 print("🔗 رابط الديسكورد: https://discord.gg/fJTvyYW4A")
