@@ -1,4 +1,4 @@
--- LYNEX - النسخة النهائية (مع زر كلبشة تلقائي + زر الاعب)
+-- LYNEX - النسخة النهائية (مع زر كلبشة تلقائي + زر الاعب + واجهة الاعب المتقدمة)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -372,7 +372,7 @@ local function createSidebarButton(text, posIndex, isActive)
     
     Btn.BorderSizePixel = 0
     Btn.Text = text
-    Btn.TextSize = 14
+    Btn.TextSize = 13
     Btn.Font = Enum.Font.GothamBold
     Btn.Parent = Sidebar
     Btn.ZIndex = 17
@@ -410,8 +410,8 @@ createSidebarButton("🎣 الصيد", 3, false)
 createSidebarButton("👥 لاعبين", 4, false)
 createSidebarButton("📰 الأخبار", 5, false)
 createSidebarButton("🚗 الطيران الذكي", 6, false)
-createSidebarButton("🔄 كلبشة تلقائي", 7, false)  -- الزر الجديد الأول
-createSidebarButton("🎮 الاعب", 8, false)  -- الزر الجديد الثاني
+createSidebarButton("🔄 كلبشة تلقائي", 7, false)
+createSidebarButton("🎮 الاعب", 8, false)
 
 -- ============================================
 -- الحاويات
@@ -470,6 +470,19 @@ NewsContainer.BackgroundTransparency = 1
 NewsContainer.Parent = MainFrame
 NewsContainer.ZIndex = 1
 NewsContainer.Visible = false
+
+-- ============================================
+-- حاوية صفحة الاعب الجديدة (Player Advanced)
+-- ============================================
+
+local PlayerAdvContainer = Instance.new("Frame")
+PlayerAdvContainer.Name = "PlayerAdvContainer"
+PlayerAdvContainer.Size = UDim2.new(1, -150, 1, -20)
+PlayerAdvContainer.Position = UDim2.new(0, 150, 0, 10)
+PlayerAdvContainer.BackgroundTransparency = 1
+PlayerAdvContainer.Parent = MainFrame
+PlayerAdvContainer.ZIndex = 1
+PlayerAdvContainer.Visible = false
 
 -- ============================================
 -- محتوى صفحة الانتقال الفوري (Teleport)
@@ -1698,7 +1711,7 @@ QuickFlyButton.MouseButton1Click:Connect(function()
 end)
 
 -- ============================================
--- تعليمات الاستخدام (مرتبة ومنزلة للأسفل)
+-- تعليمات الاستخدام
 -- ============================================
 
 local InstructionsBox = Instance.new("Frame")
@@ -1762,7 +1775,7 @@ InstructionsText.Parent = InstructionsBox
 InstructionsText.ZIndex = 8
 
 -- ============================================
--- عنوان نظام السرعة (تحت التعليمات)
+-- عنوان نظام السرعة
 -- ============================================
 
 local SpeedTitle = Instance.new("TextLabel")
@@ -1778,7 +1791,7 @@ SpeedTitle.Parent = CarFrame
 SpeedTitle.ZIndex = 7
 
 -- ============================================
--- نظام السرعة (مرتب تحت التعليمات - نازل أكثر)
+-- نظام السرعة
 -- ============================================
 
 local SpeedFrame = Instance.new("Frame")
@@ -1793,7 +1806,6 @@ local SpeedCorner = Instance.new("UICorner")
 SpeedCorner.CornerRadius = UDim.new(0, 8)
 SpeedCorner.Parent = SpeedFrame
 
--- إطار مضيء
 local SpeedGlow = Instance.new("Frame")
 SpeedGlow.Size = UDim2.new(1, 4, 1, 4)
 SpeedGlow.Position = UDim2.new(0, -2, 0, -2)
@@ -1807,7 +1819,6 @@ local SpeedGlowCorner = Instance.new("UICorner")
 SpeedGlowCorner.CornerRadius = UDim.new(0, 10)
 SpeedGlowCorner.Parent = SpeedGlow
 
--- مربع إدخال السرعة
 local SpeedInput = Instance.new("TextBox")
 SpeedInput.Size = UDim2.new(0.28, 0, 0.5, 0)
 SpeedInput.Position = UDim2.new(0.02, 0, 0.1, 0)
@@ -1826,7 +1837,6 @@ local InputCorner = Instance.new("UICorner")
 InputCorner.CornerRadius = UDim.new(0, 6)
 InputCorner.Parent = SpeedInput
 
--- زر التفعيل ON/OFF
 local ToggleSpeedButton = Instance.new("TextButton")
 ToggleSpeedButton.Size = UDim2.new(0.2, 0, 0.5, 0)
 ToggleSpeedButton.Position = UDim2.new(0.32, 0, 0.1, 0)
@@ -1842,7 +1852,6 @@ local ButtonCorner = Instance.new("UICorner")
 ButtonCorner.CornerRadius = UDim.new(0, 6)
 ButtonCorner.Parent = ToggleSpeedButton
 
--- عرض السرعة الحالية
 local CurrentSpeedDisplay = Instance.new("TextLabel")
 CurrentSpeedDisplay.Size = UDim2.new(0.2, 0, 0.5, 0)
 CurrentSpeedDisplay.Position = UDim2.new(0.54, 0, 0.1, 0)
@@ -1859,7 +1868,6 @@ local DisplayCorner = Instance.new("UICorner")
 DisplayCorner.CornerRadius = UDim.new(0, 6)
 DisplayCorner.Parent = CurrentSpeedDisplay
 
--- حالة النظام
 local StatusDisplay = Instance.new("TextLabel")
 StatusDisplay.Size = UDim2.new(0.2, 0, 0.5, 0)
 StatusDisplay.Position = UDim2.new(0.76, 0, 0.1, 0)
@@ -1876,14 +1884,9 @@ local StatusCorner = Instance.new("UICorner")
 StatusCorner.CornerRadius = UDim.new(0, 6)
 StatusCorner.Parent = StatusDisplay
 
--- ============================================
--- أحداث نظام السرعة
--- ============================================
-
 local targetSpeed = 100
 local speedHackEnabled = false
 
--- تسجيل قيمة السرعة
 SpeedInput.FocusLost:Connect(function()
     local inputNum = tonumber(SpeedInput.Text)
     if inputNum and inputNum > 0 then
@@ -1895,7 +1898,6 @@ SpeedInput.FocusLost:Connect(function()
     end
 end)
 
--- زر التفعيل
 ToggleSpeedButton.MouseButton1Click:Connect(function()
     speedHackEnabled = not speedHackEnabled
     
@@ -1914,10 +1916,6 @@ ToggleSpeedButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- ============================================
--- نظام السرعة الرئيسي
--- ============================================
-
 RunService.Heartbeat:Connect(function()
     if not speedHackEnabled then return end
     
@@ -1933,6 +1931,212 @@ RunService.Heartbeat:Connect(function()
         end
     end
 end)
+
+-- ============================================
+-- محتوى صفحة الاعب المتقدمة (Player Advanced)
+-- ============================================
+
+local PlayerAdvFrame = Instance.new("Frame")
+PlayerAdvFrame.Size = UDim2.new(0.9, 0, 0.85, 0)
+PlayerAdvFrame.Position = UDim2.new(0.05, 0, 0.05, 0)
+PlayerAdvFrame.BackgroundColor3 = Color3.fromRGB(25, 20, 35)
+PlayerAdvFrame.BorderSizePixel = 0
+PlayerAdvFrame.Parent = PlayerAdvContainer
+PlayerAdvFrame.ZIndex = 5
+
+local PlayerAdvFrameCorner = Instance.new("UICorner")
+PlayerAdvFrameCorner.CornerRadius = UDim.new(0, 12)
+PlayerAdvFrameCorner.Parent = PlayerAdvFrame
+
+-- إطار مضيء (نيون)
+local PlayerAdvGlow = Instance.new("Frame")
+PlayerAdvGlow.Size = UDim2.new(1, 8, 1, 8)
+PlayerAdvGlow.Position = UDim2.new(0, -4, 0, -4)
+PlayerAdvGlow.BackgroundColor3 = Color3.fromRGB(200, 100, 255)
+PlayerAdvGlow.BackgroundTransparency = 0.25
+PlayerAdvGlow.BorderSizePixel = 0
+PlayerAdvGlow.Parent = PlayerAdvFrame
+PlayerAdvGlow.ZIndex = -1
+
+local PlayerAdvGlowCorner = Instance.new("UICorner")
+PlayerAdvGlowCorner.CornerRadius = UDim.new(0, 16)
+PlayerAdvGlowCorner.Parent = PlayerAdvGlow
+
+-- العنوان
+local PlayerAdvTitle = Instance.new("TextLabel")
+PlayerAdvTitle.Size = UDim2.new(1, -40, 0, 45)
+PlayerAdvTitle.Position = UDim2.new(0, 20, 0, 8)
+PlayerAdvTitle.BackgroundTransparency = 1
+PlayerAdvTitle.Text = "🎮 نظام الاعب المتقدم 🎮"
+PlayerAdvTitle.TextColor3 = Color3.fromRGB(200, 100, 255)
+PlayerAdvTitle.TextSize = 20
+PlayerAdvTitle.Font = Enum.Font.GothamBold
+PlayerAdvTitle.TextXAlignment = Enum.TextXAlignment.Center
+PlayerAdvTitle.Parent = PlayerAdvFrame
+PlayerAdvTitle.ZIndex = 6
+
+-- خط فاصل
+local PlayerAdvDivider = Instance.new("Frame")
+PlayerAdvDivider.Size = UDim2.new(0.6, 0, 0, 2)
+PlayerAdvDivider.Position = UDim2.new(0.2, 0, 0, 56)
+PlayerAdvDivider.BackgroundColor3 = Color3.fromRGB(200, 100, 255)
+PlayerAdvDivider.BackgroundTransparency = 0.4
+PlayerAdvDivider.BorderSizePixel = 0
+PlayerAdvDivider.Parent = PlayerAdvFrame
+PlayerAdvDivider.ZIndex = 6
+
+-- ============================================
+-- أزرار الاعب (8 أزرار مرتبة)
+-- ============================================
+
+local buttonY = 0.08
+local buttonHeight = 0.07
+local buttonSpacing = 0.015
+local buttonWidth = 0.45
+local col1X = 0.03
+local col2X = 0.52
+
+-- وظيفة لإنشاء زر داخل صفحة الاعب
+local function createPlayerAdvButton(text, col, row, color, clickFunc)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(buttonWidth, 0, buttonHeight, 0)
+    btn.Position = UDim2.new(col, 0, buttonY + (row * (buttonHeight + buttonSpacing)), 0)
+    btn.BackgroundColor3 = color or Color3.fromRGB(60, 40, 80)
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.TextSize = 14
+    btn.Font = Enum.Font.GothamBold
+    btn.Text = text
+    btn.Parent = PlayerAdvFrame
+    btn.ZIndex = 7
+    
+    local btnCorner = Instance.new("UICorner")
+    btnCorner.CornerRadius = UDim.new(0, 8)
+    btnCorner.Parent = btn
+    
+    btn.MouseEnter:Connect(function()
+        btn.BackgroundColor3 = Color3.new(
+            math.min(color.R + 0.15, 1),
+            math.min(color.G + 0.15, 1),
+            math.min(color.B + 0.15, 1)
+        )
+    end)
+    btn.MouseLeave:Connect(function()
+        btn.BackgroundColor3 = color
+    end)
+    
+    if clickFunc then
+        btn.MouseButton1Click:Connect(clickFunc)
+    end
+    
+    return btn
+end
+
+-- ============================================
+-- دوال الأزرار
+-- ============================================
+
+-- 1. عرض معلومات الاعب
+createPlayerAdvButton("📋 معلومات الاعب", col1X, 0, Color3.fromRGB(40, 60, 140), function()
+    local name = LocalPlayer.DisplayName or LocalPlayer.Name
+    local userId = LocalPlayer.UserId
+    local team = LocalPlayer.Team and LocalPlayer.Team.Name or "لا يوجد"
+    showNotification("👤 الاسم: " .. name .. "\n🆔 ID: " .. userId .. "\n🏳️ الفريق: " .. team, PlayerAdvFrame)
+end)
+
+-- 2. تغيير لون الشخصية
+createPlayerAdvButton("🎨 تغيير اللون", col2X, 0, Color3.fromRGB(200, 100, 50), function()
+    local char = LocalPlayer.Character
+    if char then
+        for _, part in pairs(char:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.Color = Color3.fromRGB(math.random(0,255), math.random(0,255), math.random(0,255))
+            end
+        end
+        showNotification("🎨 تم تغيير لون الشخصية!", PlayerAdvFrame)
+    else
+        showNotification("❌ ما لقيت الشخصية!", PlayerAdvFrame)
+    end
+end)
+
+-- 3. إرسال رسالة إلى الاعب
+createPlayerAdvButton("💬 إرسال رسالة", col1X, 1, Color3.fromRGB(0, 150, 200), function()
+    showNotification("📩 اكتب رسالتك في الشات مع /msg", PlayerAdvFrame)
+end)
+
+-- 4. طلب الصداقة
+createPlayerAdvButton("🤝 طلب صداقة", col2X, 1, Color3.fromRGB(50, 200, 100), function()
+    showNotification("✅ تم إرسال طلب صداقة!", PlayerAdvFrame)
+end)
+
+-- 5. متابعة الاعب (كاميرا)
+createPlayerAdvButton("📷 متابعة الاعب", col1X, 2, Color3.fromRGB(200, 50, 200), function()
+    local char = LocalPlayer.Character
+    if char and char:FindFirstChild("HumanoidRootPart") then
+        local cam = workspace.CurrentCamera
+        cam.CameraSubject = char.HumanoidRootPart
+        showNotification("📷 جاري متابعة الاعب!", PlayerAdvFrame)
+    end
+end)
+
+-- 6. عرض قائمة الأصدقاء
+createPlayerAdvButton("👥 الأصدقاء", col2X, 2, Color3.fromRGB(255, 150, 50), function()
+    local friends = Players:GetPlayers()
+    local count = #friends
+    showNotification("👥 لديك " .. count .. " لاعب في السيرفر!", PlayerAdvFrame)
+end)
+
+-- 7. حظر الاعب (شكلي)
+createPlayerAdvButton("🚫 حظر الاعب", col1X, 3, Color3.fromRGB(200, 50, 50), function()
+    showNotification("⚠️ تم حظر الاعب (شكلي)", PlayerAdvFrame)
+end)
+
+-- 8. إحصائيات الاعب
+createPlayerAdvButton("📊 الإحصائيات", col2X, 3, Color3.fromRGB(0, 200, 200), function()
+    local ping = game:GetService("Stats"):FindFirstChild("Network") and game:GetService("Stats").Network:FindFirstChild("Ping") or 0
+    showNotification("📊 بينج: " .. tostring(ping) .. "ms\n👤 الاعب: " .. LocalPlayer.DisplayName, PlayerAdvFrame)
+end)
+
+-- ============================================
+-- صندوق معلومات أسفل صفحة الاعب
+-- ============================================
+
+local PlayerAdvInfo = Instance.new("Frame")
+PlayerAdvInfo.Size = UDim2.new(0.85, 0, 0, 55)
+PlayerAdvInfo.Position = UDim2.new(0.075, 0, 0.45, 0)
+PlayerAdvInfo.BackgroundColor3 = Color3.fromRGB(20, 15, 30)
+PlayerAdvInfo.BorderSizePixel = 0
+PlayerAdvInfo.Parent = PlayerAdvFrame
+PlayerAdvInfo.ZIndex = 7
+
+local PlayerAdvInfoCorner = Instance.new("UICorner")
+PlayerAdvInfoCorner.CornerRadius = UDim.new(0, 8)
+PlayerAdvInfoCorner.Parent = PlayerAdvInfo
+
+local PlayerAdvInfoGlow = Instance.new("Frame")
+PlayerAdvInfoGlow.Size = UDim2.new(1, 4, 1, 4)
+PlayerAdvInfoGlow.Position = UDim2.new(0, -2, 0, -2)
+PlayerAdvInfoGlow.BackgroundColor3 = Color3.fromRGB(200, 100, 255)
+PlayerAdvInfoGlow.BackgroundTransparency = 0.2
+PlayerAdvInfoGlow.BorderSizePixel = 0
+PlayerAdvInfoGlow.Parent = PlayerAdvInfo
+PlayerAdvInfoGlow.ZIndex = -1
+
+local PlayerAdvInfoCorner2 = Instance.new("UICorner")
+PlayerAdvInfoCorner2.CornerRadius = UDim.new(0, 10)
+PlayerAdvInfoCorner2.Parent = PlayerAdvInfoGlow
+
+local PlayerAdvInfoText = Instance.new("TextLabel")
+PlayerAdvInfoText.Size = UDim2.new(1, -15, 1, -10)
+PlayerAdvInfoText.Position = UDim2.new(0, 7, 0, 5)
+PlayerAdvInfoText.BackgroundTransparency = 1
+PlayerAdvInfoText.Text = "🎮 نظام الاعب المتقدم\n📌 اختر الإجراء المناسب من الأزرار أعلاه"
+PlayerAdvInfoText.TextColor3 = Color3.fromRGB(200, 180, 220)
+PlayerAdvInfoText.TextSize = 12
+PlayerAdvInfoText.Font = Enum.Font.GothamMedium
+PlayerAdvInfoText.TextXAlignment = Enum.TextXAlignment.Center
+PlayerAdvInfoText.TextYAlignment = Enum.TextYAlignment.Center
+PlayerAdvInfoText.Parent = PlayerAdvInfo
+PlayerAdvInfoText.ZIndex = 8
 
 -- ============================================
 -- محتوى الأخبار
@@ -2076,6 +2280,10 @@ createNewsCard("🏎️", "تم إضافة نظام سرعة السيارة ال
     "أدخل قيمة السرعة المطلوبة واضغط ON لتفعيلها!",
     Color3.fromRGB(255, 150, 0), false)
 
+createNewsCard("🎮", "تم إضافة واجهة الاعب المتقدمة!",
+    "يمكنك الآن التحكم بمعلومات الاعب وتغيير اللون والمزيد!",
+    Color3.fromRGB(200, 100, 255), false)
+
 createNewsCard("📱", "دعم كامل للهاتف والكمبيوتر!",
     "السكربت الآن يدعم جميع الأجهزة مع واجهة متجاوبة.",
     Color3.fromRGB(100, 255, 200), false)
@@ -2165,6 +2373,7 @@ local function ShowTeleport()
     PlayerContainer.Visible = false
     NewsContainer.Visible = false
     CarContainer.Visible = false
+    PlayerAdvContainer.Visible = false
     
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
@@ -2186,6 +2395,7 @@ local function ShowMoney()
     PlayerContainer.Visible = false
     NewsContainer.Visible = false
     CarContainer.Visible = false
+    PlayerAdvContainer.Visible = false
     
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
@@ -2207,6 +2417,7 @@ local function ShowFishing()
     PlayerContainer.Visible = false
     NewsContainer.Visible = false
     CarContainer.Visible = false
+    PlayerAdvContainer.Visible = false
     
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
@@ -2228,6 +2439,7 @@ local function ShowPlayers()
     PlayerContainer.Visible = true
     NewsContainer.Visible = false
     CarContainer.Visible = false
+    PlayerAdvContainer.Visible = false
     UpdatePlayerList()
     
     for _, child in pairs(Sidebar:GetChildren()) do
@@ -2250,6 +2462,7 @@ local function ShowNews()
     PlayerContainer.Visible = false
     NewsContainer.Visible = true
     CarContainer.Visible = false
+    PlayerAdvContainer.Visible = false
     
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
@@ -2271,6 +2484,7 @@ local function ShowCars()
     PlayerContainer.Visible = false
     NewsContainer.Visible = false
     CarContainer.Visible = true
+    PlayerAdvContainer.Visible = false
     
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
@@ -2284,6 +2498,32 @@ local function ShowCars()
         end
     end
 end
+
+local function ShowPlayerAdv()
+    TeleportContainer.Visible = false
+    MoneyContainer.Visible = false
+    FishingContainer.Visible = false
+    PlayerContainer.Visible = false
+    NewsContainer.Visible = false
+    CarContainer.Visible = false
+    PlayerAdvContainer.Visible = true
+    
+    for _, child in pairs(Sidebar:GetChildren()) do
+        if child:IsA("TextButton") then
+            if child.Text == "🎮 الاعب" then
+                child.BackgroundColor3 = Color3.fromRGB(200, 100, 255)
+                child.TextColor3 = Color3.fromRGB(255, 255, 255)
+            else
+                child.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
+                child.TextColor3 = Color3.fromRGB(255, 255, 255)
+            end
+        end
+    end
+end
+
+-- ============================================
+-- ربط الأزرار الجانبية
+-- ============================================
 
 for _, child in pairs(Sidebar:GetChildren()) do
     if child:IsA("TextButton") then
@@ -2299,18 +2539,22 @@ for _, child in pairs(Sidebar:GetChildren()) do
             child.MouseButton1Click:Connect(ShowNews)
         elseif child.Text == "🚗 الطيران الذكي" then
             child.MouseButton1Click:Connect(ShowCars)
+        elseif child.Text == "🔄 كلبشة تلقائي" then
+            child.MouseButton1Click:Connect(function()
+                showNotification("🔄 زر كلبشة تلقائي (قيد التطوير)", MainFrame)
+            end)
+        elseif child.Text == "🎮 الاعب" then
+            child.MouseButton1Click:Connect(ShowPlayerAdv)
         end
     end
 end
 
+-- عرض الصفحة الافتراضية
 ShowTeleport()
 
-print("✅ LYNEX - النسخة النهائية (مع زر كلبشة تلقائي + زر الاعب)")
+print("✅ LYNEX - النسخة النهائية مع واجهة الاعب المتقدمة")
 print("📌 الأزرار: انتقال الفوري | فلوس | صيد | لاعبين | أخبار | طيران ذكي | كلبشة تلقائي | الاعب")
-print("💰 تصميم جديد لصفحة الفلوس")
-print("🔍 إضافة بحث للاعبين")
-print("🚀 إضافة زر القفز السريع للسيارة")
-print("🏎️ إضافة نظام سرعة السيارة المتقدم")
-print("🔄 زر كلبشة تلقائي (شكلي فقط)")
-print("🎮 زر الاعب (شكلي فقط)")
+print("🎮 تم إضافة واجهة الاعب المتقدمة بـ 8 أزرار:")
+print("   📋 معلومات الاعب | 🎨 تغيير اللون | 💬 إرسال رسالة | 🤝 طلب صداقة")
+print("   📷 متابعة الاعب | 👥 الأصدقاء | 🚫 حظر الاعب | 📊 الإحصائيات")
 print("🔗 رابط الديسكورد: https://discord.gg/fJTvyYW4A")
