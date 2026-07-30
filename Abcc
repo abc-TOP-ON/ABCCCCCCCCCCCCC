@@ -1,4 +1,4 @@
--- LYNEX - النسخة النهائية (مع نظام التحكم بالشخصية المتقدم)
+-- LYNEX - النسخة النهائية (مع نظام التحكم بالشخصية المتقدم) - مُصلح
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -444,14 +444,14 @@ FishingContainer.Parent = MainFrame
 FishingContainer.ZIndex = 1
 FishingContainer.Visible = false
 
-local PlayerContainer = Instance.new("Frame")
-PlayerContainer.Name = "PlayerContainer"
-PlayerContainer.Size = UDim2.new(1, -150, 1, -20)
-PlayerContainer.Position = UDim2.new(0, 150, 0, 10)
-PlayerContainer.BackgroundTransparency = 1
-PlayerContainer.Parent = MainFrame
-PlayerContainer.ZIndex = 1
-PlayerContainer.Visible = false
+local PlayerListContainer = Instance.new("Frame")
+PlayerListContainer.Name = "PlayerListContainer"
+PlayerListContainer.Size = UDim2.new(1, -150, 1, -20)
+PlayerListContainer.Position = UDim2.new(0, 150, 0, 10)
+PlayerListContainer.BackgroundTransparency = 1
+PlayerListContainer.Parent = MainFrame
+PlayerListContainer.ZIndex = 1
+PlayerListContainer.Visible = false
 
 local CarContainer = Instance.new("Frame")
 CarContainer.Name = "CarContainer"
@@ -472,20 +472,20 @@ NewsContainer.ZIndex = 1
 NewsContainer.Visible = false
 
 -- ============================================
--- حاوية صفحة التحكم بالشخصية (Player Advanced)
+-- حاوية صفحة التحكم بالشخصية (Player Control)
 -- ============================================
 
-local PlayerAdvContainer = Instance.new("Frame")
-PlayerAdvContainer.Name = "PlayerAdvContainer"
-PlayerAdvContainer.Size = UDim2.new(1, -150, 1, -20)
-PlayerAdvContainer.Position = UDim2.new(0, 150, 0, 10)
-PlayerAdvContainer.BackgroundTransparency = 1
-PlayerAdvContainer.Parent = MainFrame
-PlayerAdvContainer.ZIndex = 1
-PlayerAdvContainer.Visible = false
+local PlayerControlContainer = Instance.new("Frame")
+PlayerControlContainer.Name = "PlayerControlContainer"
+PlayerControlContainer.Size = UDim2.new(1, -150, 1, -20)
+PlayerControlContainer.Position = UDim2.new(0, 150, 0, 10)
+PlayerControlContainer.BackgroundTransparency = 1
+PlayerControlContainer.Parent = MainFrame
+PlayerControlContainer.ZIndex = 1
+PlayerControlContainer.Visible = false
 
 -- ============================================
--- محتوى صفحة الانتقال الفوري (Teleport)
+-- محتوى صفحة الانتقال الفوري
 -- ============================================
 
 local TeleportFrame = Instance.new("Frame")
@@ -1175,61 +1175,61 @@ end
 FishingToggleButton.MouseButton1Click:Connect(startFishing)
 
 -- ============================================
--- محتوى صفحة اللاعبين (مع بحث)
+-- محتوى صفحة اللاعبين (قائمة مع بحث)
 -- ============================================
 
-local PlayerFrame = Instance.new("Frame")
-PlayerFrame.Size = UDim2.new(0.9, 0, 0.85, 0)
-PlayerFrame.Position = UDim2.new(0.05, 0, 0.05, 0)
-PlayerFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 35)
-PlayerFrame.BorderSizePixel = 0
-PlayerFrame.Parent = PlayerContainer
-PlayerFrame.ZIndex = 5
+local PlayerListFrame = Instance.new("Frame")
+PlayerListFrame.Size = UDim2.new(0.9, 0, 0.85, 0)
+PlayerListFrame.Position = UDim2.new(0.05, 0, 0.05, 0)
+PlayerListFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 35)
+PlayerListFrame.BorderSizePixel = 0
+PlayerListFrame.Parent = PlayerListContainer
+PlayerListFrame.ZIndex = 5
 
-local PlayerFrameCorner = Instance.new("UICorner")
-PlayerFrameCorner.CornerRadius = UDim.new(0, 12)
-PlayerFrameCorner.Parent = PlayerFrame
+local PlayerListFrameCorner = Instance.new("UICorner")
+PlayerListFrameCorner.CornerRadius = UDim.new(0, 12)
+PlayerListFrameCorner.Parent = PlayerListFrame
 
-local PlayerGlow = Instance.new("Frame")
-PlayerGlow.Size = UDim2.new(1, 6, 1, 6)
-PlayerGlow.Position = UDim2.new(0, -3, 0, -3)
-PlayerGlow.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
-PlayerGlow.BackgroundTransparency = 0.3
-PlayerGlow.BorderSizePixel = 0
-PlayerGlow.Parent = PlayerFrame
-PlayerGlow.ZIndex = -1
+local PlayerListGlow = Instance.new("Frame")
+PlayerListGlow.Size = UDim2.new(1, 6, 1, 6)
+PlayerListGlow.Position = UDim2.new(0, -3, 0, -3)
+PlayerListGlow.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
+PlayerListGlow.BackgroundTransparency = 0.3
+PlayerListGlow.BorderSizePixel = 0
+PlayerListGlow.Parent = PlayerListFrame
+PlayerListGlow.ZIndex = -1
 
-local PlayerGlowCorner = Instance.new("UICorner")
-PlayerGlowCorner.CornerRadius = UDim.new(0, 15)
-PlayerGlowCorner.Parent = PlayerGlow
+local PlayerListGlowCorner = Instance.new("UICorner")
+PlayerListGlowCorner.CornerRadius = UDim.new(0, 15)
+PlayerListGlowCorner.Parent = PlayerListGlow
 
-local PlayerTitle = Instance.new("TextLabel")
-PlayerTitle.Size = UDim2.new(1, -40, 0, 35)
-PlayerTitle.Position = UDim2.new(0, 20, 0, 8)
-PlayerTitle.BackgroundTransparency = 1
-PlayerTitle.Text = "👥 قائمة اللاعبين"
-PlayerTitle.TextColor3 = Color3.fromRGB(0, 200, 255)
-PlayerTitle.TextSize = 20
-PlayerTitle.Font = Enum.Font.GothamBold
-PlayerTitle.TextXAlignment = Enum.TextXAlignment.Center
-PlayerTitle.Parent = PlayerFrame
-PlayerTitle.ZIndex = 6
+local PlayerListTitle = Instance.new("TextLabel")
+PlayerListTitle.Size = UDim2.new(1, -40, 0, 35)
+PlayerListTitle.Position = UDim2.new(0, 20, 0, 8)
+PlayerListTitle.BackgroundTransparency = 1
+PlayerListTitle.Text = "👥 قائمة اللاعبين"
+PlayerListTitle.TextColor3 = Color3.fromRGB(0, 200, 255)
+PlayerListTitle.TextSize = 20
+PlayerListTitle.Font = Enum.Font.GothamBold
+PlayerListTitle.TextXAlignment = Enum.TextXAlignment.Center
+PlayerListTitle.Parent = PlayerListFrame
+PlayerListTitle.ZIndex = 6
 
-local PlayerDivider = Instance.new("Frame")
-PlayerDivider.Size = UDim2.new(0.6, 0, 0, 2)
-PlayerDivider.Position = UDim2.new(0.2, 0, 0, 48)
-PlayerDivider.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
-PlayerDivider.BackgroundTransparency = 0.4
-PlayerDivider.BorderSizePixel = 0
-PlayerDivider.Parent = PlayerFrame
-PlayerDivider.ZIndex = 6
+local PlayerListDivider = Instance.new("Frame")
+PlayerListDivider.Size = UDim2.new(0.6, 0, 0, 2)
+PlayerListDivider.Position = UDim2.new(0.2, 0, 0, 48)
+PlayerListDivider.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
+PlayerListDivider.BackgroundTransparency = 0.4
+PlayerListDivider.BorderSizePixel = 0
+PlayerListDivider.Parent = PlayerListFrame
+PlayerListDivider.ZIndex = 6
 
 local SearchContainer = Instance.new("Frame")
 SearchContainer.Size = UDim2.new(0.92, 0, 0, 40)
 SearchContainer.Position = UDim2.new(0.04, 0, 0.1, 0)
 SearchContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
 SearchContainer.BorderSizePixel = 0
-SearchContainer.Parent = PlayerFrame
+SearchContainer.Parent = PlayerListFrame
 SearchContainer.ZIndex = 7
 
 local SearchCorner = Instance.new("UICorner")
@@ -1284,15 +1284,15 @@ ClearSearchBtn.MouseButton1Click:Connect(function()
     UpdatePlayerList()
 end)
 
-local PlayerScroll = Instance.new("ScrollingFrame")
-PlayerScroll.Size = UDim2.new(1, -10, 1, -110)
-PlayerScroll.Position = UDim2.new(0, 5, 0, 95)
-PlayerScroll.BackgroundTransparency = 1
-PlayerScroll.BorderSizePixel = 0
-PlayerScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
-PlayerScroll.ScrollBarThickness = 4
-PlayerScroll.Parent = PlayerFrame
-PlayerScroll.ZIndex = 6
+local PlayerListScroll = Instance.new("ScrollingFrame")
+PlayerListScroll.Size = UDim2.new(1, -10, 1, -110)
+PlayerListScroll.Position = UDim2.new(0, 5, 0, 95)
+PlayerListScroll.BackgroundTransparency = 1
+PlayerListScroll.BorderSizePixel = 0
+PlayerListScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+PlayerListScroll.ScrollBarThickness = 4
+PlayerListScroll.Parent = PlayerListFrame
+PlayerListScroll.ZIndex = 6
 
 local PlayerCountLabel = Instance.new("TextLabel")
 PlayerCountLabel.Size = UDim2.new(1, -40, 0, 18)
@@ -1302,11 +1302,11 @@ PlayerCountLabel.TextColor3 = Color3.fromRGB(150, 150, 180)
 PlayerCountLabel.TextSize = 11
 PlayerCountLabel.Font = Enum.Font.GothamMedium
 PlayerCountLabel.TextXAlignment = Enum.TextXAlignment.Center
-PlayerCountLabel.Parent = PlayerFrame
+PlayerCountLabel.Parent = PlayerListFrame
 PlayerCountLabel.ZIndex = 6
 
 local function UpdatePlayerList()
-    for _, child in pairs(PlayerScroll:GetChildren()) do
+    for _, child in pairs(PlayerListScroll:GetChildren()) do
         if child:IsA("TextButton") then
             child:Destroy()
         end
@@ -1347,7 +1347,7 @@ local function UpdatePlayerList()
                 button.Text = "👤 " .. player.DisplayName .. " @" .. player.Name
             end
             
-            button.Parent = PlayerScroll
+            button.Parent = PlayerListScroll
             button.ZIndex = 7
             
             local corner = Instance.new("UICorner")
@@ -1380,7 +1380,7 @@ local function UpdatePlayerList()
     end
     
     PlayerCountLabel.Text = "👥 " .. shownCount .. " لاعب" .. (shownCount > 1 and "ين" or "") .. (searchText ~= "" and " (نتائج البحث)" or " في السيرفر")
-    PlayerScroll.CanvasSize = UDim2.new(0, 0, 0, yOffset + 10)
+    PlayerListScroll.CanvasSize = UDim2.new(0, 0, 0, yOffset + 10)
 end
 
 SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
@@ -1890,54 +1890,54 @@ RunService.Heartbeat:Connect(function()
 end)
 
 -- ============================================
--- محتوى صفحة التحكم بالشخصية (نظام متقدم)
+-- محتوى صفحة التحكم بالشخصية (Player Control)
 -- ============================================
 
-local PlayerAdvFrame = Instance.new("Frame")
-PlayerAdvFrame.Size = UDim2.new(0.9, 0, 0.85, 0)
-PlayerAdvFrame.Position = UDim2.new(0.05, 0, 0.05, 0)
-PlayerAdvFrame.BackgroundColor3 = Color3.fromRGB(25, 20, 35)
-PlayerAdvFrame.BorderSizePixel = 0
-PlayerAdvFrame.Parent = PlayerAdvContainer
-PlayerAdvFrame.ZIndex = 5
+local PlayerControlFrame = Instance.new("Frame")
+PlayerControlFrame.Size = UDim2.new(0.9, 0, 0.85, 0)
+PlayerControlFrame.Position = UDim2.new(0.05, 0, 0.05, 0)
+PlayerControlFrame.BackgroundColor3 = Color3.fromRGB(25, 20, 35)
+PlayerControlFrame.BorderSizePixel = 0
+PlayerControlFrame.Parent = PlayerControlContainer
+PlayerControlFrame.ZIndex = 5
 
-local PlayerAdvFrameCorner = Instance.new("UICorner")
-PlayerAdvFrameCorner.CornerRadius = UDim.new(0, 12)
-PlayerAdvFrameCorner.Parent = PlayerAdvFrame
+local PlayerControlFrameCorner = Instance.new("UICorner")
+PlayerControlFrameCorner.CornerRadius = UDim.new(0, 12)
+PlayerControlFrameCorner.Parent = PlayerControlFrame
 
-local PlayerAdvGlow = Instance.new("Frame")
-PlayerAdvGlow.Size = UDim2.new(1, 8, 1, 8)
-PlayerAdvGlow.Position = UDim2.new(0, -4, 0, -4)
-PlayerAdvGlow.BackgroundColor3 = Color3.fromRGB(200, 100, 255)
-PlayerAdvGlow.BackgroundTransparency = 0.25
-PlayerAdvGlow.BorderSizePixel = 0
-PlayerAdvGlow.Parent = PlayerAdvFrame
-PlayerAdvGlow.ZIndex = -1
+local PlayerControlGlow = Instance.new("Frame")
+PlayerControlGlow.Size = UDim2.new(1, 8, 1, 8)
+PlayerControlGlow.Position = UDim2.new(0, -4, 0, -4)
+PlayerControlGlow.BackgroundColor3 = Color3.fromRGB(200, 100, 255)
+PlayerControlGlow.BackgroundTransparency = 0.25
+PlayerControlGlow.BorderSizePixel = 0
+PlayerControlGlow.Parent = PlayerControlFrame
+PlayerControlGlow.ZIndex = -1
 
-local PlayerAdvGlowCorner = Instance.new("UICorner")
-PlayerAdvGlowCorner.CornerRadius = UDim.new(0, 16)
-PlayerAdvGlowCorner.Parent = PlayerAdvGlow
+local PlayerControlGlowCorner = Instance.new("UICorner")
+PlayerControlGlowCorner.CornerRadius = UDim.new(0, 16)
+PlayerControlGlowCorner.Parent = PlayerControlGlow
 
-local PlayerAdvTitle = Instance.new("TextLabel")
-PlayerAdvTitle.Size = UDim2.new(1, -40, 0, 40)
-PlayerAdvTitle.Position = UDim2.new(0, 20, 0, 5)
-PlayerAdvTitle.BackgroundTransparency = 1
-PlayerAdvTitle.Text = "🎮 نظام التحكم بالشخصية 🎮"
-PlayerAdvTitle.TextColor3 = Color3.fromRGB(200, 100, 255)
-PlayerAdvTitle.TextSize = 18
-PlayerAdvTitle.Font = Enum.Font.GothamBold
-PlayerAdvTitle.TextXAlignment = Enum.TextXAlignment.Center
-PlayerAdvTitle.Parent = PlayerAdvFrame
-PlayerAdvTitle.ZIndex = 6
+local PlayerControlTitle = Instance.new("TextLabel")
+PlayerControlTitle.Size = UDim2.new(1, -40, 0, 40)
+PlayerControlTitle.Position = UDim2.new(0, 20, 0, 5)
+PlayerControlTitle.BackgroundTransparency = 1
+PlayerControlTitle.Text = "🎮 نظام التحكم بالشخصية 🎮"
+PlayerControlTitle.TextColor3 = Color3.fromRGB(200, 100, 255)
+PlayerControlTitle.TextSize = 18
+PlayerControlTitle.Font = Enum.Font.GothamBold
+PlayerControlTitle.TextXAlignment = Enum.TextXAlignment.Center
+PlayerControlTitle.Parent = PlayerControlFrame
+PlayerControlTitle.ZIndex = 6
 
-local PlayerAdvDivider = Instance.new("Frame")
-PlayerAdvDivider.Size = UDim2.new(0.6, 0, 0, 2)
-PlayerAdvDivider.Position = UDim2.new(0.2, 0, 0, 48)
-PlayerAdvDivider.BackgroundColor3 = Color3.fromRGB(200, 100, 255)
-PlayerAdvDivider.BackgroundTransparency = 0.4
-PlayerAdvDivider.BorderSizePixel = 0
-PlayerAdvDivider.Parent = PlayerAdvFrame
-PlayerAdvDivider.ZIndex = 6
+local PlayerControlDivider = Instance.new("Frame")
+PlayerControlDivider.Size = UDim2.new(0.6, 0, 0, 2)
+PlayerControlDivider.Position = UDim2.new(0.2, 0, 0, 48)
+PlayerControlDivider.BackgroundColor3 = Color3.fromRGB(200, 100, 255)
+PlayerControlDivider.BackgroundTransparency = 0.4
+PlayerControlDivider.BorderSizePixel = 0
+PlayerControlDivider.Parent = PlayerControlFrame
+PlayerControlDivider.ZIndex = 6
 
 -- ============================================
 -- 1️⃣ نظام السرعة
@@ -1952,7 +1952,7 @@ SpeedLabel.TextColor3 = Color3.fromRGB(0, 255, 150)
 SpeedLabel.TextSize = 14
 SpeedLabel.Font = Enum.Font.GothamBold
 SpeedLabel.TextXAlignment = Enum.TextXAlignment.Left
-SpeedLabel.Parent = PlayerAdvFrame
+SpeedLabel.Parent = PlayerControlFrame
 SpeedLabel.ZIndex = 7
 
 local SpeedInput = Instance.new("TextBox")
@@ -1964,7 +1964,7 @@ SpeedInput.TextColor3 = Color3.fromRGB(255, 255, 255)
 SpeedInput.TextSize = 14
 SpeedInput.Font = Enum.Font.GothamMedium
 SpeedInput.PlaceholderText = "السرعة"
-SpeedInput.Parent = PlayerAdvFrame
+SpeedInput.Parent = PlayerControlFrame
 SpeedInput.ZIndex = 7
 
 local SpeedInputCorner = Instance.new("UICorner")
@@ -1979,7 +1979,7 @@ SpeedToggle.Text = "OFF"
 SpeedToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
 SpeedToggle.TextSize = 13
 SpeedToggle.Font = Enum.Font.GothamBold
-SpeedToggle.Parent = PlayerAdvFrame
+SpeedToggle.Parent = PlayerControlFrame
 SpeedToggle.ZIndex = 7
 
 local SpeedToggleCorner = Instance.new("UICorner")
@@ -2000,12 +2000,12 @@ SpeedToggle.MouseButton1Click:Connect(function()
                 hum.WalkSpeed = speedVal
                 SpeedToggle.Text = "ON ✅"
                 SpeedToggle.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
-                showNotification("🏃 تم تفعيل السرعة: " .. speedVal, PlayerAdvFrame)
+                showNotification("🏃 تم تفعيل السرعة: " .. speedVal, PlayerControlFrame)
             else
                 hum.WalkSpeed = originalSpeed
                 SpeedToggle.Text = "OFF"
                 SpeedToggle.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-                showNotification("⛔ تم إيقاف السرعة", PlayerAdvFrame)
+                showNotification("⛔ تم إيقاف السرعة", PlayerControlFrame)
             end
         end
     end
@@ -2024,7 +2024,7 @@ TeleportLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
 TeleportLabel.TextSize = 14
 TeleportLabel.Font = Enum.Font.GothamBold
 TeleportLabel.TextXAlignment = Enum.TextXAlignment.Left
-TeleportLabel.Parent = PlayerAdvFrame
+TeleportLabel.Parent = PlayerControlFrame
 TeleportLabel.ZIndex = 7
 
 local TeleportInput = Instance.new("TextBox")
@@ -2036,7 +2036,7 @@ TeleportInput.TextColor3 = Color3.fromRGB(255, 255, 255)
 TeleportInput.TextSize = 13
 TeleportInput.Font = Enum.Font.GothamMedium
 TeleportInput.PlaceholderText = "X, Y, Z"
-TeleportInput.Parent = PlayerAdvFrame
+TeleportInput.Parent = PlayerControlFrame
 TeleportInput.ZIndex = 7
 
 local TeleportInputCorner = Instance.new("UICorner")
@@ -2051,7 +2051,7 @@ TeleportBtn.Text = "🚀 انتقل"
 TeleportBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 TeleportBtn.TextSize = 12
 TeleportBtn.Font = Enum.Font.GothamBold
-TeleportBtn.Parent = PlayerAdvFrame
+TeleportBtn.Parent = PlayerControlFrame
 TeleportBtn.ZIndex = 7
 
 local TeleportBtnCorner = Instance.new("UICorner")
@@ -2068,10 +2068,10 @@ TeleportBtn.MouseButton1Click:Connect(function()
         local char = LocalPlayer.Character
         if char and char:FindFirstChild("HumanoidRootPart") then
             char.HumanoidRootPart.CFrame = CFrame.new(parts[1], parts[2], parts[3])
-            showNotification("📍 تم الانتقال إلى: " .. TeleportInput.Text, PlayerAdvFrame)
+            showNotification("📍 تم الانتقال إلى: " .. TeleportInput.Text, PlayerControlFrame)
         end
     else
-        showNotification("⚠️ أدخل إحداثيات صحيحة (X, Y, Z)", PlayerAdvFrame)
+        showNotification("⚠️ أدخل إحداثيات صحيحة (X, Y, Z)", PlayerControlFrame)
     end
 end)
 
@@ -2088,7 +2088,7 @@ JumpLabel.TextColor3 = Color3.fromRGB(255, 200, 50)
 JumpLabel.TextSize = 14
 JumpLabel.Font = Enum.Font.GothamBold
 JumpLabel.TextXAlignment = Enum.TextXAlignment.Left
-JumpLabel.Parent = PlayerAdvFrame
+JumpLabel.Parent = PlayerControlFrame
 JumpLabel.ZIndex = 7
 
 local JumpInput = Instance.new("TextBox")
@@ -2100,7 +2100,7 @@ JumpInput.TextColor3 = Color3.fromRGB(255, 255, 255)
 JumpInput.TextSize = 14
 JumpInput.Font = Enum.Font.GothamMedium
 JumpInput.PlaceholderText = "القوة"
-JumpInput.Parent = PlayerAdvFrame
+JumpInput.Parent = PlayerControlFrame
 JumpInput.ZIndex = 7
 
 local JumpInputCorner = Instance.new("UICorner")
@@ -2115,7 +2115,7 @@ JumpBtn.Text = "🚀 اقفز"
 JumpBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 JumpBtn.TextSize = 13
 JumpBtn.Font = Enum.Font.GothamBold
-JumpBtn.Parent = PlayerAdvFrame
+JumpBtn.Parent = PlayerControlFrame
 JumpBtn.ZIndex = 7
 
 local JumpBtnCorner = Instance.new("UICorner")
@@ -2130,7 +2130,7 @@ JumpBtn.MouseButton1Click:Connect(function()
             local power = tonumber(JumpInput.Text) or 50
             hum.JumpPower = power
             hum:Jump()
-            showNotification("⬆️ تم القفز بقوة: " .. power, PlayerAdvFrame)
+            showNotification("⬆️ تم القفز بقوة: " .. power, PlayerControlFrame)
         end
     end
 end)
@@ -2148,7 +2148,7 @@ NoclipLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
 NoclipLabel.TextSize = 14
 NoclipLabel.Font = Enum.Font.GothamBold
 NoclipLabel.TextXAlignment = Enum.TextXAlignment.Left
-NoclipLabel.Parent = PlayerAdvFrame
+NoclipLabel.Parent = PlayerControlFrame
 NoclipLabel.ZIndex = 7
 
 local NoclipToggle = Instance.new("TextButton")
@@ -2159,7 +2159,7 @@ NoclipToggle.Text = "🚫 معطل"
 NoclipToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
 NoclipToggle.TextSize = 13
 NoclipToggle.Font = Enum.Font.GothamBold
-NoclipToggle.Parent = PlayerAdvFrame
+NoclipToggle.Parent = PlayerControlFrame
 NoclipToggle.ZIndex = 7
 
 local NoclipToggleCorner = Instance.new("UICorner")
@@ -2175,7 +2175,7 @@ NoclipToggle.MouseButton1Click:Connect(function()
     if noclipActive then
         NoclipToggle.Text = "✅ مفعل"
         NoclipToggle.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
-        showNotification("🧱 تم تفعيل اختراق الجدران!", PlayerAdvFrame)
+        showNotification("🧱 تم تفعيل اختراق الجدران!", PlayerControlFrame)
         
         if noclipConnection then
             noclipConnection:Disconnect()
@@ -2208,7 +2208,7 @@ NoclipToggle.MouseButton1Click:Connect(function()
                 end
             end
         end
-        showNotification("⛔ تم إيقاف اختراق الجدران", PlayerAdvFrame)
+        showNotification("⛔ تم إيقاف اختراق الجدران", PlayerControlFrame)
     end
 end)
 
@@ -2225,7 +2225,7 @@ InfiniteJumpLabel.TextColor3 = Color3.fromRGB(0, 255, 200)
 InfiniteJumpLabel.TextSize = 14
 InfiniteJumpLabel.Font = Enum.Font.GothamBold
 InfiniteJumpLabel.TextXAlignment = Enum.TextXAlignment.Left
-InfiniteJumpLabel.Parent = PlayerAdvFrame
+InfiniteJumpLabel.Parent = PlayerControlFrame
 InfiniteJumpLabel.ZIndex = 7
 
 local InfiniteJumpToggle = Instance.new("TextButton")
@@ -2236,7 +2236,7 @@ InfiniteJumpToggle.Text = "🚫 معطل"
 InfiniteJumpToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
 InfiniteJumpToggle.TextSize = 13
 InfiniteJumpToggle.Font = Enum.Font.GothamBold
-InfiniteJumpToggle.Parent = PlayerAdvFrame
+InfiniteJumpToggle.Parent = PlayerControlFrame
 InfiniteJumpToggle.ZIndex = 7
 
 local InfiniteJumpCorner = Instance.new("UICorner")
@@ -2252,7 +2252,7 @@ InfiniteJumpToggle.MouseButton1Click:Connect(function()
     if infiniteJumpActive then
         InfiniteJumpToggle.Text = "✅ مفعل"
         InfiniteJumpToggle.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
-        showNotification("🚀 تم تفعيل القفز اللانهائي!", PlayerAdvFrame)
+        showNotification("🚀 تم تفعيل القفز اللانهائي!", PlayerControlFrame)
         
         if infiniteJumpConnection then
             infiniteJumpConnection:Disconnect()
@@ -2276,7 +2276,7 @@ InfiniteJumpToggle.MouseButton1Click:Connect(function()
             infiniteJumpConnection:Disconnect()
             infiniteJumpConnection = nil
         end
-        showNotification("⛔ تم إيقاف القفز اللانهائي", PlayerAdvFrame)
+        showNotification("⛔ تم إيقاف القفز اللانهائي", PlayerControlFrame)
     end
 end)
 
@@ -2293,7 +2293,7 @@ SpinLabel.TextColor3 = Color3.fromRGB(255, 150, 200)
 SpinLabel.TextSize = 14
 SpinLabel.Font = Enum.Font.GothamBold
 SpinLabel.TextXAlignment = Enum.TextXAlignment.Left
-SpinLabel.Parent = PlayerAdvFrame
+SpinLabel.Parent = PlayerControlFrame
 SpinLabel.ZIndex = 7
 
 local SpinInput = Instance.new("TextBox")
@@ -2305,7 +2305,7 @@ SpinInput.TextColor3 = Color3.fromRGB(255, 255, 255)
 SpinInput.TextSize = 14
 SpinInput.Font = Enum.Font.GothamMedium
 SpinInput.PlaceholderText = "السرعة"
-SpinInput.Parent = PlayerAdvFrame
+SpinInput.Parent = PlayerControlFrame
 SpinInput.ZIndex = 7
 
 local SpinInputCorner = Instance.new("UICorner")
@@ -2320,7 +2320,7 @@ SpinToggle.Text = "OFF"
 SpinToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
 SpinToggle.TextSize = 13
 SpinToggle.Font = Enum.Font.GothamBold
-SpinToggle.Parent = PlayerAdvFrame
+SpinToggle.Parent = PlayerControlFrame
 SpinToggle.ZIndex = 7
 
 local SpinToggleCorner = Instance.new("UICorner")
@@ -2338,7 +2338,7 @@ SpinToggle.MouseButton1Click:Connect(function()
         spinSpeed = tonumber(SpinInput.Text) or 5
         SpinToggle.Text = "ON ✅"
         SpinToggle.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
-        showNotification("🔄 تم تفعيل الدوران بسرعة: " .. spinSpeed, PlayerAdvFrame)
+        showNotification("🔄 تم تفعيل الدوران بسرعة: " .. spinSpeed, PlayerControlFrame)
         
         if spinConnection then
             spinConnection:Disconnect()
@@ -2362,7 +2362,7 @@ SpinToggle.MouseButton1Click:Connect(function()
             spinConnection:Disconnect()
             spinConnection = nil
         end
-        showNotification("⛔ تم إيقاف الدوران", PlayerAdvFrame)
+        showNotification("⛔ تم إيقاف الدوران", PlayerControlFrame)
     end
 end)
 
@@ -2379,7 +2379,7 @@ FOVLabel.TextColor3 = Color3.fromRGB(100, 200, 255)
 FOVLabel.TextSize = 14
 FOVLabel.Font = Enum.Font.GothamBold
 FOVLabel.TextXAlignment = Enum.TextXAlignment.Left
-FOVLabel.Parent = PlayerAdvFrame
+FOVLabel.Parent = PlayerControlFrame
 FOVLabel.ZIndex = 7
 
 local FOVToggle = Instance.new("TextButton")
@@ -2390,7 +2390,7 @@ FOVToggle.Text = "🚫 معطل"
 FOVToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
 FOVToggle.TextSize = 13
 FOVToggle.Font = Enum.Font.GothamBold
-FOVToggle.Parent = PlayerAdvFrame
+FOVToggle.Parent = PlayerControlFrame
 FOVToggle.ZIndex = 7
 
 local FOVToggleCorner = Instance.new("UICorner")
@@ -2407,12 +2407,12 @@ FOVToggle.MouseButton1Click:Connect(function()
         FOVToggle.Text = "✅ مفعل"
         FOVToggle.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
         workspace.CurrentCamera.FieldOfView = 120
-        showNotification("👁️ تم تفعيل 120 FOV!", PlayerAdvFrame)
+        showNotification("👁️ تم تفعيل 120 FOV!", PlayerControlFrame)
     else
         FOVToggle.Text = "🚫 معطل"
         FOVToggle.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
         workspace.CurrentCamera.FieldOfView = originalFOV
-        showNotification("⛔ تم إيقاف 120 FOV", PlayerAdvFrame)
+        showNotification("⛔ تم إيقاف 120 FOV", PlayerControlFrame)
     end
 end)
 
@@ -2420,43 +2420,43 @@ end)
 -- صندوق معلومات أسفل صفحة التحكم
 -- ============================================
 
-local PlayerAdvInfo = Instance.new("Frame")
-PlayerAdvInfo.Size = UDim2.new(0.85, 0, 0, 45)
-PlayerAdvInfo.Position = UDim2.new(0.075, 0, 0.75, 0)
-PlayerAdvInfo.BackgroundColor3 = Color3.fromRGB(20, 15, 30)
-PlayerAdvInfo.BorderSizePixel = 0
-PlayerAdvInfo.Parent = PlayerAdvFrame
-PlayerAdvInfo.ZIndex = 7
+local PlayerControlInfo = Instance.new("Frame")
+PlayerControlInfo.Size = UDim2.new(0.85, 0, 0, 45)
+PlayerControlInfo.Position = UDim2.new(0.075, 0, 0.75, 0)
+PlayerControlInfo.BackgroundColor3 = Color3.fromRGB(20, 15, 30)
+PlayerControlInfo.BorderSizePixel = 0
+PlayerControlInfo.Parent = PlayerControlFrame
+PlayerControlInfo.ZIndex = 7
 
-local PlayerAdvInfoCorner = Instance.new("UICorner")
-PlayerAdvInfoCorner.CornerRadius = UDim.new(0, 8)
-PlayerAdvInfoCorner.Parent = PlayerAdvInfo
+local PlayerControlInfoCorner = Instance.new("UICorner")
+PlayerControlInfoCorner.CornerRadius = UDim.new(0, 8)
+PlayerControlInfoCorner.Parent = PlayerControlInfo
 
-local PlayerAdvInfoGlow = Instance.new("Frame")
-PlayerAdvInfoGlow.Size = UDim2.new(1, 4, 1, 4)
-PlayerAdvInfoGlow.Position = UDim2.new(0, -2, 0, -2)
-PlayerAdvInfoGlow.BackgroundColor3 = Color3.fromRGB(200, 100, 255)
-PlayerAdvInfoGlow.BackgroundTransparency = 0.2
-PlayerAdvInfoGlow.BorderSizePixel = 0
-PlayerAdvInfoGlow.Parent = PlayerAdvInfo
-PlayerAdvInfoGlow.ZIndex = -1
+local PlayerControlInfoGlow = Instance.new("Frame")
+PlayerControlInfoGlow.Size = UDim2.new(1, 4, 1, 4)
+PlayerControlInfoGlow.Position = UDim2.new(0, -2, 0, -2)
+PlayerControlInfoGlow.BackgroundColor3 = Color3.fromRGB(200, 100, 255)
+PlayerControlInfoGlow.BackgroundTransparency = 0.2
+PlayerControlInfoGlow.BorderSizePixel = 0
+PlayerControlInfoGlow.Parent = PlayerControlInfo
+PlayerControlInfoGlow.ZIndex = -1
 
-local PlayerAdvInfoCorner2 = Instance.new("UICorner")
-PlayerAdvInfoCorner2.CornerRadius = UDim.new(0, 10)
-PlayerAdvInfoCorner2.Parent = PlayerAdvInfoGlow
+local PlayerControlInfoCorner2 = Instance.new("UICorner")
+PlayerControlInfoCorner2.CornerRadius = UDim.new(0, 10)
+PlayerControlInfoCorner2.Parent = PlayerControlInfoGlow
 
-local PlayerAdvInfoText = Instance.new("TextLabel")
-PlayerAdvInfoText.Size = UDim2.new(1, -15, 1, -10)
-PlayerAdvInfoText.Position = UDim2.new(0, 7, 0, 5)
-PlayerAdvInfoText.BackgroundTransparency = 1
-PlayerAdvInfoText.Text = "🎮 نظام التحكم بالشخصية المتقدم\n🏃 سرعة | 📍 تلبورت | ⬆️ قفز | 🧱 اختراق | 🚀 قفز لانهائي | 🔄 دوران | 👁️ 120 FOV"
-PlayerAdvInfoText.TextColor3 = Color3.fromRGB(200, 180, 220)
-PlayerAdvInfoText.TextSize = 11
-PlayerAdvInfoText.Font = Enum.Font.GothamMedium
-PlayerAdvInfoText.TextXAlignment = Enum.TextXAlignment.Center
-PlayerAdvInfoText.TextYAlignment = Enum.TextYAlignment.Center
-PlayerAdvInfoText.Parent = PlayerAdvInfo
-PlayerAdvInfoText.ZIndex = 8
+local PlayerControlInfoText = Instance.new("TextLabel")
+PlayerControlInfoText.Size = UDim2.new(1, -15, 1, -10)
+PlayerControlInfoText.Position = UDim2.new(0, 7, 0, 5)
+PlayerControlInfoText.BackgroundTransparency = 1
+PlayerControlInfoText.Text = "🎮 نظام التحكم بالشخصية المتقدم\n🏃 سرعة | 📍 تلبورت | ⬆️ قفز | 🧱 اختراق | 🚀 قفز لانهائي | 🔄 دوران | 👁️ 120 FOV"
+PlayerControlInfoText.TextColor3 = Color3.fromRGB(200, 180, 220)
+PlayerControlInfoText.TextSize = 11
+PlayerControlInfoText.Font = Enum.Font.GothamMedium
+PlayerControlInfoText.TextXAlignment = Enum.TextXAlignment.Center
+PlayerControlInfoText.TextYAlignment = Enum.TextYAlignment.Center
+PlayerControlInfoText.Parent = PlayerControlInfo
+PlayerControlInfoText.ZIndex = 8
 
 -- ============================================
 -- محتوى الأخبار
@@ -2690,10 +2690,10 @@ local function ShowTeleport()
     TeleportContainer.Visible = true
     MoneyContainer.Visible = false
     FishingContainer.Visible = false
-    PlayerContainer.Visible = false
+    PlayerListContainer.Visible = false
     NewsContainer.Visible = false
     CarContainer.Visible = false
-    PlayerAdvContainer.Visible = false
+    PlayerControlContainer.Visible = false
     
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
@@ -2712,10 +2712,10 @@ local function ShowMoney()
     TeleportContainer.Visible = false
     MoneyContainer.Visible = true
     FishingContainer.Visible = false
-    PlayerContainer.Visible = false
+    PlayerListContainer.Visible = false
     NewsContainer.Visible = false
     CarContainer.Visible = false
-    PlayerAdvContainer.Visible = false
+    PlayerControlContainer.Visible = false
     
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
@@ -2734,10 +2734,10 @@ local function ShowFishing()
     TeleportContainer.Visible = false
     MoneyContainer.Visible = false
     FishingContainer.Visible = true
-    PlayerContainer.Visible = false
+    PlayerListContainer.Visible = false
     NewsContainer.Visible = false
     CarContainer.Visible = false
-    PlayerAdvContainer.Visible = false
+    PlayerControlContainer.Visible = false
     
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
@@ -2752,14 +2752,14 @@ local function ShowFishing()
     end
 end
 
-local function ShowPlayers()
+local function ShowPlayerList()
     TeleportContainer.Visible = false
     MoneyContainer.Visible = false
     FishingContainer.Visible = false
-    PlayerContainer.Visible = true
+    PlayerListContainer.Visible = true
     NewsContainer.Visible = false
     CarContainer.Visible = false
-    PlayerAdvContainer.Visible = false
+    PlayerControlContainer.Visible = false
     UpdatePlayerList()
     
     for _, child in pairs(Sidebar:GetChildren()) do
@@ -2779,10 +2779,10 @@ local function ShowNews()
     TeleportContainer.Visible = false
     MoneyContainer.Visible = false
     FishingContainer.Visible = false
-    PlayerContainer.Visible = false
+    PlayerListContainer.Visible = false
     NewsContainer.Visible = true
     CarContainer.Visible = false
-    PlayerAdvContainer.Visible = false
+    PlayerControlContainer.Visible = false
     
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
@@ -2801,10 +2801,10 @@ local function ShowCars()
     TeleportContainer.Visible = false
     MoneyContainer.Visible = false
     FishingContainer.Visible = false
-    PlayerContainer.Visible = false
+    PlayerListContainer.Visible = false
     NewsContainer.Visible = false
     CarContainer.Visible = true
-    PlayerAdvContainer.Visible = false
+    PlayerControlContainer.Visible = false
     
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
@@ -2819,14 +2819,14 @@ local function ShowCars()
     end
 end
 
-local function ShowPlayerAdv()
+local function ShowPlayerControl()
     TeleportContainer.Visible = false
     MoneyContainer.Visible = false
     FishingContainer.Visible = false
-    PlayerContainer.Visible = false
+    PlayerListContainer.Visible = false
     NewsContainer.Visible = false
     CarContainer.Visible = false
-    PlayerAdvContainer.Visible = true
+    PlayerControlContainer.Visible = true
     
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
@@ -2854,7 +2854,7 @@ for _, child in pairs(Sidebar:GetChildren()) do
         elseif child.Text == "🎣 الصيد" then
             child.MouseButton1Click:Connect(ShowFishing)
         elseif child.Text == "👥 لاعبين" then
-            child.MouseButton1Click:Connect(ShowPlayers)
+            child.MouseButton1Click:Connect(ShowPlayerList)
         elseif child.Text == "📰 الأخبار" then
             child.MouseButton1Click:Connect(ShowNews)
         elseif child.Text == "🚗 الطيران الذكي" then
@@ -2864,7 +2864,7 @@ for _, child in pairs(Sidebar:GetChildren()) do
                 showNotification("🔄 زر كلبشة تلقائي (قيد التطوير)", MainFrame)
             end)
         elseif child.Text == "🎮 التحكم" then
-            child.MouseButton1Click:Connect(ShowPlayerAdv)
+            child.MouseButton1Click:Connect(ShowPlayerControl)
         end
     end
 end
@@ -2872,7 +2872,7 @@ end
 -- عرض الصفحة الافتراضية
 ShowTeleport()
 
-print("✅ LYNEX - النسخة النهائية مع نظام التحكم بالشخصية المتقدم")
+print("✅ LYNEX - النسخة النهائية المُصلحة مع نظام التحكم بالشخصية المتقدم")
 print("📌 الأزرار: انتقال الفوري | فلوس | صيد | لاعبين | أخبار | طيران ذكي | كلبشة تلقائي | التحكم")
 print("🎮 تم إضافة نظام التحكم بالشخصية مع 7 ميزات:")
 print("   🏃 سرعة | 📍 تلبورت | ⬆️ قفز | 🧱 اختراق جدران | 🚀 قفز لانهائي | 🔄 دوران | 👁️ 120 FOV")
