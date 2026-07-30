@@ -471,10 +471,6 @@ NewsContainer.Parent = MainFrame
 NewsContainer.ZIndex = 1
 NewsContainer.Visible = false
 
--- ============================================
--- حاوية زر كلبشة تلقائي (Auto Clutch)
--- ============================================
-
 local ClutchContainer = Instance.new("Frame")
 ClutchContainer.Name = "ClutchContainer"
 ClutchContainer.Size = UDim2.new(1, -150, 1, -20)
@@ -483,10 +479,6 @@ ClutchContainer.BackgroundTransparency = 1
 ClutchContainer.Parent = MainFrame
 ClutchContainer.ZIndex = 1
 ClutchContainer.Visible = false
-
--- ============================================
--- حاوية زر الاعب (Player Settings)
--- ============================================
 
 local PlayerSettingsContainer = Instance.new("Frame")
 PlayerSettingsContainer.Name = "PlayerSettingsContainer"
@@ -643,7 +635,7 @@ TeleportFooter.Parent = TeleportFrame
 TeleportFooter.ZIndex = 6
 
 -- ============================================
--- محتوى صفحة الفلوس (تصميم جديد ومحسن)
+-- محتوى صفحة الفلوس
 -- ============================================
 
 local MoneyFrame = Instance.new("Frame")
@@ -658,7 +650,6 @@ local MoneyFrameCorner = Instance.new("UICorner")
 MoneyFrameCorner.CornerRadius = UDim.new(0, 12)
 MoneyFrameCorner.Parent = MoneyFrame
 
--- إطار مضيء ذهبي للفلوس
 local MoneyGlow = Instance.new("Frame")
 MoneyGlow.Size = UDim2.new(1, 8, 1, 8)
 MoneyGlow.Position = UDim2.new(0, -4, 0, -4)
@@ -672,7 +663,6 @@ local MoneyGlowCorner = Instance.new("UICorner")
 MoneyGlowCorner.CornerRadius = UDim.new(0, 16)
 MoneyGlowCorner.Parent = MoneyGlow
 
--- رأس الصفحة
 local MoneyHeader = Instance.new("Frame")
 MoneyHeader.Size = UDim2.new(1, 0, 0, 50)
 MoneyHeader.Position = UDim2.new(0, 0, 0, 0)
@@ -685,7 +675,6 @@ local MoneyHeaderCorner = Instance.new("UICorner")
 MoneyHeaderCorner.CornerRadius = UDim.new(0, 12)
 MoneyHeaderCorner.Parent = MoneyHeader
 
--- أيقونة الفلوس
 local MoneyIcon = Instance.new("TextLabel")
 MoneyIcon.Size = UDim2.new(0, 50, 1, 0)
 MoneyIcon.Position = UDim2.new(0, 10, 0, 0)
@@ -710,7 +699,6 @@ MoneyTitle.TextXAlignment = Enum.TextXAlignment.Center
 MoneyTitle.Parent = MoneyHeader
 MoneyTitle.ZIndex = 7
 
--- الإحصائيات الرئيسية (كروت)
 local StatsContainer = Instance.new("Frame")
 StatsContainer.Size = UDim2.new(0.92, 0, 0, 80)
 StatsContainer.Position = UDim2.new(0.04, 0, 0.12, 0)
@@ -718,7 +706,6 @@ StatsContainer.BackgroundTransparency = 1
 StatsContainer.Parent = MoneyFrame
 StatsContainer.ZIndex = 7
 
--- كارت عدد الفلوس
 local Card1 = Instance.new("Frame")
 Card1.Size = UDim2.new(0.48, -5, 1, 0)
 Card1.Position = UDim2.new(0, 0, 0, 0)
@@ -731,7 +718,6 @@ local Card1Corner = Instance.new("UICorner")
 Card1Corner.CornerRadius = UDim.new(0, 10)
 Card1Corner.Parent = Card1
 
--- إطار ذهبي للكارت
 local Card1Glow = Instance.new("Frame")
 Card1Glow.Size = UDim2.new(1, 4, 1, 4)
 Card1Glow.Position = UDim2.new(0, -2, 0, -2)
@@ -781,7 +767,6 @@ CountLabel.TextXAlignment = Enum.TextXAlignment.Left
 CountLabel.Parent = Card1
 CountLabel.ZIndex = 9
 
--- كارت الحالة
 local Card2 = Instance.new("Frame")
 Card2.Size = UDim2.new(0.48, -5, 1, 0)
 Card2.Position = UDim2.new(0.52, 0, 0, 0)
@@ -843,7 +828,6 @@ StatusLabel.TextXAlignment = Enum.TextXAlignment.Left
 StatusLabel.Parent = Card2
 StatusLabel.ZIndex = 9
 
--- زر التشغيل الكبير
 local ToggleButtonMoney = Instance.new("TextButton")
 ToggleButtonMoney.Size = UDim2.new(0.7, 0, 0, 55)
 ToggleButtonMoney.Position = UDim2.new(0.15, 0, 0.35, 0)
@@ -859,7 +843,6 @@ local ToggleCornerMoney = Instance.new("UICorner")
 ToggleCornerMoney.CornerRadius = UDim.new(0, 12)
 ToggleCornerMoney.Parent = ToggleButtonMoney
 
--- تأثير hover للزر
 ToggleButtonMoney.MouseEnter:Connect(function()
     if ToggleButtonMoney.Text == "▶️ تشغيل" then
         ToggleButtonMoney.BackgroundColor3 = Color3.fromRGB(50, 220, 50)
@@ -871,7 +854,6 @@ ToggleButtonMoney.MouseLeave:Connect(function()
     end
 end)
 
--- أزرار مساعدة
 local BtnContainer = Instance.new("Frame")
 BtnContainer.Size = UDim2.new(0.7, 0, 0, 35)
 BtnContainer.Position = UDim2.new(0.15, 0, 0.48, 0)
@@ -879,7 +861,6 @@ BtnContainer.BackgroundTransparency = 1
 BtnContainer.Parent = MoneyFrame
 BtnContainer.ZIndex = 10
 
--- زر إعادة تعيين
 local ResetBtn = Instance.new("TextButton")
 ResetBtn.Size = UDim2.new(0.45, -5, 1, 0)
 ResetBtn.Position = UDim2.new(0, 0, 0, 0)
@@ -908,7 +889,6 @@ ResetBtn.MouseButton1Click:Connect(function()
     showNotification("🔄 تم إعادة تعيين العداد", MoneyFrame)
 end)
 
--- زر مساعدة
 local HelpBtn = Instance.new("TextButton")
 HelpBtn.Size = UDim2.new(0.45, -5, 1, 0)
 HelpBtn.Position = UDim2.new(0.55, 0, 0, 0)
@@ -935,7 +915,6 @@ HelpBtn.MouseButton1Click:Connect(function()
     showNotification("📌 اضغط تشغيل لجمع الفلوس تلقائياً!", MoneyFrame)
 end)
 
--- مربع معلومات أسفل
 local InfoBoxMoney = Instance.new("Frame")
 InfoBoxMoney.Size = UDim2.new(0.85, 0, 0, 55)
 InfoBoxMoney.Position = UDim2.new(0.075, 0, 0.58, 0)
@@ -961,7 +940,6 @@ InfoBoxMoneyText.TextYAlignment = Enum.TextYAlignment.Center
 InfoBoxMoneyText.Parent = InfoBoxMoney
 InfoBoxMoneyText.ZIndex = 11
 
--- متغيرات التشغيل
 _G.CashStealer = false
 local eventConnection = nil
 local collectedCount = 0
@@ -1063,7 +1041,6 @@ ToggleButtonMoney.MouseButton1Click:Connect(function()
     end
 end)
 
--- تعيين الحالة الابتدائية
 ToggleButtonMoney.Text = "▶️ تشغيل"
 ToggleButtonMoney.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
 
@@ -1252,7 +1229,6 @@ PlayerDivider.BorderSizePixel = 0
 PlayerDivider.Parent = PlayerFrame
 PlayerDivider.ZIndex = 6
 
--- ========== مربع البحث ==========
 local SearchContainer = Instance.new("Frame")
 SearchContainer.Size = UDim2.new(0.92, 0, 0, 40)
 SearchContainer.Position = UDim2.new(0.04, 0, 0.1, 0)
@@ -1265,7 +1241,6 @@ local SearchCorner = Instance.new("UICorner")
 SearchCorner.CornerRadius = UDim.new(0, 8)
 SearchCorner.Parent = SearchContainer
 
--- أيقونة البحث
 local SearchIcon = Instance.new("TextLabel")
 SearchIcon.Size = UDim2.new(0, 35, 1, 0)
 SearchIcon.Position = UDim2.new(0, 5, 0, 0)
@@ -1278,7 +1253,6 @@ SearchIcon.TextXAlignment = Enum.TextXAlignment.Center
 SearchIcon.Parent = SearchContainer
 SearchIcon.ZIndex = 8
 
--- مربع إدخال البحث
 local SearchBox = Instance.new("TextBox")
 SearchBox.Size = UDim2.new(0.7, 0, 1, -10)
 SearchBox.Position = UDim2.new(0.08, 0, 0, 5)
@@ -1295,7 +1269,6 @@ local SearchBoxCorner = Instance.new("UICorner")
 SearchBoxCorner.CornerRadius = UDim.new(0, 6)
 SearchBoxCorner.Parent = SearchBox
 
--- زر مسح البحث
 local ClearSearchBtn = Instance.new("TextButton")
 ClearSearchBtn.Size = UDim2.new(0, 30, 1, -10)
 ClearSearchBtn.Position = UDim2.new(0.82, 0, 0, 5)
@@ -1316,7 +1289,6 @@ ClearSearchBtn.MouseButton1Click:Connect(function()
     UpdatePlayerList()
 end)
 
--- قائمة اللاعبين
 local PlayerScroll = Instance.new("ScrollingFrame")
 PlayerScroll.Size = UDim2.new(1, -10, 1, -110)
 PlayerScroll.Position = UDim2.new(0, 5, 0, 95)
@@ -1426,7 +1398,7 @@ Players.PlayerAdded:Connect(function() UpdatePlayerList() end)
 Players.PlayerRemoving:Connect(function() UpdatePlayerList() end)
 
 -- ============================================
--- محتوى صفحة الطيران الذكي (مع نظام سرعة السيارة المتقدم)
+-- محتوى صفحة الطيران الذكي
 -- ============================================
 
 local CarFrame = Instance.new("Frame")
@@ -1475,16 +1447,11 @@ CarDivider.BorderSizePixel = 0
 CarDivider.Parent = CarFrame
 CarDivider.ZIndex = 6
 
--- ============================================
--- نظام الطيران الذكي
--- ============================================
-
 local Flying = false
 local MovingForward = false
 local FlySpeed = 2.5
 local flyConnection = nil
 
--- دالة جلب السيارة
 local function GetVehicle()
     if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
         local Seat = LocalPlayer.Character.Humanoid.SeatPart
@@ -1495,7 +1462,6 @@ local function GetVehicle()
     return nil
 end
 
--- دالة الإشعارات
 function showNotification(text, parent)
     local notif = Instance.new("TextLabel")
     notif.Size = UDim2.new(0, 220, 0, 30)
@@ -1516,7 +1482,6 @@ function showNotification(text, parent)
     notif:Destroy()
 end
 
--- حلقة الطيران
 local function StartFlyLoop()
     if flyConnection then
         flyConnection:Disconnect()
@@ -1556,10 +1521,6 @@ local function StartFlyLoop()
         end
     end)
 end
-
--- ============================================
--- أزرار الطيران (الصف الأول)
--- ============================================
 
 local FlyToggleButton = Instance.new("TextButton")
 FlyToggleButton.Size = UDim2.new(0.8, 0, 0, 40)
@@ -1723,10 +1684,6 @@ QuickFlyButton.MouseButton1Click:Connect(function()
     showNotification("🚀 تم قفز السيارة للأعلى!", CarFrame)
 end)
 
--- ============================================
--- تعليمات الاستخدام (مرتبة ومنزلة للأسفل)
--- ============================================
-
 local InstructionsBox = Instance.new("Frame")
 InstructionsBox.Size = UDim2.new(0.85, 0, 0, 100)
 InstructionsBox.Position = UDim2.new(0.075, 0, 0.38, 0)
@@ -1787,10 +1744,6 @@ InstructionsText.TextWrapped = true
 InstructionsText.Parent = InstructionsBox
 InstructionsText.ZIndex = 8
 
--- ============================================
--- عنوان نظام السرعة (تحت التعليمات)
--- ============================================
-
 local SpeedTitle = Instance.new("TextLabel")
 SpeedTitle.Size = UDim2.new(0.85, 0, 0, 22)
 SpeedTitle.Position = UDim2.new(0.075, 0, 0.55, 0)
@@ -1802,10 +1755,6 @@ SpeedTitle.Font = Enum.Font.GothamBold
 SpeedTitle.TextXAlignment = Enum.TextXAlignment.Center
 SpeedTitle.Parent = CarFrame
 SpeedTitle.ZIndex = 7
-
--- ============================================
--- نظام السرعة (مرتب تحت التعليمات - نازل أكثر)
--- ============================================
 
 local SpeedFrame = Instance.new("Frame")
 SpeedFrame.Size = UDim2.new(0.85, 0, 0, 65)
@@ -1819,7 +1768,6 @@ local SpeedCorner = Instance.new("UICorner")
 SpeedCorner.CornerRadius = UDim.new(0, 8)
 SpeedCorner.Parent = SpeedFrame
 
--- إطار مضيء
 local SpeedGlow = Instance.new("Frame")
 SpeedGlow.Size = UDim2.new(1, 4, 1, 4)
 SpeedGlow.Position = UDim2.new(0, -2, 0, -2)
@@ -1833,7 +1781,6 @@ local SpeedGlowCorner = Instance.new("UICorner")
 SpeedGlowCorner.CornerRadius = UDim.new(0, 10)
 SpeedGlowCorner.Parent = SpeedGlow
 
--- مربع إدخال السرعة
 local SpeedInput = Instance.new("TextBox")
 SpeedInput.Size = UDim2.new(0.28, 0, 0.5, 0)
 SpeedInput.Position = UDim2.new(0.02, 0, 0.1, 0)
@@ -1852,7 +1799,6 @@ local InputCorner = Instance.new("UICorner")
 InputCorner.CornerRadius = UDim.new(0, 6)
 InputCorner.Parent = SpeedInput
 
--- زر التفعيل ON/OFF
 local ToggleSpeedButton = Instance.new("TextButton")
 ToggleSpeedButton.Size = UDim2.new(0.2, 0, 0.5, 0)
 ToggleSpeedButton.Position = UDim2.new(0.32, 0, 0.1, 0)
@@ -1868,7 +1814,6 @@ local ButtonCorner = Instance.new("UICorner")
 ButtonCorner.CornerRadius = UDim.new(0, 6)
 ButtonCorner.Parent = ToggleSpeedButton
 
--- عرض السرعة الحالية
 local CurrentSpeedDisplay = Instance.new("TextLabel")
 CurrentSpeedDisplay.Size = UDim2.new(0.2, 0, 0.5, 0)
 CurrentSpeedDisplay.Position = UDim2.new(0.54, 0, 0.1, 0)
@@ -1885,7 +1830,6 @@ local DisplayCorner = Instance.new("UICorner")
 DisplayCorner.CornerRadius = UDim.new(0, 6)
 DisplayCorner.Parent = CurrentSpeedDisplay
 
--- حالة النظام
 local StatusDisplay = Instance.new("TextLabel")
 StatusDisplay.Size = UDim2.new(0.2, 0, 0.5, 0)
 StatusDisplay.Position = UDim2.new(0.76, 0, 0.1, 0)
@@ -1902,14 +1846,9 @@ local StatusCorner = Instance.new("UICorner")
 StatusCorner.CornerRadius = UDim.new(0, 6)
 StatusCorner.Parent = StatusDisplay
 
--- ============================================
--- أحداث نظام السرعة
--- ============================================
-
 local targetSpeed = 100
 local speedHackEnabled = false
 
--- تسجيل قيمة السرعة
 SpeedInput.FocusLost:Connect(function()
     local inputNum = tonumber(SpeedInput.Text)
     if inputNum and inputNum > 0 then
@@ -1921,7 +1860,6 @@ SpeedInput.FocusLost:Connect(function()
     end
 end)
 
--- زر التفعيل
 ToggleSpeedButton.MouseButton1Click:Connect(function()
     speedHackEnabled = not speedHackEnabled
     
@@ -1939,10 +1877,6 @@ ToggleSpeedButton.MouseButton1Click:Connect(function()
         showNotification("⛔ تم إيقاف السرعة", CarFrame)
     end
 end)
-
--- ============================================
--- نظام السرعة الرئيسي
--- ============================================
 
 RunService.Heartbeat:Connect(function()
     if not speedHackEnabled then return end
@@ -2230,7 +2164,6 @@ ClutchDivider.BorderSizePixel = 0
 ClutchDivider.Parent = ClutchFrame
 ClutchDivider.ZIndex = 6
 
--- زر تشغيل/إيقاف الكلبشة
 local ClutchToggleButton = Instance.new("TextButton")
 ClutchToggleButton.Size = UDim2.new(0.7, 0, 0, 55)
 ClutchToggleButton.Position = UDim2.new(0.15, 0, 0.2, 0)
@@ -2258,7 +2191,6 @@ ClutchStatus.TextXAlignment = Enum.TextXAlignment.Center
 ClutchStatus.Parent = ClutchFrame
 ClutchStatus.ZIndex = 7
 
--- مربع معلومات
 local ClutchInfoBox = Instance.new("Frame")
 ClutchInfoBox.Size = UDim2.new(0.85, 0, 0, 80)
 ClutchInfoBox.Position = UDim2.new(0.075, 0, 0.55, 0)
@@ -2284,11 +2216,9 @@ ClutchInfoText.TextYAlignment = Enum.TextYAlignment.Center
 ClutchInfoText.Parent = ClutchInfoBox
 ClutchInfoText.ZIndex = 8
 
--- متغيرات الكلبشة
 local clutchActive = false
 local clutchConnection = nil
 
--- وظيفة الكلبشة
 local function startClutch()
     if clutchActive then
         clutchActive = false
@@ -2310,7 +2240,6 @@ local function startClutch()
         ClutchStatus.TextColor3 = Color3.fromRGB(0, 255, 100)
         ClutchInfoText.Text = "🔄 الكلبشة التلقائي مفعلة ✅"
         
-        -- نظام الكلبشة التلقائي
         clutchConnection = RunService.Heartbeat:Connect(function()
             if not clutchActive then return end
             
@@ -2324,10 +2253,8 @@ local function startClutch()
             if seat and seat:IsA("VehicleSeat") then
                 local vehicle = seat.Parent
                 if vehicle then
-                    -- محاولة العثور على الأجزاء المناسبة للكلبشة
                     for _, child in pairs(vehicle:GetDescendants()) do
                         if child:IsA("BasePart") and child.Name ~= "Seat" then
-                            -- تطبيق الكلبشة (تثبيت السيارة)
                             child.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
                             child.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
                         end
@@ -2342,7 +2269,6 @@ end
 
 ClutchToggleButton.MouseButton1Click:Connect(startClutch)
 
--- تعيين الحالة الابتدائية
 ClutchToggleButton.Text = "▶️ تشغيل الكلبشة"
 ClutchToggleButton.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
 
@@ -2362,7 +2288,6 @@ local SettingsFrameCorner = Instance.new("UICorner")
 SettingsFrameCorner.CornerRadius = UDim.new(0, 12)
 SettingsFrameCorner.Parent = SettingsFrame
 
--- إطار مضيء
 local SettingsGlow = Instance.new("Frame")
 SettingsGlow.Size = UDim2.new(1, 6, 1, 6)
 SettingsGlow.Position = UDim2.new(0, -3, 0, -3)
@@ -2376,7 +2301,6 @@ local SettingsGlowCorner = Instance.new("UICorner")
 SettingsGlowCorner.CornerRadius = UDim.new(0, 15)
 SettingsGlowCorner.Parent = SettingsGlow
 
--- العنوان
 local SettingsTitle = Instance.new("TextLabel")
 SettingsTitle.Size = UDim2.new(1, -40, 0, 45)
 SettingsTitle.Position = UDim2.new(0, 20, 0, 5)
@@ -2389,7 +2313,6 @@ SettingsTitle.TextXAlignment = Enum.TextXAlignment.Center
 SettingsTitle.Parent = SettingsFrame
 SettingsTitle.ZIndex = 6
 
--- خط فاصل
 local SettingsDivider = Instance.new("Frame")
 SettingsDivider.Size = UDim2.new(0.6, 0, 0, 2)
 SettingsDivider.Position = UDim2.new(0.2, 0, 0, 52)
@@ -2398,10 +2321,6 @@ SettingsDivider.BackgroundTransparency = 0.4
 SettingsDivider.BorderSizePixel = 0
 SettingsDivider.Parent = SettingsFrame
 SettingsDivider.ZIndex = 6
-
--- ============================================
--- إعداد السرعة فقط
--- ============================================
 
 local SpeedContainer = Instance.new("Frame")
 SpeedContainer.Size = UDim2.new(0.8, 0, 0.15, 0)
@@ -2415,7 +2334,6 @@ local SpeedContainerCorner = Instance.new("UICorner")
 SpeedContainerCorner.CornerRadius = UDim.new(0, 10)
 SpeedContainerCorner.Parent = SpeedContainer
 
--- أيقونة السرعة
 local SpeedIcon = Instance.new("TextLabel")
 SpeedIcon.Size = UDim2.new(0, 40, 1, 0)
 SpeedIcon.Position = UDim2.new(0, 5, 0, 0)
@@ -2428,7 +2346,6 @@ SpeedIcon.TextXAlignment = Enum.TextXAlignment.Center
 SpeedIcon.Parent = SpeedContainer
 SpeedIcon.ZIndex = 8
 
--- عنوان السرعة
 local SpeedLabel = Instance.new("TextLabel")
 SpeedLabel.Size = UDim2.new(1, -50, 0, 20)
 SpeedLabel.Position = UDim2.new(0, 48, 0, 4)
@@ -2441,7 +2358,6 @@ SpeedLabel.TextXAlignment = Enum.TextXAlignment.Left
 SpeedLabel.Parent = SpeedContainer
 SpeedLabel.ZIndex = 8
 
--- مربع إدخال السرعة
 local SpeedInputBox = Instance.new("TextBox")
 SpeedInputBox.Size = UDim2.new(0.25, 0, 0.6, 0)
 SpeedInputBox.Position = UDim2.new(0.7, 0, 0.2, 0)
@@ -2460,7 +2376,6 @@ local SpeedInputCorner = Instance.new("UICorner")
 SpeedInputCorner.CornerRadius = UDim.new(0, 6)
 SpeedInputCorner.Parent = SpeedInputBox
 
--- تطبيق السرعة فوراً عند تغيير القيمة
 SpeedInputBox.FocusLost:Connect(function()
     local speedVal = tonumber(SpeedInputBox.Text)
     if speedVal and speedVal > 0 then
@@ -2471,10 +2386,6 @@ SpeedInputBox.FocusLost:Connect(function()
         end
     end
 end)
-
--- ============================================
--- إعداد القفز فقط
--- ============================================
 
 local JumpContainer = Instance.new("Frame")
 JumpContainer.Size = UDim2.new(0.8, 0, 0.15, 0)
@@ -2488,7 +2399,6 @@ local JumpContainerCorner = Instance.new("UICorner")
 JumpContainerCorner.CornerRadius = UDim.new(0, 10)
 JumpContainerCorner.Parent = JumpContainer
 
--- أيقونة القفز
 local JumpIcon = Instance.new("TextLabel")
 JumpIcon.Size = UDim2.new(0, 40, 1, 0)
 JumpIcon.Position = UDim2.new(0, 5, 0, 0)
@@ -2501,7 +2411,6 @@ JumpIcon.TextXAlignment = Enum.TextXAlignment.Center
 JumpIcon.Parent = JumpContainer
 JumpIcon.ZIndex = 8
 
--- عنوان القفز
 local JumpLabel = Instance.new("TextLabel")
 JumpLabel.Size = UDim2.new(1, -50, 0, 20)
 JumpLabel.Position = UDim2.new(0, 48, 0, 4)
@@ -2514,7 +2423,6 @@ JumpLabel.TextXAlignment = Enum.TextXAlignment.Left
 JumpLabel.Parent = JumpContainer
 JumpLabel.ZIndex = 8
 
--- مربع إدخال القفز
 local JumpInputBox = Instance.new("TextBox")
 JumpInputBox.Size = UDim2.new(0.25, 0, 0.6, 0)
 JumpInputBox.Position = UDim2.new(0.7, 0, 0.2, 0)
@@ -2533,7 +2441,6 @@ local JumpInputCorner = Instance.new("UICorner")
 JumpInputCorner.CornerRadius = UDim.new(0, 6)
 JumpInputCorner.Parent = JumpInputBox
 
--- تطبيق القفز فوراً عند تغيير القيمة
 JumpInputBox.FocusLost:Connect(function()
     local jumpVal = tonumber(JumpInputBox.Text)
     if jumpVal and jumpVal > 0 then
@@ -2544,10 +2451,6 @@ JumpInputBox.FocusLost:Connect(function()
         end
     end
 end)
-
--- ============================================
--- عرض القيم الحالية (مبسط)
--- ============================================
 
 local CurrentValuesBox = Instance.new("Frame")
 CurrentValuesBox.Size = UDim2.new(0.8, 0, 0.15, 0)
@@ -2574,7 +2477,6 @@ CurrentValuesLabel.Text = "📊 السرعة الحالية: 16 | القفز ا�
 CurrentValuesLabel.Parent = CurrentValuesBox
 CurrentValuesLabel.ZIndex = 8
 
--- تحديث القيم الحالية كل 0.5 ثانية
 task.spawn(function()
     while PlayerSettingsContainer and PlayerSettingsContainer.Parent do
         task.wait(0.5)
