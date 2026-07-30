@@ -1,4 +1,4 @@
--- LYNEX - النسخة النهائية (مع زر كلبشة تلقائي + زر الاعب + واجهة الاعب المتقدمة)
+-- LYNEX - النسخة النهائية (مع نظام التحكم بالشخصية المتقدم)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserId = LocalPlayer.UserId
@@ -372,7 +372,7 @@ local function createSidebarButton(text, posIndex, isActive)
     
     Btn.BorderSizePixel = 0
     Btn.Text = text
-    Btn.TextSize = 13
+    Btn.TextSize = 12
     Btn.Font = Enum.Font.GothamBold
     Btn.Parent = Sidebar
     Btn.ZIndex = 17
@@ -411,7 +411,7 @@ createSidebarButton("👥 لاعبين", 4, false)
 createSidebarButton("📰 الأخبار", 5, false)
 createSidebarButton("🚗 الطيران الذكي", 6, false)
 createSidebarButton("🔄 كلبشة تلقائي", 7, false)
-createSidebarButton("🎮 الاعب", 8, false)
+createSidebarButton("🎮 التحكم", 8, false)
 
 -- ============================================
 -- الحاويات
@@ -472,7 +472,7 @@ NewsContainer.ZIndex = 1
 NewsContainer.Visible = false
 
 -- ============================================
--- حاوية صفحة الاعب الجديدة (Player Advanced)
+-- حاوية صفحة التحكم بالشخصية (Player Advanced)
 -- ============================================
 
 local PlayerAdvContainer = Instance.new("Frame")
@@ -630,7 +630,7 @@ TeleportFooter.Parent = TeleportFrame
 TeleportFooter.ZIndex = 6
 
 -- ============================================
--- محتوى صفحة الفلوس (تصميم جديد ومحسن)
+-- محتوى صفحة الفلوس
 -- ============================================
 
 local MoneyFrame = Instance.new("Frame")
@@ -645,7 +645,6 @@ local MoneyFrameCorner = Instance.new("UICorner")
 MoneyFrameCorner.CornerRadius = UDim.new(0, 12)
 MoneyFrameCorner.Parent = MoneyFrame
 
--- إطار مضيء ذهبي للفلوس
 local MoneyGlow = Instance.new("Frame")
 MoneyGlow.Size = UDim2.new(1, 8, 1, 8)
 MoneyGlow.Position = UDim2.new(0, -4, 0, -4)
@@ -659,7 +658,6 @@ local MoneyGlowCorner = Instance.new("UICorner")
 MoneyGlowCorner.CornerRadius = UDim.new(0, 16)
 MoneyGlowCorner.Parent = MoneyGlow
 
--- رأس الصفحة
 local MoneyHeader = Instance.new("Frame")
 MoneyHeader.Size = UDim2.new(1, 0, 0, 50)
 MoneyHeader.Position = UDim2.new(0, 0, 0, 0)
@@ -672,7 +670,6 @@ local MoneyHeaderCorner = Instance.new("UICorner")
 MoneyHeaderCorner.CornerRadius = UDim.new(0, 12)
 MoneyHeaderCorner.Parent = MoneyHeader
 
--- أيقونة الفلوس
 local MoneyIcon = Instance.new("TextLabel")
 MoneyIcon.Size = UDim2.new(0, 50, 1, 0)
 MoneyIcon.Position = UDim2.new(0, 10, 0, 0)
@@ -697,7 +694,6 @@ MoneyTitle.TextXAlignment = Enum.TextXAlignment.Center
 MoneyTitle.Parent = MoneyHeader
 MoneyTitle.ZIndex = 7
 
--- الإحصائيات الرئيسية (كروت)
 local StatsContainer = Instance.new("Frame")
 StatsContainer.Size = UDim2.new(0.92, 0, 0, 80)
 StatsContainer.Position = UDim2.new(0.04, 0, 0.12, 0)
@@ -705,7 +701,6 @@ StatsContainer.BackgroundTransparency = 1
 StatsContainer.Parent = MoneyFrame
 StatsContainer.ZIndex = 7
 
--- كارت عدد الفلوس
 local Card1 = Instance.new("Frame")
 Card1.Size = UDim2.new(0.48, -5, 1, 0)
 Card1.Position = UDim2.new(0, 0, 0, 0)
@@ -718,7 +713,6 @@ local Card1Corner = Instance.new("UICorner")
 Card1Corner.CornerRadius = UDim.new(0, 10)
 Card1Corner.Parent = Card1
 
--- إطار ذهبي للكارت
 local Card1Glow = Instance.new("Frame")
 Card1Glow.Size = UDim2.new(1, 4, 1, 4)
 Card1Glow.Position = UDim2.new(0, -2, 0, -2)
@@ -768,7 +762,6 @@ CountLabel.TextXAlignment = Enum.TextXAlignment.Left
 CountLabel.Parent = Card1
 CountLabel.ZIndex = 9
 
--- كارت الحالة
 local Card2 = Instance.new("Frame")
 Card2.Size = UDim2.new(0.48, -5, 1, 0)
 Card2.Position = UDim2.new(0.52, 0, 0, 0)
@@ -830,7 +823,6 @@ StatusLabel.TextXAlignment = Enum.TextXAlignment.Left
 StatusLabel.Parent = Card2
 StatusLabel.ZIndex = 9
 
--- زر التشغيل الكبير
 local ToggleButtonMoney = Instance.new("TextButton")
 ToggleButtonMoney.Size = UDim2.new(0.7, 0, 0, 55)
 ToggleButtonMoney.Position = UDim2.new(0.15, 0, 0.35, 0)
@@ -846,7 +838,6 @@ local ToggleCornerMoney = Instance.new("UICorner")
 ToggleCornerMoney.CornerRadius = UDim.new(0, 12)
 ToggleCornerMoney.Parent = ToggleButtonMoney
 
--- تأثير hover للزر
 ToggleButtonMoney.MouseEnter:Connect(function()
     if ToggleButtonMoney.Text == "▶️ تشغيل" then
         ToggleButtonMoney.BackgroundColor3 = Color3.fromRGB(50, 220, 50)
@@ -858,7 +849,6 @@ ToggleButtonMoney.MouseLeave:Connect(function()
     end
 end)
 
--- أزرار مساعدة
 local BtnContainer = Instance.new("Frame")
 BtnContainer.Size = UDim2.new(0.7, 0, 0, 35)
 BtnContainer.Position = UDim2.new(0.15, 0, 0.48, 0)
@@ -866,7 +856,6 @@ BtnContainer.BackgroundTransparency = 1
 BtnContainer.Parent = MoneyFrame
 BtnContainer.ZIndex = 10
 
--- زر إعادة تعيين
 local ResetBtn = Instance.new("TextButton")
 ResetBtn.Size = UDim2.new(0.45, -5, 1, 0)
 ResetBtn.Position = UDim2.new(0, 0, 0, 0)
@@ -895,7 +884,6 @@ ResetBtn.MouseButton1Click:Connect(function()
     showNotification("🔄 تم إعادة تعيين العداد", MoneyFrame)
 end)
 
--- زر مساعدة
 local HelpBtn = Instance.new("TextButton")
 HelpBtn.Size = UDim2.new(0.45, -5, 1, 0)
 HelpBtn.Position = UDim2.new(0.55, 0, 0, 0)
@@ -922,7 +910,6 @@ HelpBtn.MouseButton1Click:Connect(function()
     showNotification("📌 اضغط تشغيل لجمع الفلوس تلقائياً!", MoneyFrame)
 end)
 
--- مربع معلومات أسفل
 local InfoBoxMoney = Instance.new("Frame")
 InfoBoxMoney.Size = UDim2.new(0.85, 0, 0, 55)
 InfoBoxMoney.Position = UDim2.new(0.075, 0, 0.58, 0)
@@ -948,7 +935,6 @@ InfoBoxMoneyText.TextYAlignment = Enum.TextYAlignment.Center
 InfoBoxMoneyText.Parent = InfoBoxMoney
 InfoBoxMoneyText.ZIndex = 11
 
--- متغيرات التشغيل
 _G.CashStealer = false
 local eventConnection = nil
 local collectedCount = 0
@@ -1050,12 +1036,11 @@ ToggleButtonMoney.MouseButton1Click:Connect(function()
     end
 end)
 
--- تعيين الحالة الابتدائية
 ToggleButtonMoney.Text = "▶️ تشغيل"
 ToggleButtonMoney.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
 
 -- ============================================
--- محتوى صفحة الصيد (Fishing)
+-- محتوى صفحة الصيد
 -- ============================================
 
 local FishingFrame = Instance.new("Frame")
@@ -1239,7 +1224,6 @@ PlayerDivider.BorderSizePixel = 0
 PlayerDivider.Parent = PlayerFrame
 PlayerDivider.ZIndex = 6
 
--- ========== مربع البحث ==========
 local SearchContainer = Instance.new("Frame")
 SearchContainer.Size = UDim2.new(0.92, 0, 0, 40)
 SearchContainer.Position = UDim2.new(0.04, 0, 0.1, 0)
@@ -1252,7 +1236,6 @@ local SearchCorner = Instance.new("UICorner")
 SearchCorner.CornerRadius = UDim.new(0, 8)
 SearchCorner.Parent = SearchContainer
 
--- أيقونة البحث
 local SearchIcon = Instance.new("TextLabel")
 SearchIcon.Size = UDim2.new(0, 35, 1, 0)
 SearchIcon.Position = UDim2.new(0, 5, 0, 0)
@@ -1265,7 +1248,6 @@ SearchIcon.TextXAlignment = Enum.TextXAlignment.Center
 SearchIcon.Parent = SearchContainer
 SearchIcon.ZIndex = 8
 
--- مربع إدخال البحث
 local SearchBox = Instance.new("TextBox")
 SearchBox.Size = UDim2.new(0.7, 0, 1, -10)
 SearchBox.Position = UDim2.new(0.08, 0, 0, 5)
@@ -1282,7 +1264,6 @@ local SearchBoxCorner = Instance.new("UICorner")
 SearchBoxCorner.CornerRadius = UDim.new(0, 6)
 SearchBoxCorner.Parent = SearchBox
 
--- زر مسح البحث
 local ClearSearchBtn = Instance.new("TextButton")
 ClearSearchBtn.Size = UDim2.new(0, 30, 1, -10)
 ClearSearchBtn.Position = UDim2.new(0.82, 0, 0, 5)
@@ -1303,7 +1284,6 @@ ClearSearchBtn.MouseButton1Click:Connect(function()
     UpdatePlayerList()
 end)
 
--- قائمة اللاعبين
 local PlayerScroll = Instance.new("ScrollingFrame")
 PlayerScroll.Size = UDim2.new(1, -10, 1, -110)
 PlayerScroll.Position = UDim2.new(0, 5, 0, 95)
@@ -1413,7 +1393,7 @@ Players.PlayerAdded:Connect(function() UpdatePlayerList() end)
 Players.PlayerRemoving:Connect(function() UpdatePlayerList() end)
 
 -- ============================================
--- محتوى صفحة الطيران الذكي (مع نظام سرعة السيارة المتقدم)
+-- محتوى صفحة الطيران الذكي
 -- ============================================
 
 local CarFrame = Instance.new("Frame")
@@ -1462,16 +1442,11 @@ CarDivider.BorderSizePixel = 0
 CarDivider.Parent = CarFrame
 CarDivider.ZIndex = 6
 
--- ============================================
--- نظام الطيران الذكي
--- ============================================
-
 local Flying = false
 local MovingForward = false
 local FlySpeed = 2.5
 local flyConnection = nil
 
--- دالة جلب السيارة
 local function GetVehicle()
     if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
         local Seat = LocalPlayer.Character.Humanoid.SeatPart
@@ -1482,7 +1457,6 @@ local function GetVehicle()
     return nil
 end
 
--- دالة الإشعارات
 function showNotification(text, parent)
     local notif = Instance.new("TextLabel")
     notif.Size = UDim2.new(0, 220, 0, 30)
@@ -1503,7 +1477,6 @@ function showNotification(text, parent)
     notif:Destroy()
 end
 
--- حلقة الطيران
 local function StartFlyLoop()
     if flyConnection then
         flyConnection:Disconnect()
@@ -1543,10 +1516,6 @@ local function StartFlyLoop()
         end
     end)
 end
-
--- ============================================
--- أزرار الطيران (الصف الأول)
--- ============================================
 
 local FlyToggleButton = Instance.new("TextButton")
 FlyToggleButton.Size = UDim2.new(0.8, 0, 0, 40)
@@ -1710,10 +1679,6 @@ QuickFlyButton.MouseButton1Click:Connect(function()
     showNotification("🚀 تم قفز السيارة للأعلى!", CarFrame)
 end)
 
--- ============================================
--- تعليمات الاستخدام
--- ============================================
-
 local InstructionsBox = Instance.new("Frame")
 InstructionsBox.Size = UDim2.new(0.85, 0, 0, 100)
 InstructionsBox.Position = UDim2.new(0.075, 0, 0.38, 0)
@@ -1774,10 +1739,6 @@ InstructionsText.TextWrapped = true
 InstructionsText.Parent = InstructionsBox
 InstructionsText.ZIndex = 8
 
--- ============================================
--- عنوان نظام السرعة
--- ============================================
-
 local SpeedTitle = Instance.new("TextLabel")
 SpeedTitle.Size = UDim2.new(0.85, 0, 0, 22)
 SpeedTitle.Position = UDim2.new(0.075, 0, 0.55, 0)
@@ -1789,10 +1750,6 @@ SpeedTitle.Font = Enum.Font.GothamBold
 SpeedTitle.TextXAlignment = Enum.TextXAlignment.Center
 SpeedTitle.Parent = CarFrame
 SpeedTitle.ZIndex = 7
-
--- ============================================
--- نظام السرعة
--- ============================================
 
 local SpeedFrame = Instance.new("Frame")
 SpeedFrame.Size = UDim2.new(0.85, 0, 0, 65)
@@ -1933,7 +1890,7 @@ RunService.Heartbeat:Connect(function()
 end)
 
 -- ============================================
--- محتوى صفحة الاعب المتقدمة (Player Advanced)
+-- محتوى صفحة التحكم بالشخصية (نظام متقدم)
 -- ============================================
 
 local PlayerAdvFrame = Instance.new("Frame")
@@ -1948,7 +1905,6 @@ local PlayerAdvFrameCorner = Instance.new("UICorner")
 PlayerAdvFrameCorner.CornerRadius = UDim.new(0, 12)
 PlayerAdvFrameCorner.Parent = PlayerAdvFrame
 
--- إطار مضيء (نيون)
 local PlayerAdvGlow = Instance.new("Frame")
 PlayerAdvGlow.Size = UDim2.new(1, 8, 1, 8)
 PlayerAdvGlow.Position = UDim2.new(0, -4, 0, -4)
@@ -1962,23 +1918,21 @@ local PlayerAdvGlowCorner = Instance.new("UICorner")
 PlayerAdvGlowCorner.CornerRadius = UDim.new(0, 16)
 PlayerAdvGlowCorner.Parent = PlayerAdvGlow
 
--- العنوان
 local PlayerAdvTitle = Instance.new("TextLabel")
-PlayerAdvTitle.Size = UDim2.new(1, -40, 0, 45)
-PlayerAdvTitle.Position = UDim2.new(0, 20, 0, 8)
+PlayerAdvTitle.Size = UDim2.new(1, -40, 0, 40)
+PlayerAdvTitle.Position = UDim2.new(0, 20, 0, 5)
 PlayerAdvTitle.BackgroundTransparency = 1
-PlayerAdvTitle.Text = "🎮 نظام الاعب المتقدم 🎮"
+PlayerAdvTitle.Text = "🎮 نظام التحكم بالشخصية 🎮"
 PlayerAdvTitle.TextColor3 = Color3.fromRGB(200, 100, 255)
-PlayerAdvTitle.TextSize = 20
+PlayerAdvTitle.TextSize = 18
 PlayerAdvTitle.Font = Enum.Font.GothamBold
 PlayerAdvTitle.TextXAlignment = Enum.TextXAlignment.Center
 PlayerAdvTitle.Parent = PlayerAdvFrame
 PlayerAdvTitle.ZIndex = 6
 
--- خط فاصل
 local PlayerAdvDivider = Instance.new("Frame")
 PlayerAdvDivider.Size = UDim2.new(0.6, 0, 0, 2)
-PlayerAdvDivider.Position = UDim2.new(0.2, 0, 0, 56)
+PlayerAdvDivider.Position = UDim2.new(0.2, 0, 0, 48)
 PlayerAdvDivider.BackgroundColor3 = Color3.fromRGB(200, 100, 255)
 PlayerAdvDivider.BackgroundTransparency = 0.4
 PlayerAdvDivider.BorderSizePixel = 0
@@ -1986,123 +1940,489 @@ PlayerAdvDivider.Parent = PlayerAdvFrame
 PlayerAdvDivider.ZIndex = 6
 
 -- ============================================
--- أزرار الاعب (8 أزرار مرتبة)
+-- 1️⃣ نظام السرعة
 -- ============================================
 
-local buttonY = 0.08
-local buttonHeight = 0.07
-local buttonSpacing = 0.015
-local buttonWidth = 0.45
-local col1X = 0.03
-local col2X = 0.52
+local SpeedLabel = Instance.new("TextLabel")
+SpeedLabel.Size = UDim2.new(0.45, 0, 0, 22)
+SpeedLabel.Position = UDim2.new(0.03, 0, 0.08, 0)
+SpeedLabel.BackgroundTransparency = 1
+SpeedLabel.Text = "🏃 السرعة:"
+SpeedLabel.TextColor3 = Color3.fromRGB(0, 255, 150)
+SpeedLabel.TextSize = 14
+SpeedLabel.Font = Enum.Font.GothamBold
+SpeedLabel.TextXAlignment = Enum.TextXAlignment.Left
+SpeedLabel.Parent = PlayerAdvFrame
+SpeedLabel.ZIndex = 7
 
--- وظيفة لإنشاء زر داخل صفحة الاعب
-local function createPlayerAdvButton(text, col, row, color, clickFunc)
-    local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(buttonWidth, 0, buttonHeight, 0)
-    btn.Position = UDim2.new(col, 0, buttonY + (row * (buttonHeight + buttonSpacing)), 0)
-    btn.BackgroundColor3 = color or Color3.fromRGB(60, 40, 80)
-    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    btn.TextSize = 14
-    btn.Font = Enum.Font.GothamBold
-    btn.Text = text
-    btn.Parent = PlayerAdvFrame
-    btn.ZIndex = 7
-    
-    local btnCorner = Instance.new("UICorner")
-    btnCorner.CornerRadius = UDim.new(0, 8)
-    btnCorner.Parent = btn
-    
-    btn.MouseEnter:Connect(function()
-        btn.BackgroundColor3 = Color3.new(
-            math.min(color.R + 0.15, 1),
-            math.min(color.G + 0.15, 1),
-            math.min(color.B + 0.15, 1)
-        )
-    end)
-    btn.MouseLeave:Connect(function()
-        btn.BackgroundColor3 = color
-    end)
-    
-    if clickFunc then
-        btn.MouseButton1Click:Connect(clickFunc)
-    end
-    
-    return btn
-end
+local SpeedInput = Instance.new("TextBox")
+SpeedInput.Size = UDim2.new(0.25, 0, 0, 30)
+SpeedInput.Position = UDim2.new(0.03, 0, 0.14, 0)
+SpeedInput.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
+SpeedInput.Text = "16"
+SpeedInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpeedInput.TextSize = 14
+SpeedInput.Font = Enum.Font.GothamMedium
+SpeedInput.PlaceholderText = "السرعة"
+SpeedInput.Parent = PlayerAdvFrame
+SpeedInput.ZIndex = 7
 
--- ============================================
--- دوال الأزرار
--- ============================================
+local SpeedInputCorner = Instance.new("UICorner")
+SpeedInputCorner.CornerRadius = UDim.new(0, 6)
+SpeedInputCorner.Parent = SpeedInput
 
--- 1. عرض معلومات الاعب
-createPlayerAdvButton("📋 معلومات الاعب", col1X, 0, Color3.fromRGB(40, 60, 140), function()
-    local name = LocalPlayer.DisplayName or LocalPlayer.Name
-    local userId = LocalPlayer.UserId
-    local team = LocalPlayer.Team and LocalPlayer.Team.Name or "لا يوجد"
-    showNotification("👤 الاسم: " .. name .. "\n🆔 ID: " .. userId .. "\n🏳️ الفريق: " .. team, PlayerAdvFrame)
-end)
+local SpeedToggle = Instance.new("TextButton")
+SpeedToggle.Size = UDim2.new(0.18, 0, 0, 30)
+SpeedToggle.Position = UDim2.new(0.30, 0, 0.14, 0)
+SpeedToggle.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+SpeedToggle.Text = "OFF"
+SpeedToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpeedToggle.TextSize = 13
+SpeedToggle.Font = Enum.Font.GothamBold
+SpeedToggle.Parent = PlayerAdvFrame
+SpeedToggle.ZIndex = 7
 
--- 2. تغيير لون الشخصية
-createPlayerAdvButton("🎨 تغيير اللون", col2X, 0, Color3.fromRGB(200, 100, 50), function()
+local SpeedToggleCorner = Instance.new("UICorner")
+SpeedToggleCorner.CornerRadius = UDim.new(0, 6)
+SpeedToggleCorner.Parent = SpeedToggle
+
+local speedHackActive = false
+local originalSpeed = 16
+
+SpeedToggle.MouseButton1Click:Connect(function()
+    speedHackActive = not speedHackActive
     local char = LocalPlayer.Character
     if char then
-        for _, part in pairs(char:GetDescendants()) do
-            if part:IsA("BasePart") then
-                part.Color = Color3.fromRGB(math.random(0,255), math.random(0,255), math.random(0,255))
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        if hum then
+            if speedHackActive then
+                local speedVal = tonumber(SpeedInput.Text) or 16
+                hum.WalkSpeed = speedVal
+                SpeedToggle.Text = "ON ✅"
+                SpeedToggle.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
+                showNotification("🏃 تم تفعيل السرعة: " .. speedVal, PlayerAdvFrame)
+            else
+                hum.WalkSpeed = originalSpeed
+                SpeedToggle.Text = "OFF"
+                SpeedToggle.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+                showNotification("⛔ تم إيقاف السرعة", PlayerAdvFrame)
             end
         end
-        showNotification("🎨 تم تغيير لون الشخصية!", PlayerAdvFrame)
-    else
-        showNotification("❌ ما لقيت الشخصية!", PlayerAdvFrame)
     end
-end)
-
--- 3. إرسال رسالة إلى الاعب
-createPlayerAdvButton("💬 إرسال رسالة", col1X, 1, Color3.fromRGB(0, 150, 200), function()
-    showNotification("📩 اكتب رسالتك في الشات مع /msg", PlayerAdvFrame)
-end)
-
--- 4. طلب الصداقة
-createPlayerAdvButton("🤝 طلب صداقة", col2X, 1, Color3.fromRGB(50, 200, 100), function()
-    showNotification("✅ تم إرسال طلب صداقة!", PlayerAdvFrame)
-end)
-
--- 5. متابعة الاعب (كاميرا)
-createPlayerAdvButton("📷 متابعة الاعب", col1X, 2, Color3.fromRGB(200, 50, 200), function()
-    local char = LocalPlayer.Character
-    if char and char:FindFirstChild("HumanoidRootPart") then
-        local cam = workspace.CurrentCamera
-        cam.CameraSubject = char.HumanoidRootPart
-        showNotification("📷 جاري متابعة الاعب!", PlayerAdvFrame)
-    end
-end)
-
--- 6. عرض قائمة الأصدقاء
-createPlayerAdvButton("👥 الأصدقاء", col2X, 2, Color3.fromRGB(255, 150, 50), function()
-    local friends = Players:GetPlayers()
-    local count = #friends
-    showNotification("👥 لديك " .. count .. " لاعب في السيرفر!", PlayerAdvFrame)
-end)
-
--- 7. حظر الاعب (شكلي)
-createPlayerAdvButton("🚫 حظر الاعب", col1X, 3, Color3.fromRGB(200, 50, 50), function()
-    showNotification("⚠️ تم حظر الاعب (شكلي)", PlayerAdvFrame)
-end)
-
--- 8. إحصائيات الاعب
-createPlayerAdvButton("📊 الإحصائيات", col2X, 3, Color3.fromRGB(0, 200, 200), function()
-    local ping = game:GetService("Stats"):FindFirstChild("Network") and game:GetService("Stats").Network:FindFirstChild("Ping") or 0
-    showNotification("📊 بينج: " .. tostring(ping) .. "ms\n👤 الاعب: " .. LocalPlayer.DisplayName, PlayerAdvFrame)
 end)
 
 -- ============================================
--- صندوق معلومات أسفل صفحة الاعب
+-- 2️⃣ مكان التلبورت (إحداثيات)
+-- ============================================
+
+local TeleportLabel = Instance.new("TextLabel")
+TeleportLabel.Size = UDim2.new(0.45, 0, 0, 22)
+TeleportLabel.Position = UDim2.new(0.52, 0, 0.08, 0)
+TeleportLabel.BackgroundTransparency = 1
+TeleportLabel.Text = "📍 مكان التلبورت:"
+TeleportLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
+TeleportLabel.TextSize = 14
+TeleportLabel.Font = Enum.Font.GothamBold
+TeleportLabel.TextXAlignment = Enum.TextXAlignment.Left
+TeleportLabel.Parent = PlayerAdvFrame
+TeleportLabel.ZIndex = 7
+
+local TeleportInput = Instance.new("TextBox")
+TeleportInput.Size = UDim2.new(0.45, 0, 0, 30)
+TeleportInput.Position = UDim2.new(0.52, 0, 0.14, 0)
+TeleportInput.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
+TeleportInput.Text = "0, 10, 0"
+TeleportInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+TeleportInput.TextSize = 13
+TeleportInput.Font = Enum.Font.GothamMedium
+TeleportInput.PlaceholderText = "X, Y, Z"
+TeleportInput.Parent = PlayerAdvFrame
+TeleportInput.ZIndex = 7
+
+local TeleportInputCorner = Instance.new("UICorner")
+TeleportInputCorner.CornerRadius = UDim.new(0, 6)
+TeleportInputCorner.Parent = TeleportInput
+
+local TeleportBtn = Instance.new("TextButton")
+TeleportBtn.Size = UDim2.new(0.18, 0, 0, 30)
+TeleportBtn.Position = UDim2.new(0.99, -70, 0.14, 0)
+TeleportBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 200)
+TeleportBtn.Text = "🚀 انتقل"
+TeleportBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+TeleportBtn.TextSize = 12
+TeleportBtn.Font = Enum.Font.GothamBold
+TeleportBtn.Parent = PlayerAdvFrame
+TeleportBtn.ZIndex = 7
+
+local TeleportBtnCorner = Instance.new("UICorner")
+TeleportBtnCorner.CornerRadius = UDim.new(0, 6)
+TeleportBtnCorner.Parent = TeleportBtn
+
+TeleportBtn.MouseButton1Click:Connect(function()
+    local coords = TeleportInput.Text:gsub(" ", "")
+    local parts = {}
+    for part in coords:gmatch("[^,]+") do
+        table.insert(parts, tonumber(part))
+    end
+    if #parts == 3 then
+        local char = LocalPlayer.Character
+        if char and char:FindFirstChild("HumanoidRootPart") then
+            char.HumanoidRootPart.CFrame = CFrame.new(parts[1], parts[2], parts[3])
+            showNotification("📍 تم الانتقال إلى: " .. TeleportInput.Text, PlayerAdvFrame)
+        end
+    else
+        showNotification("⚠️ أدخل إحداثيات صحيحة (X, Y, Z)", PlayerAdvFrame)
+    end
+end)
+
+-- ============================================
+-- 3️⃣ القفز
+-- ============================================
+
+local JumpLabel = Instance.new("TextLabel")
+JumpLabel.Size = UDim2.new(0.45, 0, 0, 22)
+JumpLabel.Position = UDim2.new(0.03, 0, 0.25, 0)
+JumpLabel.BackgroundTransparency = 1
+JumpLabel.Text = "⬆️ القفز:"
+JumpLabel.TextColor3 = Color3.fromRGB(255, 200, 50)
+JumpLabel.TextSize = 14
+JumpLabel.Font = Enum.Font.GothamBold
+JumpLabel.TextXAlignment = Enum.TextXAlignment.Left
+JumpLabel.Parent = PlayerAdvFrame
+JumpLabel.ZIndex = 7
+
+local JumpInput = Instance.new("TextBox")
+JumpInput.Size = UDim2.new(0.25, 0, 0, 30)
+JumpInput.Position = UDim2.new(0.03, 0, 0.31, 0)
+JumpInput.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
+JumpInput.Text = "50"
+JumpInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+JumpInput.TextSize = 14
+JumpInput.Font = Enum.Font.GothamMedium
+JumpInput.PlaceholderText = "القوة"
+JumpInput.Parent = PlayerAdvFrame
+JumpInput.ZIndex = 7
+
+local JumpInputCorner = Instance.new("UICorner")
+JumpInputCorner.CornerRadius = UDim.new(0, 6)
+JumpInputCorner.Parent = JumpInput
+
+local JumpBtn = Instance.new("TextButton")
+JumpBtn.Size = UDim2.new(0.18, 0, 0, 30)
+JumpBtn.Position = UDim2.new(0.30, 0, 0.31, 0)
+JumpBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
+JumpBtn.Text = "🚀 اقفز"
+JumpBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+JumpBtn.TextSize = 13
+JumpBtn.Font = Enum.Font.GothamBold
+JumpBtn.Parent = PlayerAdvFrame
+JumpBtn.ZIndex = 7
+
+local JumpBtnCorner = Instance.new("UICorner")
+JumpBtnCorner.CornerRadius = UDim.new(0, 6)
+JumpBtnCorner.Parent = JumpBtn
+
+JumpBtn.MouseButton1Click:Connect(function()
+    local char = LocalPlayer.Character
+    if char then
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        if hum then
+            local power = tonumber(JumpInput.Text) or 50
+            hum.JumpPower = power
+            hum:Jump()
+            showNotification("⬆️ تم القفز بقوة: " .. power, PlayerAdvFrame)
+        end
+    end
+end)
+
+-- ============================================
+-- 4️⃣ اختراق الجدران (Noclip)
+-- ============================================
+
+local NoclipLabel = Instance.new("TextLabel")
+NoclipLabel.Size = UDim2.new(0.45, 0, 0, 22)
+NoclipLabel.Position = UDim2.new(0.52, 0, 0.25, 0)
+NoclipLabel.BackgroundTransparency = 1
+NoclipLabel.Text = "🧱 اختراق الجدران:"
+NoclipLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+NoclipLabel.TextSize = 14
+NoclipLabel.Font = Enum.Font.GothamBold
+NoclipLabel.TextXAlignment = Enum.TextXAlignment.Left
+NoclipLabel.Parent = PlayerAdvFrame
+NoclipLabel.ZIndex = 7
+
+local NoclipToggle = Instance.new("TextButton")
+NoclipToggle.Size = UDim2.new(0.25, 0, 0, 30)
+NoclipToggle.Position = UDim2.new(0.52, 0, 0.31, 0)
+NoclipToggle.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+NoclipToggle.Text = "🚫 معطل"
+NoclipToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+NoclipToggle.TextSize = 13
+NoclipToggle.Font = Enum.Font.GothamBold
+NoclipToggle.Parent = PlayerAdvFrame
+NoclipToggle.ZIndex = 7
+
+local NoclipToggleCorner = Instance.new("UICorner")
+NoclipToggleCorner.CornerRadius = UDim.new(0, 6)
+NoclipToggleCorner.Parent = NoclipToggle
+
+local noclipActive = false
+local noclipConnection = nil
+
+NoclipToggle.MouseButton1Click:Connect(function()
+    noclipActive = not noclipActive
+    
+    if noclipActive then
+        NoclipToggle.Text = "✅ مفعل"
+        NoclipToggle.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
+        showNotification("🧱 تم تفعيل اختراق الجدران!", PlayerAdvFrame)
+        
+        if noclipConnection then
+            noclipConnection:Disconnect()
+        end
+        
+        noclipConnection = RunService.Heartbeat:Connect(function()
+            if noclipActive then
+                local char = LocalPlayer.Character
+                if char then
+                    for _, part in pairs(char:GetDescendants()) do
+                        if part:IsA("BasePart") then
+                            part.CanCollide = false
+                        end
+                    end
+                end
+            end
+        end)
+    else
+        NoclipToggle.Text = "🚫 معطل"
+        NoclipToggle.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+        if noclipConnection then
+            noclipConnection:Disconnect()
+            noclipConnection = nil
+        end
+        local char = LocalPlayer.Character
+        if char then
+            for _, part in pairs(char:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = true
+                end
+            end
+        end
+        showNotification("⛔ تم إيقاف اختراق الجدران", PlayerAdvFrame)
+    end
+end)
+
+-- ============================================
+-- 5️⃣ قفز لا نهائي (Infinite Jump)
+-- ============================================
+
+local InfiniteJumpLabel = Instance.new("TextLabel")
+InfiniteJumpLabel.Size = UDim2.new(0.45, 0, 0, 22)
+InfiniteJumpLabel.Position = UDim2.new(0.03, 0, 0.42, 0)
+InfiniteJumpLabel.BackgroundTransparency = 1
+InfiniteJumpLabel.Text = "🚀 قفز لا نهائي:"
+InfiniteJumpLabel.TextColor3 = Color3.fromRGB(0, 255, 200)
+InfiniteJumpLabel.TextSize = 14
+InfiniteJumpLabel.Font = Enum.Font.GothamBold
+InfiniteJumpLabel.TextXAlignment = Enum.TextXAlignment.Left
+InfiniteJumpLabel.Parent = PlayerAdvFrame
+InfiniteJumpLabel.ZIndex = 7
+
+local InfiniteJumpToggle = Instance.new("TextButton")
+InfiniteJumpToggle.Size = UDim2.new(0.25, 0, 0, 30)
+InfiniteJumpToggle.Position = UDim2.new(0.03, 0, 0.48, 0)
+InfiniteJumpToggle.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+InfiniteJumpToggle.Text = "🚫 معطل"
+InfiniteJumpToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+InfiniteJumpToggle.TextSize = 13
+InfiniteJumpToggle.Font = Enum.Font.GothamBold
+InfiniteJumpToggle.Parent = PlayerAdvFrame
+InfiniteJumpToggle.ZIndex = 7
+
+local InfiniteJumpCorner = Instance.new("UICorner")
+InfiniteJumpCorner.CornerRadius = UDim.new(0, 6)
+InfiniteJumpCorner.Parent = InfiniteJumpToggle
+
+local infiniteJumpActive = false
+local infiniteJumpConnection = nil
+
+InfiniteJumpToggle.MouseButton1Click:Connect(function()
+    infiniteJumpActive = not infiniteJumpActive
+    
+    if infiniteJumpActive then
+        InfiniteJumpToggle.Text = "✅ مفعل"
+        InfiniteJumpToggle.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
+        showNotification("🚀 تم تفعيل القفز اللانهائي!", PlayerAdvFrame)
+        
+        if infiniteJumpConnection then
+            infiniteJumpConnection:Disconnect()
+        end
+        
+        infiniteJumpConnection = UserInputService.JumpRequest:Connect(function()
+            if infiniteJumpActive then
+                local char = LocalPlayer.Character
+                if char then
+                    local hum = char:FindFirstChildOfClass("Humanoid")
+                    if hum then
+                        hum:Jump()
+                    end
+                end
+            end
+        end)
+    else
+        InfiniteJumpToggle.Text = "🚫 معطل"
+        InfiniteJumpToggle.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+        if infiniteJumpConnection then
+            infiniteJumpConnection:Disconnect()
+            infiniteJumpConnection = nil
+        end
+        showNotification("⛔ تم إيقاف القفز اللانهائي", PlayerAdvFrame)
+    end
+end)
+
+-- ============================================
+-- 6️⃣ دوران (Spin)
+-- ============================================
+
+local SpinLabel = Instance.new("TextLabel")
+SpinLabel.Size = UDim2.new(0.45, 0, 0, 22)
+SpinLabel.Position = UDim2.new(0.52, 0, 0.42, 0)
+SpinLabel.BackgroundTransparency = 1
+SpinLabel.Text = "🔄 دوران:"
+SpinLabel.TextColor3 = Color3.fromRGB(255, 150, 200)
+SpinLabel.TextSize = 14
+SpinLabel.Font = Enum.Font.GothamBold
+SpinLabel.TextXAlignment = Enum.TextXAlignment.Left
+SpinLabel.Parent = PlayerAdvFrame
+SpinLabel.ZIndex = 7
+
+local SpinInput = Instance.new("TextBox")
+SpinInput.Size = UDim2.new(0.20, 0, 0, 30)
+SpinInput.Position = UDim2.new(0.52, 0, 0.48, 0)
+SpinInput.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
+SpinInput.Text = "5"
+SpinInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpinInput.TextSize = 14
+SpinInput.Font = Enum.Font.GothamMedium
+SpinInput.PlaceholderText = "السرعة"
+SpinInput.Parent = PlayerAdvFrame
+SpinInput.ZIndex = 7
+
+local SpinInputCorner = Instance.new("UICorner")
+SpinInputCorner.CornerRadius = UDim.new(0, 6)
+SpinInputCorner.Parent = SpinInput
+
+local SpinToggle = Instance.new("TextButton")
+SpinToggle.Size = UDim2.new(0.18, 0, 0, 30)
+SpinToggle.Position = UDim2.new(0.74, 0, 0.48, 0)
+SpinToggle.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+SpinToggle.Text = "OFF"
+SpinToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpinToggle.TextSize = 13
+SpinToggle.Font = Enum.Font.GothamBold
+SpinToggle.Parent = PlayerAdvFrame
+SpinToggle.ZIndex = 7
+
+local SpinToggleCorner = Instance.new("UICorner")
+SpinToggleCorner.CornerRadius = UDim.new(0, 6)
+SpinToggleCorner.Parent = SpinToggle
+
+local spinActive = false
+local spinSpeed = 5
+local spinConnection = nil
+
+SpinToggle.MouseButton1Click:Connect(function()
+    spinActive = not spinActive
+    
+    if spinActive then
+        spinSpeed = tonumber(SpinInput.Text) or 5
+        SpinToggle.Text = "ON ✅"
+        SpinToggle.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
+        showNotification("🔄 تم تفعيل الدوران بسرعة: " .. spinSpeed, PlayerAdvFrame)
+        
+        if spinConnection then
+            spinConnection:Disconnect()
+        end
+        
+        spinConnection = RunService.Heartbeat:Connect(function()
+            if spinActive then
+                local char = LocalPlayer.Character
+                if char then
+                    local hrp = char:FindFirstChild("HumanoidRootPart")
+                    if hrp then
+                        hrp.CFrame = hrp.CFrame * CFrame.Angles(0, math.rad(spinSpeed), 0)
+                    end
+                end
+            end
+        end)
+    else
+        SpinToggle.Text = "OFF"
+        SpinToggle.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+        if spinConnection then
+            spinConnection:Disconnect()
+            spinConnection = nil
+        end
+        showNotification("⛔ تم إيقاف الدوران", PlayerAdvFrame)
+    end
+end)
+
+-- ============================================
+-- 7️⃣ 120 FOV
+-- ============================================
+
+local FOVLabel = Instance.new("TextLabel")
+FOVLabel.Size = UDim2.new(0.45, 0, 0, 22)
+FOVLabel.Position = UDim2.new(0.03, 0, 0.59, 0)
+FOVLabel.BackgroundTransparency = 1
+FOVLabel.Text = "👁️ 120 FOV:"
+FOVLabel.TextColor3 = Color3.fromRGB(100, 200, 255)
+FOVLabel.TextSize = 14
+FOVLabel.Font = Enum.Font.GothamBold
+FOVLabel.TextXAlignment = Enum.TextXAlignment.Left
+FOVLabel.Parent = PlayerAdvFrame
+FOVLabel.ZIndex = 7
+
+local FOVToggle = Instance.new("TextButton")
+FOVToggle.Size = UDim2.new(0.25, 0, 0, 30)
+FOVToggle.Position = UDim2.new(0.03, 0, 0.65, 0)
+FOVToggle.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+FOVToggle.Text = "🚫 معطل"
+FOVToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+FOVToggle.TextSize = 13
+FOVToggle.Font = Enum.Font.GothamBold
+FOVToggle.Parent = PlayerAdvFrame
+FOVToggle.ZIndex = 7
+
+local FOVToggleCorner = Instance.new("UICorner")
+FOVToggleCorner.CornerRadius = UDim.new(0, 6)
+FOVToggleCorner.Parent = FOVToggle
+
+local fovActive = false
+local originalFOV = 70
+
+FOVToggle.MouseButton1Click:Connect(function()
+    fovActive = not fovActive
+    
+    if fovActive then
+        FOVToggle.Text = "✅ مفعل"
+        FOVToggle.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
+        workspace.CurrentCamera.FieldOfView = 120
+        showNotification("👁️ تم تفعيل 120 FOV!", PlayerAdvFrame)
+    else
+        FOVToggle.Text = "🚫 معطل"
+        FOVToggle.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+        workspace.CurrentCamera.FieldOfView = originalFOV
+        showNotification("⛔ تم إيقاف 120 FOV", PlayerAdvFrame)
+    end
+end)
+
+-- ============================================
+-- صندوق معلومات أسفل صفحة التحكم
 -- ============================================
 
 local PlayerAdvInfo = Instance.new("Frame")
-PlayerAdvInfo.Size = UDim2.new(0.85, 0, 0, 55)
-PlayerAdvInfo.Position = UDim2.new(0.075, 0, 0.45, 0)
+PlayerAdvInfo.Size = UDim2.new(0.85, 0, 0, 45)
+PlayerAdvInfo.Position = UDim2.new(0.075, 0, 0.75, 0)
 PlayerAdvInfo.BackgroundColor3 = Color3.fromRGB(20, 15, 30)
 PlayerAdvInfo.BorderSizePixel = 0
 PlayerAdvInfo.Parent = PlayerAdvFrame
@@ -2129,9 +2449,9 @@ local PlayerAdvInfoText = Instance.new("TextLabel")
 PlayerAdvInfoText.Size = UDim2.new(1, -15, 1, -10)
 PlayerAdvInfoText.Position = UDim2.new(0, 7, 0, 5)
 PlayerAdvInfoText.BackgroundTransparency = 1
-PlayerAdvInfoText.Text = "🎮 نظام الاعب المتقدم\n📌 اختر الإجراء المناسب من الأزرار أعلاه"
+PlayerAdvInfoText.Text = "🎮 نظام التحكم بالشخصية المتقدم\n🏃 سرعة | 📍 تلبورت | ⬆️ قفز | 🧱 اختراق | 🚀 قفز لانهائي | 🔄 دوران | 👁️ 120 FOV"
 PlayerAdvInfoText.TextColor3 = Color3.fromRGB(200, 180, 220)
-PlayerAdvInfoText.TextSize = 12
+PlayerAdvInfoText.TextSize = 11
 PlayerAdvInfoText.Font = Enum.Font.GothamMedium
 PlayerAdvInfoText.TextXAlignment = Enum.TextXAlignment.Center
 PlayerAdvInfoText.TextYAlignment = Enum.TextYAlignment.Center
@@ -2280,8 +2600,8 @@ createNewsCard("🏎️", "تم إضافة نظام سرعة السيارة ال
     "أدخل قيمة السرعة المطلوبة واضغط ON لتفعيلها!",
     Color3.fromRGB(255, 150, 0), false)
 
-createNewsCard("🎮", "تم إضافة واجهة الاعب المتقدمة!",
-    "يمكنك الآن التحكم بمعلومات الاعب وتغيير اللون والمزيد!",
+createNewsCard("🎮", "تم إضافة نظام التحكم بالشخصية المتقدم!",
+    "الآن يمكنك التحكم بالسرعة، التلبورت، القفز، اختراق الجدران، القفز اللانهائي، الدوران و 120 FOV!",
     Color3.fromRGB(200, 100, 255), false)
 
 createNewsCard("📱", "دعم كامل للهاتف والكمبيوتر!",
@@ -2510,7 +2830,7 @@ local function ShowPlayerAdv()
     
     for _, child in pairs(Sidebar:GetChildren()) do
         if child:IsA("TextButton") then
-            if child.Text == "🎮 الاعب" then
+            if child.Text == "🎮 التحكم" then
                 child.BackgroundColor3 = Color3.fromRGB(200, 100, 255)
                 child.TextColor3 = Color3.fromRGB(255, 255, 255)
             else
@@ -2543,7 +2863,7 @@ for _, child in pairs(Sidebar:GetChildren()) do
             child.MouseButton1Click:Connect(function()
                 showNotification("🔄 زر كلبشة تلقائي (قيد التطوير)", MainFrame)
             end)
-        elseif child.Text == "🎮 الاعب" then
+        elseif child.Text == "🎮 التحكم" then
             child.MouseButton1Click:Connect(ShowPlayerAdv)
         end
     end
@@ -2552,9 +2872,8 @@ end
 -- عرض الصفحة الافتراضية
 ShowTeleport()
 
-print("✅ LYNEX - النسخة النهائية مع واجهة الاعب المتقدمة")
-print("📌 الأزرار: انتقال الفوري | فلوس | صيد | لاعبين | أخبار | طيران ذكي | كلبشة تلقائي | الاعب")
-print("🎮 تم إضافة واجهة الاعب المتقدمة بـ 8 أزرار:")
-print("   📋 معلومات الاعب | 🎨 تغيير اللون | 💬 إرسال رسالة | 🤝 طلب صداقة")
-print("   📷 متابعة الاعب | 👥 الأصدقاء | 🚫 حظر الاعب | 📊 الإحصائيات")
+print("✅ LYNEX - النسخة النهائية مع نظام التحكم بالشخصية المتقدم")
+print("📌 الأزرار: انتقال الفوري | فلوس | صيد | لاعبين | أخبار | طيران ذكي | كلبشة تلقائي | التحكم")
+print("🎮 تم إضافة نظام التحكم بالشخصية مع 7 ميزات:")
+print("   🏃 سرعة | 📍 تلبورت | ⬆️ قفز | 🧱 اختراق جدران | 🚀 قفز لانهائي | 🔄 دوران | 👁️ 120 FOV")
 print("🔗 رابط الديسكورد: https://discord.gg/fJTvyYW4A")
