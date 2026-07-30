@@ -2347,7 +2347,7 @@ ClutchToggleButton.Text = "▶️ تشغيل الكلبشة"
 ClutchToggleButton.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
 
 -- ============================================
--- محتوى صفحة الاعب (Player Settings)
+-- محتوى صفحة الاعب (Player Settings) - مبسطة
 -- ============================================
 
 local SettingsFrame = Instance.new("Frame")
@@ -2400,12 +2400,12 @@ SettingsDivider.Parent = SettingsFrame
 SettingsDivider.ZIndex = 6
 
 -- ============================================
--- إعداد السرعة
+-- إعداد السرعة فقط
 -- ============================================
 
 local SpeedContainer = Instance.new("Frame")
 SpeedContainer.Size = UDim2.new(0.8, 0, 0.15, 0)
-SpeedContainer.Position = UDim2.new(0.1, 0, 0.15, 0)
+SpeedContainer.Position = UDim2.new(0.1, 0, 0.2, 0)
 SpeedContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
 SpeedContainer.BorderSizePixel = 0
 SpeedContainer.Parent = SettingsFrame
@@ -2443,11 +2443,11 @@ SpeedLabel.ZIndex = 8
 
 -- مربع إدخال السرعة
 local SpeedInputBox = Instance.new("TextBox")
-SpeedInputBox.Size = UDim2.new(0.2, 0, 0.5, 0)
-SpeedInputBox.Position = UDim2.new(0.75, 0, 0.25, 0)
+SpeedInputBox.Size = UDim2.new(0.25, 0, 0.6, 0)
+SpeedInputBox.Position = UDim2.new(0.7, 0, 0.2, 0)
 SpeedInputBox.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
 SpeedInputBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-SpeedInputBox.TextSize = 16
+SpeedInputBox.TextSize = 18
 SpeedInputBox.Font = Enum.Font.GothamBold
 SpeedInputBox.Text = "16"
 SpeedInputBox.PlaceholderText = "السرعة"
@@ -2460,13 +2460,25 @@ local SpeedInputCorner = Instance.new("UICorner")
 SpeedInputCorner.CornerRadius = UDim.new(0, 6)
 SpeedInputCorner.Parent = SpeedInputBox
 
+-- تطبيق السرعة فوراً عند تغيير القيمة
+SpeedInputBox.FocusLost:Connect(function()
+    local speedVal = tonumber(SpeedInputBox.Text)
+    if speedVal and speedVal > 0 then
+        local char = game.Players.LocalPlayer.Character
+        if char and char:FindFirstChild("Humanoid") then
+            char.Humanoid.WalkSpeed = speedVal
+            showNotification("✅ تم ضبط السرعة: " .. speedVal, SettingsFrame)
+        end
+    end
+end)
+
 -- ============================================
--- إعداد القفز
+-- إعداد القفز فقط
 -- ============================================
 
 local JumpContainer = Instance.new("Frame")
 JumpContainer.Size = UDim2.new(0.8, 0, 0.15, 0)
-JumpContainer.Position = UDim2.new(0.1, 0, 0.38, 0)
+JumpContainer.Position = UDim2.new(0.1, 0, 0.45, 0)
 JumpContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
 JumpContainer.BorderSizePixel = 0
 JumpContainer.Parent = SettingsFrame
@@ -2504,11 +2516,11 @@ JumpLabel.ZIndex = 8
 
 -- مربع إدخال القفز
 local JumpInputBox = Instance.new("TextBox")
-JumpInputBox.Size = UDim2.new(0.2, 0, 0.5, 0)
-JumpInputBox.Position = UDim2.new(0.75, 0, 0.25, 0)
+JumpInputBox.Size = UDim2.new(0.25, 0, 0.6, 0)
+JumpInputBox.Position = UDim2.new(0.7, 0, 0.2, 0)
 JumpInputBox.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
 JumpInputBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-JumpInputBox.TextSize = 16
+JumpInputBox.TextSize = 18
 JumpInputBox.Font = Enum.Font.GothamBold
 JumpInputBox.Text = "50"
 JumpInputBox.PlaceholderText = "القفز"
@@ -2521,93 +2533,25 @@ local JumpInputCorner = Instance.new("UICorner")
 JumpInputCorner.CornerRadius = UDim.new(0, 6)
 JumpInputCorner.Parent = JumpInputBox
 
--- ============================================
--- أزرار التحكم
--- ============================================
-
-local ButtonContainer = Instance.new("Frame")
-ButtonContainer.Size = UDim2.new(0.8, 0, 0.12, 0)
-ButtonContainer.Position = UDim2.new(0.1, 0, 0.6, 0)
-ButtonContainer.BackgroundTransparency = 1
-ButtonContainer.Parent = SettingsFrame
-ButtonContainer.ZIndex = 7
-
--- زر تطبيق
-local ApplyBtn = Instance.new("TextButton")
-ApplyBtn.Size = UDim2.new(0.45, -5, 1, 0)
-ApplyBtn.Position = UDim2.new(0, 0, 0, 0)
-ApplyBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
-ApplyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-ApplyBtn.TextSize = 16
-ApplyBtn.Font = Enum.Font.GothamBold
-ApplyBtn.Text = "✅ تطبيق"
-ApplyBtn.Parent = ButtonContainer
-ApplyBtn.ZIndex = 8
-
-local ApplyCorner = Instance.new("UICorner")
-ApplyCorner.CornerRadius = UDim.new(0, 8)
-ApplyCorner.Parent = ApplyBtn
-
-ApplyBtn.MouseEnter:Connect(function()
-    ApplyBtn.BackgroundColor3 = Color3.fromRGB(0, 220, 120)
-end)
-ApplyBtn.MouseLeave:Connect(function()
-    ApplyBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
-end)
-
-ApplyBtn.MouseButton1Click:Connect(function()
-    local speedVal = tonumber(SpeedInputBox.Text)
+-- تطبيق القفز فوراً عند تغيير القيمة
+JumpInputBox.FocusLost:Connect(function()
     local jumpVal = tonumber(JumpInputBox.Text)
-    
-    if speedVal and speedVal > 0 then
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = speedVal
-    end
-    
     if jumpVal and jumpVal > 0 then
-        game.Players.LocalPlayer.Character.Humanoid.JumpPower = jumpVal
+        local char = game.Players.LocalPlayer.Character
+        if char and char:FindFirstChild("Humanoid") then
+            char.Humanoid.JumpPower = jumpVal
+            showNotification("✅ تم ضبط القفز: " .. jumpVal, SettingsFrame)
+        end
     end
-    
-    showNotification("✅ تم تطبيق الإعدادات!", SettingsFrame)
-end)
-
--- زر إعادة تعيين
-local ResetSettingsBtn = Instance.new("TextButton")
-ResetSettingsBtn.Size = UDim2.new(0.45, -5, 1, 0)
-ResetSettingsBtn.Position = UDim2.new(0.55, 0, 0, 0)
-ResetSettingsBtn.BackgroundColor3 = Color3.fromRGB(200, 100, 50)
-ResetSettingsBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-ResetSettingsBtn.TextSize = 16
-ResetSettingsBtn.Font = Enum.Font.GothamBold
-ResetSettingsBtn.Text = "🔄 إعادة تعيين"
-ResetSettingsBtn.Parent = ButtonContainer
-ResetSettingsBtn.ZIndex = 8
-
-local ResetSettingsCorner = Instance.new("UICorner")
-ResetSettingsCorner.CornerRadius = UDim.new(0, 8)
-ResetSettingsCorner.Parent = ResetSettingsBtn
-
-ResetSettingsBtn.MouseEnter:Connect(function()
-    ResetSettingsBtn.BackgroundColor3 = Color3.fromRGB(220, 120, 60)
-end)
-ResetSettingsBtn.MouseLeave:Connect(function()
-    ResetSettingsBtn.BackgroundColor3 = Color3.fromRGB(200, 100, 50)
-end)
-
-ResetSettingsBtn.MouseButton1Click:Connect(function()
-    SpeedInputBox.Text = "16"
-    JumpInputBox.Text = "50"
-    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
-    game.Players.LocalPlayer.Character.Humanoid.JumpPower = 50
-    showNotification("🔄 تم إعادة التعيين للقيم الافتراضية!", SettingsFrame)
 end)
 
 -- ============================================
--- عرض القيم الحالية
+-- عرض القيم الحالية (مبسط)
 -- ============================================
 
 local CurrentValuesBox = Instance.new("Frame")
 CurrentValuesBox.Size = UDim2.new(0.8, 0, 0.15, 0)
-CurrentValuesBox.Position = UDim2.new(0.1, 0, 0.78, 0)
+CurrentValuesBox.Position = UDim2.new(0.1, 0, 0.7, 0)
 CurrentValuesBox.BackgroundColor3 = Color3.fromRGB(15, 15, 30)
 CurrentValuesBox.BorderSizePixel = 0
 CurrentValuesBox.Parent = SettingsFrame
@@ -2862,5 +2806,5 @@ print("🔍 إضافة بحث للاعبين")
 print("🚀 إضافة زر القفز السريع للسيارة")
 print("🏎️ إضافة نظام سرعة السيارة المتقدم")
 print("🔄 نظام الكلبشة التلقائي للسيارات")
-print("🎮 إعدادات الاعب (سرعة + قفز)")
+print("🎮 إعدادات الاعب (سرعة + قفز) - تطبيق تلقائي")
 print("🔗 رابط الديسكورد: https://discord.gg/fJTvyYW4A")
